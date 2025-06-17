@@ -86,16 +86,10 @@
             <span class="text-content">Đã hủy đơn</span>
           </div>
         </div>
-        <% } else if (reservation.Status === 'Approved') { %>
-        <div class="status-overlay approved">
+        <% } else if (reservation.Status === 'Completed') { %>
+        <div class="status-overlay completed">
           <div class="background">
-            <span class="text-content">Đã duyệt đơn</span>
-          </div>
-        </div>
-        <% } else if (reservation.Status === 'Rejected') { %>
-        <div class="status-overlay rejected">
-          <div class="background">
-            <span class="text-content">Đã từ chối đơn</span>
+            <span class="text-content">Đã hoàn thành đơn</span>
           </div>
         </div>
         <% } %>
@@ -143,7 +137,7 @@
           <textarea id="note-input" name="Note" rows="3" class="form-field"
             placeholder="Nhập ghi chú cho nhà hàng..."><%= reservation.Note %></textarea>
         </div>
-        <% if (reservation.Status !== 'Cancelled' && reservation.Status !== 'Approved' && reservation.Status !== 'Rejected') { %>
+        <% if (reservation.Status !== 'Cancelled' && reservation.Status !== 'Completed') { %>
         <button type="submit">Cập nhật đơn đặt bàn</button>
         <% } %>
       </form>

@@ -79,6 +79,8 @@
           <div class="status rejected">Đã từ chối</div>
           <% } else if (Status === 'Completed') { %>
           <div class="status completed">Đã hoàn thành</div>
+          <% } else if (Status === 'Cancelled') { %>
+          <div class="status cancelled">Đã hủy</div>
           <% } %>
         </div>
         <div class="card-info">
@@ -109,7 +111,7 @@
             <i class="bi bi-x-lg"></i>
             <span>Từ chối đơn</span>
           </button>
-          <button type="button" class="action-btn" id="complete-booking-btn"
+          <button type="button" class="action-btn" id="approve-booking-btn"
             data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
             onclick="showConfirmApproveBookingModal(event)">
             <i class="bi bi-clipboard-check"></i>
@@ -120,6 +122,12 @@
             onclick="showConfirmCompleteBookingModal(event)">
             <i class="bi bi-check-circle"></i>
             <span>Hoàn thành đơn</span>
+          </button>
+          <button type="button" class="action-btn" id="cancel-booking-btn"
+            data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
+            onclick="showConfirmCancelBookingModal(event)">
+            <i class="bi bi-trash"></i>
+            <span>Hủy đơn</span>
           </button>
           <% } %>
         </div>
@@ -237,7 +245,7 @@
 
           <div class="btns">
             <button class="submit-btn" onclick="rejectBooking(event)">
-              <i class="bi bi-trash"></i>
+              <i class="bi bi-x-lg"></i>
               <span>Xác nhận từ chối đơn</span>
             </button>
           </div>
@@ -287,9 +295,9 @@
 
         <form class="approve-form" id="confirm-approve-form">
           <div class="btns">
-            <button class="submit-btn complete-btn" onclick="approveBooking(event)">
-              <i class="bi bi-trash"></i>
-              <span>Duyệt đơn</span>
+            <button class="submit-btn approve-btn" onclick="approveBooking(event)">
+              <i class="bi bi-clipboard-check"></i>
+              <span>Duyệt đơn</span>  
             </button>
           </div>
         </form>
@@ -339,7 +347,7 @@
         <form class="complete-form" id="confirm-complete-form">
           <div class="btns">
             <button class="submit-btn complete-btn" onclick="completeBooking(event)">
-              <i class="bi bi-trash"></i>
+              <i class="bi bi-check-circle"></i>
               <span>Hoàn thành đơn</span>
             </button>
           </div>

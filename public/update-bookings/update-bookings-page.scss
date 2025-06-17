@@ -105,6 +105,7 @@
           z-index: 10;
           pointer-events: none;
           position: absolute;
+          background-color: rgba(255, 255, 255, 0.5);
 
           .background {
             position: absolute;
@@ -124,23 +125,15 @@
             z-index: 20;
           }
 
-          &.approved {
+          &.completed {
             .background {
-              border: 6px dashed #10b981e6;
+              border: 6px dashed gs.$dark-bg;
             }
             .text-content {
-              color: #10b981e6;
+              color: gs.$dark-bg;
             }
           }
           &.cancelled {
-            .background {
-              border: 6px dashed red;
-            }
-            .text-content {
-              color: red;
-            }
-          }
-          &.rejected {
             .background {
               border: 6px dashed red;
             }

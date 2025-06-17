@@ -2,12 +2,12 @@ import { genOTP, sendOTPEmail } from "../utils/send-mail.js"
 
 // Middleware xác thực user cho route getReservationsByUserInfo
 export function authenticateUser(req, res, next) {
-  req.session.user = {
-    email: "hanmunmun000@gmail.com",
-    otp: "123456",
-    otpExpiry: Date.now() + 5 * 60 * 1000, // OTP hết hạn sau 5 phút
-    verified: true,
-  }
+  // req.session.user = {
+  //   email: "hanmunmun000@gmail.com",
+  //   otp: "123456",
+  //   otpExpiry: Date.now() + 5 * 60 * 1000, // OTP hết hạn sau 5 phút
+  //   verified: true,
+  // }
   const user = req.session.user
   
   // Kiểm tra xem user đã có session chưa
@@ -84,6 +84,8 @@ export function verifyOTP(req, res, next) {
   const user = req.session.user
   const admin = req.session.admin
 
+  console.log('>>> verify OTP:', { otp, user, admin, sessionOTP: req.session.user.otp })
+
   if (!user || !user.otp) {
     return res.redirect("/update-bookings/email-form")
   }
@@ -101,7 +103,7 @@ export function verifyOTP(req, res, next) {
     return res.render("update-bookings/otp-form/otp-form-page", {
       isAdmin: admin || false,
       email: user.email,
-      error: "OTP không chính xác",
+      error: "OTP không chính xác, vui lòng thử lại",
     })
   }
 
