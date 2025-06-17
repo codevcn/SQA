@@ -1,0 +1,245 @@
+@use "../utils/global-styles.scss" as gs;
+
+#main-section {
+  padding: 2rem;
+
+  .title-section {
+    border-bottom: 2px black solid;
+    width: 100%;
+
+    h3 {
+      font-weight: bold;
+    }
+  }
+
+  .update-booking-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 20px;
+
+    h4 {
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-align: start;
+      margin-bottom: 1rem;
+    }
+
+    // Left side - Current details
+    .current-details {
+      .details-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        .detail-item {
+          display: flex;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid #eee;
+
+          &:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+          }
+
+          label {
+            width: 140px;
+            color: #666;
+            font-weight: 500;
+          }
+
+          span {
+            flex: 1;
+
+            &.status-pending {
+              color: #f59e0b;
+            }
+
+            &.status-confirmed {
+              color: #10b981;
+            }
+
+            &.status-rejected {
+              color: #ef4444;
+            }
+
+            &.status-approved {
+              color: #10b981;
+            }
+
+            &.status-cancelled {
+              color: #ef4444;
+            }
+
+            &.status-arrived {
+              color: #10b981;
+            }
+          }
+        }
+      }
+    }
+
+    .booking {
+      flex: 1.5;
+
+      .card {
+        width: 100%;
+        margin: 0 auto;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+
+        // Status Overlay
+        .status-overlay {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 10;
+          pointer-events: none;
+          position: absolute;
+
+          .background {
+            position: absolute;
+            background: transparent;
+            transform: rotate(-15deg) scale(1.5);
+            z-index: 10;
+            padding: 30px 50px;
+          }
+
+          .text-content {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255);
+            transform: rotate(-15deg);
+            z-index: 20;
+          }
+
+          &.approved {
+            .background {
+              border: 6px dashed #10b981e6;
+            }
+            .text-content {
+              color: #10b981e6;
+            }
+          }
+          &.cancelled {
+            .background {
+              border: 6px dashed red;
+            }
+            .text-content {
+              color: red;
+            }
+          }
+          &.rejected {
+            .background {
+              border: 6px dashed red;
+            }
+            .text-content {
+              color: red;
+            }
+          }
+        }
+
+        .form-group-row {
+          display: flex;
+          gap: 10px;
+          width: 100%;
+
+          .form-group {
+            flex-grow: 1;
+          }
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+
+          &.warning {
+            input,
+            textarea {
+              border-color: red;
+              outline: 1px red solid;
+            }
+
+            .message {
+              display: flex;
+            }
+          }
+
+          label {
+            display: block;
+            color: gs.$gray;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+          }
+
+          input,
+          textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            outline: none;
+
+            &:focus {
+              border-color: gs.$primary-color;
+              box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.5);
+            }
+          }
+
+          .message {
+            display: none;
+            column-gap: 5px;
+            color: red;
+            font-weight: 500;
+            padding-left: 5px;
+            margin-top: 3px;
+          }
+        }
+
+        button {
+          width: 100%;
+          background: gs.$primary-color;
+          color: white;
+          padding: 0.75rem;
+          border: none;
+          border-radius: 0.375rem;
+          font-weight: bold;
+          cursor: pointer;
+
+          &:hover {
+            background: gs.$primary-hover;
+          }
+        }
+      }
+    }
+  }
+
+  .section-title {
+    padding-left: 10px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  #main-section {
+    padding: 1rem;
+
+    .update-booking-container {
+      grid-template-columns: 1fr;
+
+      .current-details {
+        margin-bottom: 2rem;
+      }
+    }
+  }
+}

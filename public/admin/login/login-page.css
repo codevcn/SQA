@@ -1,0 +1,224 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1.15;
+}
+
+[hidden=true] {
+  display: none;
+}
+
+i {
+  display: flex;
+  color: inherit;
+}
+
+body {
+  font-family: sans-serif;
+  background: #f3f4f6;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  color: white;
+  padding: 1rem;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+header .app-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-decoration: none;
+  color: white;
+}
+header nav ul {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+  margin: 0;
+}
+header nav ul .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  text-decoration: none;
+}
+header nav ul .nav-item:hover {
+  color: #eab308;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  background: #1f2937;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+footer p {
+  margin: 0;
+}
+
+.text-primary-color {
+  color: #eab308;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.title-box {
+  color: #eab308;
+  background-color: #eab308;
+}
+
+.gap-\[0\.5\] {
+  gap: 2px;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.bg-cl-primary {
+  background-color: #eab308;
+}
+
+#main-section {
+  display: flex;
+  padding: 30px 50px;
+  min-height: calc(100vh - 150px);
+}
+#main-section .login-container {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+}
+#main-section .login-container h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #eab308;
+  font-weight: bold;
+}
+#main-section .login-container .form-group {
+  margin-bottom: 1.2rem;
+}
+#main-section .login-container .form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: bold;
+  color: #4b5563;
+  padding-left: 5px;
+}
+#main-section .login-container .form-group .input-wrapper {
+  position: relative;
+}
+#main-section .login-container .form-group .input-wrapper input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #4b5563;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+#main-section .login-container .form-group .input-wrapper input[name=password] {
+  padding-right: 40px;
+}
+#main-section .login-container .form-group .input-wrapper input:focus {
+  border-color: #eab308;
+  outline: 2px #eab308 solid;
+}
+#main-section .login-container .form-group .input-wrapper .hide-show-password-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  background-color: transparent;
+  border: none;
+}
+#main-section .login-container .form-group .input-wrapper .hide-show-password-btn i {
+  font-size: 1.3rem;
+}
+#main-section .login-container .submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #eab308;
+  color: #f3f4f6;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#main-section .login-container .submit-btn:hover {
+  background-color: #ca8a04;
+}
+#main-section .login-container .submit-btn .spinner-border {
+  display: flex;
+  height: 18.4px;
+  width: 18.4px;
+  color: white;
+  margin: 0 auto;
+}
+#main-section .login-container .forgot-password {
+  display: block;
+  text-align: right;
+  margin-top: 0.5rem;
+  color: #eab308;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.3s ease;
+}
+#main-section .login-container .forgot-password:hover {
+  color: #ca8a04;
+}
+#main-section .login-container .signup-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+#main-section .login-container .signup-link a {
+  color: #eab308;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-weight: bold;
+}
+#main-section .login-container .signup-link a:hover {
+  text-decoration: underline;
+}
+
+/*# sourceMappingURL=login-page.css.map */

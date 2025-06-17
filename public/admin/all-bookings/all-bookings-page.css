@@ -1,0 +1,764 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1.15;
+}
+
+[hidden=true] {
+  display: none;
+}
+
+i {
+  display: flex;
+  color: inherit;
+}
+
+body {
+  font-family: sans-serif;
+  background: #f3f4f6;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  color: white;
+  padding: 1rem;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+header .app-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-decoration: none;
+  color: white;
+}
+header nav ul {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+  margin: 0;
+}
+header nav ul .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  text-decoration: none;
+}
+header nav ul .nav-item:hover {
+  color: #eab308;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  background: #1f2937;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+footer p {
+  margin: 0;
+}
+
+.text-primary-color {
+  color: #eab308;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.title-box {
+  color: #eab308;
+  background-color: #eab308;
+}
+
+.gap-\[0\.5\] {
+  gap: 2px;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.bg-cl-primary {
+  background-color: #eab308;
+}
+
+#main-section {
+  min-height: calc(100vh - 60.8px - 68.8px);
+  padding: 20px 50px;
+}
+#main-section .title-section {
+  border-bottom: 2px black solid;
+  width: 100%;
+}
+#main-section .title-section h3 {
+  font-weight: bold;
+}
+#main-section .result-summary {
+  display: flex;
+  gap: 30px;
+  font-weight: bold;
+  padding-left: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+#main-section .result-summary p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+#main-section .result-summary p i {
+  font-size: 1.1rem;
+}
+#main-section .result-section {
+  margin-top: 5px;
+}
+#main-section .result-section .booking-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+#main-section .result-section .booking-list .booking-card {
+  background-color: #fff;
+  padding: 15px;
+  border-left: 6px solid #eab308;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 50%;
+}
+#main-section .result-section .booking-list .booking-card:nth-child(odd) {
+  width: calc(50% - 10px);
+}
+#main-section .result-section .booking-list .booking-card:hover {
+  outline: 2px #eab308 solid;
+}
+#main-section .result-section .booking-list .booking-card .card-title {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 30px;
+}
+#main-section .result-section .booking-list .booking-card .card-title h5 {
+  margin: 0;
+  font-weight: bold;
+  color: #eab308;
+}
+#main-section .result-section .booking-list .booking-card .card-title .status {
+  border-radius: 4px;
+  color: white;
+  padding: 5px 15px;
+  font-weight: bold;
+}
+#main-section .result-section .booking-list .booking-card .card-title .status.rejected, #main-section .result-section .booking-list .booking-card .card-title .status.cancelled {
+  background-color: red;
+}
+#main-section .result-section .booking-list .booking-card .card-title .status.pending {
+  background-color: #eab308;
+}
+#main-section .result-section .booking-list .booking-card .card-title .status.approved, #main-section .result-section .booking-list .booking-card .card-title .status.completed {
+  background-color: #50cd9f;
+}
+#main-section .result-section .booking-list .booking-card .card-title .status.arrived {
+  background-color: #7700ff;
+}
+#main-section .result-section .booking-list .booking-card .card-info {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 35px;
+  row-gap: 5px;
+  margin-top: 5px;
+}
+#main-section .result-section .booking-list .booking-card .card-info p {
+  margin: 5px 0;
+}
+#main-section .result-section .booking-list .booking-card .reject-reason {
+  color: red;
+  background-color: rgba(255, 0, 0, 0.1607843137);
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-top: 10px;
+}
+#main-section .result-section .booking-list .booking-card .tables-list {
+  background-color: rgba(80, 205, 159, 0.3411764706);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+#main-section .result-section .booking-list .booking-card .booking-actions {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-top: 5px;
+  gap: 10px;
+}
+#main-section .result-section .booking-list .booking-card .booking-actions .is-expired {
+  color: #141414;
+  font-weight: bold;
+  padding: 5px 10px;
+  background-color: lightgray;
+  width: 100%;
+  text-align: center;
+}
+#main-section .result-section .booking-list .booking-card .booking-actions .action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 6px;
+  background-color: #1f2937;
+  color: white;
+  outline: none;
+  border: none;
+  padding: 6px 15px;
+  text-decoration: none;
+  border: 2px #1f2937 solid;
+  margin-top: 5px;
+}
+#main-section .result-section .booking-list .booking-card .booking-actions .action-btn:hover {
+  background-color: white;
+  color: #1f2937;
+}
+#main-section .result-section .booking-list .booking-card .booking-actions .action-btn:hover .spinner-border {
+  color: #1f2937;
+}
+#main-section .result-section .booking-list .booking-card .booking-actions .action-btn .spinner-border {
+  display: flex;
+  height: 19.2px;
+  width: 19.2px;
+  color: white;
+  margin: 0 auto;
+}
+#main-section .result-section .empty-result {
+  display: flex;
+  width: 100%;
+  padding: 50px;
+}
+#main-section .result-section .empty-result .empty-content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  align-items: center;
+  margin: auto;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: gray;
+}
+#main-section .result-section .empty-result .empty-content i {
+  font-size: 3rem;
+}
+
+#filter-bookings-form {
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 15px 0 20px;
+}
+#filter-bookings-form .filter-bookings-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+#filter-bookings-form .form-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+}
+#filter-bookings-form .form-groups .form-group {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+#filter-bookings-form .form-groups .form-group label {
+  font-weight: bold;
+  color: #4b5563;
+  margin-bottom: 4px;
+  padding-left: 5px;
+}
+#filter-bookings-form .form-groups .form-group input,
+#filter-bookings-form .form-groups .form-group p,
+#filter-bookings-form .form-groups .form-group textarea,
+#filter-bookings-form .form-groups .form-group .dropdown-toggle {
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 1px gray;
+  margin: 0;
+  outline: none;
+  border: none;
+  flex-grow: 1;
+}
+#filter-bookings-form .form-groups .form-group .dropdown {
+  flex-grow: 1;
+}
+#filter-bookings-form .form-groups .form-group .dropdown .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  width: 100%;
+  height: 100%;
+}
+#filter-bookings-form .form-groups .form-group .dropdown .dropdown-toggle::after {
+  color: gray;
+}
+#filter-bookings-form .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+#filter-bookings-form .btns {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+  margin-top: 10px;
+}
+#filter-bookings-form .btns .submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 6px;
+  background-color: #1f2937;
+  color: white;
+  outline: none;
+  border: none;
+  padding: 6px 15px;
+  text-decoration: none;
+  border: 2px #1f2937 solid;
+  margin-top: 5px;
+}
+#filter-bookings-form .btns .submit-btn:hover {
+  background-color: white;
+  color: #1f2937;
+}
+#filter-bookings-form .btns .submit-btn:hover .spinner-border {
+  color: #1f2937;
+}
+#filter-bookings-form .btns .submit-btn .spinner-border {
+  display: flex;
+  height: 19.2px;
+  width: 19.2px;
+  color: white;
+  margin: 0 auto;
+}
+
+.modal-dialog .modal-content .modal-header {
+  padding: 10px 20px;
+}
+.modal-dialog .modal-content .modal-header .modal-title {
+  font-weight: bold;
+}
+
+#reject-booking-modal .modal-body .booking-details-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 1px #1f2937 solid;
+  padding-bottom: 3px;
+  margin: 0;
+}
+#reject-booking-modal .modal-body .form-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+#reject-booking-modal .modal-body .form-groups .form-group {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+#reject-booking-modal .modal-body .form-groups .form-group label {
+  font-weight: bold;
+  color: #4b5563;
+  margin-bottom: 4px;
+  padding-left: 5px;
+}
+#reject-booking-modal .modal-body .form-groups .form-group input,
+#reject-booking-modal .modal-body .form-groups .form-group p,
+#reject-booking-modal .modal-body .form-groups .form-group textarea,
+#reject-booking-modal .modal-body .form-groups .form-group .dropdown-toggle {
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 1px gray;
+  margin: 0;
+  outline: none;
+  border: none;
+  flex-grow: 1;
+}
+#reject-booking-modal .modal-body .form-groups .form-group .dropdown {
+  flex-grow: 1;
+}
+#reject-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  width: 100%;
+  height: 100%;
+}
+#reject-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle::after {
+  color: gray;
+}
+#reject-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+#cancel-booking-modal .modal-body .booking-details-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 1px #1f2937 solid;
+  padding-bottom: 3px;
+  margin: 0;
+}
+#cancel-booking-modal .modal-body .form-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group label {
+  font-weight: bold;
+  color: #4b5563;
+  margin-bottom: 4px;
+  padding-left: 5px;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group input,
+#cancel-booking-modal .modal-body .form-groups .form-group p,
+#cancel-booking-modal .modal-body .form-groups .form-group textarea,
+#cancel-booking-modal .modal-body .form-groups .form-group .dropdown-toggle {
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 1px gray;
+  margin: 0;
+  outline: none;
+  border: none;
+  flex-grow: 1;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group .dropdown {
+  flex-grow: 1;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  width: 100%;
+  height: 100%;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle::after {
+  color: gray;
+}
+#cancel-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+#complete-booking-modal .modal-body .booking-details-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 1px #1f2937 solid;
+  padding-bottom: 3px;
+  margin: 0;
+}
+#complete-booking-modal .modal-body .form-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+#complete-booking-modal .modal-body .form-groups .form-group {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+#complete-booking-modal .modal-body .form-groups .form-group label {
+  font-weight: bold;
+  color: #4b5563;
+  margin-bottom: 4px;
+  padding-left: 5px;
+}
+#complete-booking-modal .modal-body .form-groups .form-group input,
+#complete-booking-modal .modal-body .form-groups .form-group p,
+#complete-booking-modal .modal-body .form-groups .form-group textarea,
+#complete-booking-modal .modal-body .form-groups .form-group .dropdown-toggle {
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 1px gray;
+  margin: 0;
+  outline: none;
+  border: none;
+  flex-grow: 1;
+}
+#complete-booking-modal .modal-body .form-groups .form-group .dropdown {
+  flex-grow: 1;
+}
+#complete-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  width: 100%;
+  height: 100%;
+}
+#complete-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle::after {
+  color: gray;
+}
+#complete-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+#arrived-cus-modal .modal-body .booking-details-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 1px #1f2937 solid;
+  padding-bottom: 3px;
+  margin: 0;
+}
+#arrived-cus-modal .modal-body .form-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group label {
+  font-weight: bold;
+  color: #4b5563;
+  margin-bottom: 4px;
+  padding-left: 5px;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group input,
+#arrived-cus-modal .modal-body .form-groups .form-group p,
+#arrived-cus-modal .modal-body .form-groups .form-group textarea,
+#arrived-cus-modal .modal-body .form-groups .form-group .dropdown-toggle {
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 1px gray;
+  margin: 0;
+  outline: none;
+  border: none;
+  flex-grow: 1;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group .dropdown {
+  flex-grow: 1;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  width: 100%;
+  height: 100%;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle::after {
+  color: gray;
+}
+#arrived-cus-modal .modal-body .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+#confirm-cancel-form .notice {
+  font-size: 1.1rem;
+  margin: 0;
+}
+#confirm-cancel-form .btns {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+#confirm-cancel-form .btns .submit-btn {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: white;
+  border: 2px red solid;
+  border-radius: 4px;
+  padding: 6px 15px;
+  background-color: red;
+}
+#confirm-cancel-form .btns .submit-btn:hover {
+  background-color: white;
+  color: red;
+}
+#confirm-cancel-form .btns .submit-btn:hover .spinner-border {
+  color: red;
+}
+#confirm-cancel-form .btns .submit-btn .spinner-border {
+  display: flex;
+  height: 19.2px;
+  width: 19.2px;
+  color: white;
+  margin: 0 auto;
+}
+#confirm-cancel-form .btns .submit-btn.complete-btn {
+  background-color: #1f2937;
+  border-color: #1f2937;
+}
+#confirm-cancel-form .btns .submit-btn.complete-btn:hover {
+  background-color: white;
+  color: #1f2937;
+}
+#confirm-cancel-form .btns .submit-btn.complete-btn:hover .spinner-border {
+  color: #1f2937;
+}
+
+#confirm-reject-form .notice {
+  font-size: 1.1rem;
+  margin: 0;
+}
+#confirm-reject-form .btns {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+#confirm-reject-form .btns .submit-btn {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: white;
+  border: 2px red solid;
+  border-radius: 4px;
+  padding: 6px 15px;
+  background-color: red;
+}
+#confirm-reject-form .btns .submit-btn:hover {
+  background-color: white;
+  color: red;
+}
+#confirm-reject-form .btns .submit-btn:hover .spinner-border {
+  color: red;
+}
+#confirm-reject-form .btns .submit-btn .spinner-border {
+  display: flex;
+  height: 19.2px;
+  width: 19.2px;
+  color: white;
+  margin: 0 auto;
+}
+#confirm-reject-form .btns .submit-btn.complete-btn {
+  background-color: #1f2937;
+  border-color: #1f2937;
+}
+#confirm-reject-form .btns .submit-btn.complete-btn:hover {
+  background-color: white;
+  color: #1f2937;
+}
+#confirm-reject-form .btns .submit-btn.complete-btn:hover .spinner-border {
+  color: #1f2937;
+}
+
+#confirm-complete-form .notice {
+  font-size: 1.1rem;
+  margin: 0;
+}
+#confirm-complete-form .btns {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+#confirm-complete-form .btns .submit-btn {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: white;
+  border: 2px red solid;
+  border-radius: 4px;
+  padding: 6px 15px;
+  background-color: red;
+}
+#confirm-complete-form .btns .submit-btn:hover {
+  background-color: white;
+  color: red;
+}
+#confirm-complete-form .btns .submit-btn:hover .spinner-border {
+  color: red;
+}
+#confirm-complete-form .btns .submit-btn .spinner-border {
+  display: flex;
+  height: 19.2px;
+  width: 19.2px;
+  color: white;
+  margin: 0 auto;
+}
+#confirm-complete-form .btns .submit-btn.complete-btn {
+  background-color: #1f2937;
+  border-color: #1f2937;
+}
+#confirm-complete-form .btns .submit-btn.complete-btn:hover {
+  background-color: white;
+  color: #1f2937;
+}
+#confirm-complete-form .btns .submit-btn.complete-btn:hover .spinner-border {
+  color: #1f2937;
+}
+
+/*# sourceMappingURL=all-bookings-page.css.map */

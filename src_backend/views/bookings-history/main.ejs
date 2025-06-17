@@ -1,0 +1,87 @@
+<main id="main-section">
+  <section class="title-section">
+    <h3>Tra cứu đơn đặt bàn</h3>
+  </section>
+
+  <form action="/bookings-history/" method="GET" class="search-form" id="search-form">
+    <input type="number" id="phone-input" name="Cus_Phone"
+      placeholder="Nhập số điện thoại của bạn... Ví dụ: 0123456789">
+    <input type="text" id="name-input" name="Cus_FullName" placeholder="Nhập tên của bạn... Ví dụ: Nguyễn Văn A">
+    <button type="submit" class="submit-btn">Tra cứu</button>
+  </form>
+
+  <section class="result-section">
+    <% if (bookings && bookings.length > 0) { %>
+    <div class="booking-list">
+      <% bookings.forEach(({ReservationID,Cus_FullName,Cus_Email,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,Reason}) => { %>
+      <div class="booking-card">
+        <div class="card-title">
+          <h5>Đơn #<%= ReservationID %></h5>
+          <% if (Status === 'Pending') { %>
+          <div class="status pending">Chưa được xử lý</div>
+          <% } else if (Status === 'Approved') { %>
+          <div class="status approved">Đã duyệt</div>
+          <% } else if (Status === 'Cancelled') { %>
+          <div class="status cancelled">Đã hủy</div>
+          <% } else if (Status === 'Arrived') { %>
+          <div class="status arrived">Khách đã đến</div>
+          <% } else if (Status === 'Completed') { %>
+          <div class="status completed">Đã hoàn thành</div>
+          <% } else { %>
+          <div class="status rejected">Đã từ chối</div>
+          <% } %>
+        </div>
+        <div class="card-info">
+          <p><strong>Họ tên:</strong> <%= Cus_FullName %></p>
+          <p><strong>Email:</strong> <%= Cus_Email %></p>
+          <p><strong>Số điện thoại:</strong> <%= Cus_Phone %></p>
+          <p><strong>Thời gian đến:</strong> <%= ArrivalTime %></p>
+          <p>
+            <strong>Người lớn:</strong> <%= NumAdults %>, <strong>Trẻ em:</strong> <%= NumChildren
+            %>
+          </p>
+          <p><strong>Ghi chú:</strong> <%= Note || "Không có" %></p>
+          <p><strong>Ngày tạo đơn:</strong> <%= CreatedAt %></p>
+        </div>
+        <% if (Reason) { %>
+        <div class="reason"><strong>Lý do:</strong> <%= Reason %></div>
+        <% } else if (TablesList && TablesList.length > 0) { %>
+        <div class="tables-list">
+          <span>Danh sách bàn:</span>
+          <% TablesList.forEach(({TableNumber},index) => {%>
+          <span><%= TableNumber %><%= index === TablesList.length - 1 ? '' : ',' %></span>
+          <% }) %>
+        </div>
+        <% } %>
+
+        <!-- Nút cập nhật đơn đặt bàn -->
+        <div class="card-actions mt-2">
+          <button class="update-booking-btn" data-booking-id="<%= ReservationID %>"
+            data-booking-data="<%= JSON.stringify({
+              ReservationID: ReservationID,
+              Cus_FullName: Cus_FullName,
+              Cus_Email: Cus_Email,
+              Cus_Phone: Cus_Phone,
+              ArrivalTime: ArrivalTime,
+              NumAdults: NumAdults,
+              NumChildren: NumChildren,
+              Note: Note,
+              Status: Status,
+            }) %>">
+            <i class="bi bi-pencil-square me-1"></i>
+            Cập nhật
+          </button>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="empty-result">
+      <p class="empty-content">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>Không có đơn đặt bàn nào</span>
+      </p>
+    </div>
+    <% } %>
+  </section>
+</main>

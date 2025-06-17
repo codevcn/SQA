@@ -1,0 +1,287 @@
+<main id="main-section">
+  <section class="title-section">
+    <h3>Tất cả các đơn đặt bàn</h3>
+  </section>
+
+  <form id="filter-bookings-form" action="/admin/all-bookings" method="GET">
+    <h2 class="filter-bookings-title">Lọc đơn đặt bàn</h2>
+
+    <div class="form-groups">
+      <div class="form-group status">
+        <label>Trạng thái đơn</label>
+        <input type="text" name="status" id="booking-status-input" value="none" hidden>
+        <div class="dropdown" id="booking-status-select">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            Chọn trạng thái của đơn
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <div class="dropdown-item" data-kb-table-status="All">Tất cả</div>
+            </li>
+            <li>
+              <div class="dropdown-item" data-kb-table-status="Pending">Chưa được xử lý</div>
+            </li>
+            <li>
+              <div class="dropdown-item" data-kb-table-status="Approved">Đã duyệt</div>
+            </li>
+            <li>
+              <div class="dropdown-item" data-kb-table-status="Rejected">Đã từ chối</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group time">
+        <label for="filter-bookings-time-input">Số giờ đến hạn</label>
+        <input type="number" id="filter-bookings-time-input" name="expires_in_hours">
+        <div class="message"></div>
+      </div>
+
+      <div class="form-group time">
+        <label for="filter-bookings-time-input">Số điện thoại</label>
+        <input type="phonenumber" id="filter-bookings-time-input" name="phonenumber">
+        <div class="message"></div>
+      </div>
+      <div class="form-group time">
+        <label for="filter-bookings-time-input">Trong ngày</label>
+        <input type="date" id="filter-bookings-time-input" name="date">
+        <div class="message"></div>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="submit-btn">
+        <i class="bi bi-check-lg"></i>
+        <span>Áp dụng</span>
+      </button>
+    </div>
+  </form>
+
+  <section class="result-summary">
+    <p>
+      <i class="bi bi-card-text"></i>
+      <span>Tổng cộng <%= bookings?.length || 0 %> đơn đặt bàn.</span>
+    </p>
+  </section>
+
+  <section class="result-section">
+    <% if (bookings && bookings.length > 0) { %>
+    <div class="booking-list">
+      <% bookings.forEach(({ReservationID,isExpired,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) => { %>
+      <div class="booking-card" data-kb-booking-id="<%= ReservationID%>">
+        <div class="card-title">
+          <h5>Đơn #<%= ReservationID %></h5>
+          <% if (Status === 'Pending') { %>
+          <div class="status pending">Chưa được xử lý</div>
+          <% } else if (Status === 'Approved') { %>
+          <div class="status approved">Đã duyệt</div>
+          <% } else if (Status === 'Rejected') { %>
+          <div class="status rejected">Đã từ chối</div>
+          <% } %>
+        </div>
+        <div class="card-info">
+          <p><strong>Họ tên:</strong> <%= Cus_FullName %></p>
+          <p><strong>Số điện thoại:</strong> <%= Cus_Phone %></p>
+          <p><strong>Thời gian đến:</strong> <%= ArrivalTime %></p>
+          <p><strong>Người lớn:</strong> <%= NumAdults %>, <strong>Trẻ em:</strong> <%= NumChildren %></p>
+          <p><strong>Ghi chú:</strong> <%= Note || "Không có" %></p>
+          <p><strong>Ngày tạo đơn:</strong> <%= CreatedAt %></p>
+        </div>
+        <% if (Status === 'Approved' && TablesList && TablesList.length > 0) { %>
+        <div class="tables-list">
+          <span>Danh sách bàn:</span>
+          <% TablesList.forEach(({TableNumber},index) => {%>
+          <span><%= TableNumber %><%= index === TablesList.length - 1 ? '' : ',' %></span>
+          <% }) %>
+        </div>
+        <% } %>
+        <div class="booking-actions">
+          <% if (Status === 'Pending' && isExpired) { %>
+          <div class="is-expired">
+            <span>Đơn đã hết hạn</span>
+          </div>
+          <% } else if (Status === 'Pending') { %>
+          <button type="button" class="action-btn" id="reject-booking-btn" data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>" onclick="showConfirmRejectBookingModal(event)">
+            <i class="bi bi-x-lg"></i>
+            <span>Từ chối đơn</span>
+          </button>
+          <button type="button" class="action-btn" id="complete-booking-btn" data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>" onclick="showConfirmCompleteBookingModal(event)">
+            <i class="bi bi-clipboard-check"></i>
+            <span>Duyệt đơn</span>
+          </button>
+          <% } %>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } else { %>
+    <div class="empty-result">
+      <p class="empty-content">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>Không có kết quả nào</span>
+      </p>
+    </div>
+    <% } %>
+  </section>
+</main>
+
+<div class="modal fade" id="cancel-booking-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Hủy đơn</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h3 class="booking-details-title">Thông tin đặt chỗ</h3>
+        <section class="booking-details">
+          <div class="form-groups">
+            <div class="form-group full-name">
+              <label>Họ và tên người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group phone">
+              <label>Số điện thoại người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group date-time">
+              <label>Thời gian đến</label>
+              <p></p>
+            </div>
+            <div class="form-group people-count">
+              <label>Số người lớn và trẻ em</label>
+              <p></p>
+            </div>
+            <div class="form-group note">
+              <label>Ghi chú cho nhà hàng</label>
+              <p></p>
+            </div>
+            <div class="form-group created-at">
+              <label>Thời gian tạo đơn</label>
+              <p></p>
+            </div>
+          </div>
+        </section>
+
+        <form class="cancel-form" id="confirm-cancel-form">
+          <div class="btns">
+            <button class="submit-btn" onclick="cancelBooking(event)">
+              <i class="bi bi-trash"></i>
+              <span>Xác nhận hủy đơn</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reject-booking-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Từ chối đơn</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h3 class="booking-details-title">Thông tin đặt chỗ</h3>
+        <section class="booking-details">
+          <div class="form-groups">
+            <div class="form-group full-name">
+              <label>Họ và tên người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group phone">
+              <label>Số điện thoại người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group date-time">
+              <label>Thời gian đến</label>
+              <p></p>
+            </div>
+            <div class="form-group people-count">
+              <label>Số người lớn và trẻ em</label>
+              <p></p>
+            </div>
+            <div class="form-group note">
+              <label>Ghi chú cho nhà hàng</label>
+              <p></p>
+            </div>
+            <div class="form-group created-at">
+              <label>Thời gian tạo đơn</label>
+              <p></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- <h3 class="booking-details-title mt-5">Lý do từ chối đơn</h3> -->
+        <form class="reject-form" id="confirm-reject-form">
+          <div class="form-groups" hidden>
+            <div class="form-group">
+              <label for="cancel-reject-input">Lý do từ chối đơn</label>
+              <textarea id="reject-booking-input" rows="3" placeholder="Nhập lý do từ chối đơn ở đây..."></textarea>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="submit-btn" onclick="rejectBooking(event)">
+              <i class="bi bi-trash"></i>
+              <span>Xác nhận từ chối đơn</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="complete-booking-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Duyệt đơn</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h3 class="booking-details-title">Thông tin đặt chỗ</h3>
+        <section class="booking-details">
+          <div class="form-groups">
+            <div class="form-group full-name">
+              <label>Họ và tên người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group phone">
+              <label>Số điện thoại người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group date-time">
+              <label>Thời gian đến</label>
+              <p></p>
+            </div>
+            <div class="form-group people-count">
+              <label>Số người lớn và trẻ em</label>
+              <p></p>
+            </div>
+            <div class="form-group note">
+              <label>Ghi chú cho nhà hàng</label>
+              <p></p>
+            </div>
+            <div class="form-group created-at">
+              <label>Thời gian tạo đơn</label>
+              <p></p>
+            </div>
+          </div>
+        </section>
+
+        <form class="complete-form" id="confirm-complete-form">
+          <div class="btns">
+            <button class="submit-btn complete-btn" onclick="approveBooking(event)">
+              <i class="bi bi-trash"></i>
+              <span>Duyệt đơn</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <%- include('../partials/head-libs') %>
+  <link rel="stylesheet" href="/update-bookings/update-bookings-page.css" />
+  <title>KingBuf - Cập nhật đơn đặt bàn</title>
+</head>
+
+<body>
+  <!-- Header -->
+  <%- include('../partials/page-header') %>
+
+  <!-- Main -->
+  <%- include('./main') %>
+
+  <!-- Footer -->
+  <%- include('../partials/page-footer') %>
+
+  <%- include('../partials/script-libs') %>
+  
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#date-input", {
+      dateFormat: "d/m/Y"
+    })
+    flatpickr("#time-input", {
+      enableTime: true, // Bật chọn giờ
+      noCalendar: true, // Không cần chọn ngày, chỉ chọn giờ
+      dateFormat: "H:i", // Định dạng 12 giờ với AM/PM
+      time_24hr: true // Dùng định dạng 12 giờ với AM/PM
+    });
+  </script>
+  <script src="/update-bookings/update-bookings-page.js" defer></script>
+</body>
+
+</html>

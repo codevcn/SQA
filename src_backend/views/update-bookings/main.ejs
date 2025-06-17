@@ -1,0 +1,153 @@
+<main id="main-section" data-reservation="<%= JSON.stringify(reservation) %>">
+  <section class="title-section flex align-items-center justify-content-between">
+    <h3>Cập nhật thông tin đặt bàn</h3>
+    <% if (typeof isAdmin === 'undefined' && !isAdmin && typeof user !== 'undefined' && user) { %>
+    <div class="flex align-items-center user-info gap-2">
+      <div class="flex align-items-center user-details">
+        <i class="bi bi-person-circle me-2"></i>
+        <span class="user-email"><%= user.email %></span>
+      </div>
+      <a href="/bookings-history/logout" class="flex align-items-center btn btn-outline-danger btn-sm">
+        <i class="bi bi-box-arrow-right me-1"></i>
+        Đăng xuất
+      </a>
+    </div>
+    <% } %>
+  </section>
+
+  <div class="update-booking-container">
+    <!-- Left side - Current Reservation Details -->
+    <div class="current-details">
+      <h4>Thông tin đơn</h4>
+      <div class="details-card">
+        <div class="detail-item">
+          <label>Mã đơn:</label>
+          <span><%= reservation.ReservationID %></span>
+        </div>
+        <div class="detail-item">
+          <label>Họ và tên:</label>
+          <span><%= reservation.Cus_FullName %></span>
+        </div>
+        <div class="detail-item">
+          <label>Số điện thoại:</label>
+          <span><%= reservation.Cus_Phone %></span>
+        </div>
+        <div class="detail-item">
+          <label>Thời gian đến:</label>
+          <span><%= new Date(reservation.ArrivalTime).toLocaleString('vi-VN') %></span>
+        </div>
+        <div class="detail-item">
+          <label>Số người lớn:</label>
+          <span><%= reservation.NumAdults %></span>
+        </div>
+        <div class="detail-item">
+          <label>Số trẻ em:</label>
+          <span><%= reservation.NumChildren %></span>
+        </div>
+        <div class="detail-item">
+          <label>Ghi chú:</label>
+          <span><%= reservation.Note || 'Không có' %></span>
+        </div>
+        <div class="detail-item">
+          <label>Trạng thái:</label>
+          <span class="status-<%= reservation.Status.toLowerCase() %>">
+            <% if (reservation.Status === 'Pending') { %>
+            <div class="status pending">Chưa được xử lý</div>
+            <% } else if (reservation.Status === 'Approved') { %>
+            <div class="status approved">Đã duyệt</div>
+            <% } else if (reservation.Status === 'Cancelled') { %>
+            <div class="status cancelled">Đã hủy</div>
+            <% } else if (reservation.Status === 'Arrived') { %>
+            <div class="status arrived">Khách đã đến</div>
+            <% } else if (reservation.Status === 'Completed') { %>
+            <div class="status completed">Đã hoàn thành</div>
+            <% } else { %>
+            <div class="status rejected">Đã từ chối</div>
+            <% } %>
+          </span>
+        </div>
+        <% if (reservation.reject_reason) { %>
+        <div class="detail-item">
+          <label>Lý do từ chối:</label>
+          <span class="text-danger"><%= reservation.reject_reason %></span>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Right side - Update Form -->
+    <section id="booking" class="booking">
+      <h4 class="section-title">Đặt Bàn</h4>
+      <form id="booking-form" class="card" method="post" action="/update-bookings/update">
+        <!-- Status Overlay -->
+        <% if (reservation.Status === 'Cancelled') { %>
+        <div class="status-overlay cancelled">
+          <div class="background">
+            <span class="text-content">Đã hủy đơn</span>
+          </div>
+        </div>
+        <% } else if (reservation.Status === 'Approved') { %>
+        <div class="status-overlay approved">
+          <div class="background">
+            <span class="text-content">Đã duyệt đơn</span>
+          </div>
+        </div>
+        <% } else if (reservation.Status === 'Rejected') { %>
+        <div class="status-overlay rejected">
+          <div class="background">
+            <span class="text-content">Đã từ chối đơn</span>
+          </div>
+        </div>
+        <% } %>
+
+        <div class="form-group full-name">
+          <label for="full-name-input">Họ và tên</label>
+          <input type="text" id="full-name-input" class="form-field" disabled value="<%= reservation.Cus_FullName %>"
+            name="full-name" placeholder="Nhập họ và tên">
+        </div>
+        <div class="form-group email">
+          <label for="email-input">Email</label>
+          <input type="email" id="email-input" class="form-field" disabled value="<%= reservation.Cus_Email %>"
+            name="email" placeholder="Nhập email của bạn">
+        </div>
+        <div class="form-group phone">
+          <label for="phone-input">Số điện thoại</label>
+          <input type="number" id="phone-input" class="form-field" disabled value="<%= reservation.Cus_Phone %>"
+            name="phone" placeholder="Nhập số điện thoại, ví dụ: 0987654321">
+        </div>
+        <div class="form-group-row">
+          <div class="form-group date">
+            <label for="date-input">Ngày đặt</label>
+            <input type="date" id="date-input" class="form-field" name="date">
+          </div>
+          <div class="form-group time">
+            <label for="time-input">Giờ đặt</label>
+            <input type="time" id="time-input" class="form-field" name="time">
+          </div>
+        </div>
+        <div class="form-group-row">
+          <div class="form-group adults-count">
+            <label for="adults-count-input">Số người lớn</label>
+            <input type="number" id="adults-count-input" class="form-field" value="<%= reservation.NumAdults %>"
+              name="adults-count" placeholder="Số lượng khách">
+          </div>
+          <div class="form-group children-count">
+            <label for="children-count-input">Số trẻ em</label>
+            <input type="number" id="children-count-input" class="form-field" value="<%= reservation.NumChildren %>"
+              name="children-count" placeholder="Số lượng khách">
+          </div>
+        </div>
+        <div class="form-group note">
+          <label for="note-input">Ghi chú</label>
+          <textarea id="note-input" value="<%= reservation.Note %>" name="note" rows="3" class="form-field"
+            placeholder="Nhập ghi chú cho nhà hàng..."></textarea>
+        </div>
+        <% if (reservation.Status !== 'Cancelled' && reservation.Status !== 'Approved' && reservation.Status !== 'Rejected') { %>
+        <button type="submit">Cập nhật đơn đặt</button>
+        <% } %>
+      </form>
+    </section>
+  </div>
+</main>
+
+<div hidden id="api-message-placeholder" data-app-message="<%= appMessage %>"></div>

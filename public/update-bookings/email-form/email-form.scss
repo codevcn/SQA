@@ -1,0 +1,172 @@
+@use "../../utils/global-styles.scss" as gs;
+
+.text-primary-color {
+  color: #eab308;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.title-box {
+  color: #eab308;
+  background-color: #eab308;
+}
+
+.gap-\[0\.5\] {
+  gap: 2px;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+/* User Authentication Styles */
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.form-control {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #fdcd0d;
+  box-shadow: 0 0 0 0.2rem rgba(253, 205, 13, 0.25);
+}
+
+.form-control.text-center {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-send-otp {
+  background: #eab308;
+  color: white;
+}
+.btn-send-otp:hover {
+  background: #ca8a04;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  color: white;
+}
+
+.alert {
+  border-radius: 10px;
+  border: none;
+}
+
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+
+/* Animation for card */
+.card {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+  .form-control.text-center {
+    font-size: 1.25rem;
+    letter-spacing: 0.25rem;
+  }
+}
+/* Loading state for buttons */
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success animation */
+.btn-success:active {
+  transform: scale(0.95);
+}
+
+/* Error shake animation */
+.alert-danger {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/*# sourceMappingURL=email-form.css.map */

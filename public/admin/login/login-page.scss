@@ -1,0 +1,129 @@
+@use "../../utils/global-styles.scss" as gs;
+
+#main-section {
+   display: flex;
+   padding: 30px 50px;
+   min-height: calc(100vh - 150px);
+
+   .login-container {
+      background-color: gs.$light-bg;
+      color: gs.$dark-bg;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+
+      h1 {
+         text-align: center;
+         font-size: 1.5rem;
+         margin-bottom: 1.5rem;
+         color: gs.$primary-color;
+         font-weight: bold;
+      }
+
+      .form-group {
+         margin-bottom: 1.2rem;
+
+         label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+            color: gs.$gray;
+            padding-left: 5px;
+         }
+
+         .input-wrapper {
+            position: relative;
+
+            input {
+               width: 100%;
+               padding: 0.5rem 0.75rem;
+               border: 1px solid gs.$gray;
+               border-radius: 0.25rem;
+               font-size: 1rem;
+               transition: border-color 0.3s ease;
+
+               &[name="password"] {
+                  padding-right: 40px;
+               }
+
+               &:focus {
+                  border-color: gs.$primary-color;
+                  outline: 2px gs.$primary-color solid;
+               }
+            }
+
+            .hide-show-password-btn {
+               position: absolute;
+               top: 50%;
+               transform: translateY(-50%);
+               right: 10px;
+               background-color: transparent;
+               border: none;
+
+               i {
+                  font-size: 1.3rem;
+               }
+            }
+         }
+      }
+
+      .submit-btn {
+         width: 100%;
+         padding: 0.75rem;
+         background-color: gs.$primary-color;
+         color: gs.$light-bg;
+         border: none;
+         border-radius: 0.25rem;
+         font-size: 1rem;
+         font-weight: bold;
+         cursor: pointer;
+         transition: background-color 0.3s ease;
+
+         &:hover {
+            background-color: gs.$primary-hover;
+         }
+         
+         .spinner-border {
+            display: flex;
+            height: 18.4px;
+            width: 18.4px;
+            color: white;
+            margin: 0 auto;
+         }
+      }
+
+      .forgot-password {
+         display: block;
+         text-align: right;
+         margin-top: 0.5rem;
+         color: gs.$primary-color;
+         text-decoration: none;
+         font-size: 0.875rem;
+         transition: color 0.3s ease;
+
+         &:hover {
+            color: gs.$primary-hover;
+         }
+      }
+
+      .signup-link {
+         text-align: center;
+         margin-top: 1rem;
+         font-size: 0.875rem;
+
+         a {
+            color: gs.$primary-color;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: bold;
+
+            &:hover {
+               text-decoration: underline;
+            }
+         }
+      }
+   }
+}

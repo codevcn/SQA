@@ -1,0 +1,114 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1.15;
+}
+
+[hidden=true] {
+  display: none;
+}
+
+i {
+  display: flex;
+  color: inherit;
+}
+
+body {
+  font-family: sans-serif;
+  background: #f3f4f6;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  color: white;
+  padding: 1rem;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+header .app-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-decoration: none;
+  color: white;
+}
+header nav ul {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+  margin: 0;
+}
+header nav ul .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  text-decoration: none;
+}
+header nav ul .nav-item:hover {
+  color: #eab308;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  background: #1f2937;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+footer p {
+  margin: 0;
+}
+
+.text-primary-color {
+  color: #eab308;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.title-box {
+  color: #eab308;
+  background-color: #eab308;
+}
+
+.gap-\[0\.5\] {
+  gap: 2px;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.bg-cl-primary {
+  background-color: #eab308;
+}
+
+/*# sourceMappingURL=global-styles.css.map */

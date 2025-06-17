@@ -1,0 +1,24 @@
+.not-found {
+   text-align: center;
+   margin-top: 50px;
+
+   h1 {
+      font-size: 5rem;
+      color: red;
+   }
+
+   p {
+      font-size: 1.5rem;
+      margin: 20px 0;
+   }
+
+   a {
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #007bff;
+
+      &:hover {
+         text-decoration: underline;
+      }
+   }
+}

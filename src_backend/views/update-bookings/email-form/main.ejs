@@ -1,0 +1,55 @@
+<main class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-header title-box text-white text-center">
+          <h4 class="flex align-items-center justify-content-center mb-0">
+            <i class="bi bi-envelope-fill me-2"></i>
+            Xác thực Email
+          </h4>
+        </div>
+        <div class="card-body">
+          <p class="text-muted text-center mb-4">
+            Vui lòng nhập email để xem lịch sử đặt bàn của bạn
+          </p>
+
+          <% if (error) { %>
+          <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <%= error %>
+          </div>
+          <% } %>
+
+          <form action="/update-bookings/send-otp" method="POST">
+            <div class="mb-3">
+              <label for="email" class="flex align-items-center form-label">
+                <i class="bi bi-envelope me-2"></i>
+                Email
+              </label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Nhập email của bạn"
+                required
+              />
+              <div class="form-text">Chúng tôi sẽ gửi mã OTP đến email này</div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-send-otp">
+                <i class="bi bi-send me-2"></i>
+                Gửi mã OTP
+              </button>
+              <a href="/" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Quay lại trang chủ
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

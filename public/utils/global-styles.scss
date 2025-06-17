@@ -1,0 +1,126 @@
+$primary-color: #eab308;
+$primary-hover: #ca8a04;
+$dark-bg: #1f2937;
+$gray: #4b5563;
+$light-bg: #f3f4f6;
+$success-color: #50cd9f;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1.15;
+}
+
+[hidden="true"] {
+  display: none;
+}
+
+i {
+  display: flex;
+  color: inherit;
+}
+
+body {
+  font-family: sans-serif;
+  background: $light-bg;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $dark-bg;
+  color: white;
+  padding: 1rem;
+  padding-left: 50px;
+  padding-right: 50px;
+
+  .app-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    text-decoration: none;
+    color: white;
+  }
+
+  nav {
+    ul {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+      margin: 0;
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: white;
+        text-decoration: none;
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  background: $dark-bg;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+.text-primary-color {
+  color: $primary-color;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.title-box {
+  color: $primary-color;
+  background-color: $primary-color;
+}
+
+.gap-\[0\.5\] {
+  gap: 2px;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.bg-cl-primary {
+  background-color: $primary-color;
+}
