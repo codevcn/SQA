@@ -1,461 +1,466 @@
 @use "../../utils/global-styles.scss" as gs;
 
 @mixin reject-cancel-styling {
-   .notice {
-      font-size: 1.1rem;
-      margin: 0;
-   }
+  .notice {
+    font-size: 1.1rem;
+    margin: 0;
+  }
 
-   .btns {
+  .btns {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+
+    .submit-btn {
       display: flex;
-      justify-content: end;
-      gap: 10px;
+      gap: 5px;
+      align-items: center;
+      color: white;
+      border: 2px red solid;
+      border-radius: 4px;
+      padding: 6px 15px;
+      background-color: red;
 
-      .submit-btn {
-         display: flex;
-         gap: 5px;
-         align-items: center;
-         color: white;
-         border: 2px red solid;
-         border-radius: 4px;
-         padding: 6px 15px;
-         background-color: red;
+      &:hover {
+        background-color: white;
+        color: red;
 
-         &:hover {
-            background-color: white;
-            color: red;
-
-            .spinner-border {
-               color: red;
-            }
-         }
-
-         .spinner-border {
-            display: flex;
-            height: 19.2px;
-            width: 19.2px;
-            color: white;
-            margin: 0 auto;
-         }
-
-         &.complete-btn {
-            background-color: gs.$dark-bg;
-            border-color: gs.$dark-bg;
-
-            &:hover {
-               background-color: white;
-               color: gs.$dark-bg;
-
-               .spinner-border {
-                  color: gs.$dark-bg;
-               }
-            }
-         }
+        .spinner-border {
+          color: red;
+        }
       }
-   }
+
+      .spinner-border {
+        display: flex;
+        height: 19.2px;
+        width: 19.2px;
+        color: white;
+        margin: 0 auto;
+      }
+
+      &.approve-btn,
+      &.complete-btn {
+        background-color: gs.$dark-bg;
+        border-color: gs.$dark-bg;
+
+        &:hover {
+          background-color: white;
+          color: gs.$dark-bg;
+
+          .spinner-border {
+            color: gs.$dark-bg;
+          }
+        }
+      }
+    }
+  }
 }
 
 @mixin form-groups-styling {
-   display: flex;
-   flex-wrap: wrap;
-   gap: 10px;
-   border-radius: 8px;
-   width: 100%;
-   margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
 
-   .form-group {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
+  .form-group {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 
-      label {
-         font-weight: bold;
-         color: gs.$gray;
-         margin-bottom: 4px;
-         padding-left: 5px;
-      }
+    label {
+      font-weight: bold;
+      color: gs.$gray;
+      margin-bottom: 4px;
+      padding-left: 5px;
+    }
 
-      input,
-      p,
-      textarea,
+    input,
+    p,
+    textarea,
+    .dropdown-toggle {
+      background-color: white;
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 0 1px gray;
+      margin: 0;
+      outline: none;
+      border: none;
+      flex-grow: 1;
+    }
+
+    .dropdown {
+      flex-grow: 1;
+
       .dropdown-toggle {
-         background-color: white;
-         padding: 8px;
-         border-radius: 4px;
-         box-shadow: 0 0 1px gray;
-         margin: 0;
-         outline: none;
-         border: none;
-         flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        color: black;
+        width: 100%;
+        height: 100%;
+
+        &::after {
+          color: gray;
+        }
       }
 
-      .dropdown {
-         flex-grow: 1;
-
-         .dropdown-toggle {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            color: black;
-            width: 100%;
-            height: 100%;
-
-            &::after {
-               color: gray;
-            }
-         }
-
-         .dropdown-menu {
-            .dropdown-item {
-               padding-top: 8px;
-               padding-bottom: 8px;
-               cursor: pointer;
-            }
-         }
+      .dropdown-menu {
+        .dropdown-item {
+          padding-top: 8px;
+          padding-bottom: 8px;
+          cursor: pointer;
+        }
       }
-   }
+    }
+  }
 }
 
 #main-section {
-   min-height: calc(100vh - 60.8px - 68.8px);
-   padding: 20px 50px;
+  min-height: calc(100vh - 60.8px - 68.8px);
+  padding: 20px 50px;
 
-   .title-section {
-      border-bottom: 2px black solid;
-      width: 100%;
+  .title-section {
+    border-bottom: 2px black solid;
+    width: 100%;
 
-      h3 {
-         font-weight: bold;
-      }
-   }
-
-   .result-summary {
-      display: flex;
-      gap: 30px;
+    h3 {
       font-weight: bold;
-      padding-left: 10px;
+    }
+  }
+
+  .result-summary {
+    display: flex;
+    gap: 30px;
+    font-weight: bold;
+    padding-left: 10px;
+    align-items: center;
+    margin-top: 10px;
+
+    p {
+      display: flex;
       align-items: center;
-      margin-top: 10px;
+      gap: 6px;
+      margin: 0;
 
-      p {
-         display: flex;
-         align-items: center;
-         gap: 6px;
-         margin: 0;
-
-         i {
-            font-size: 1.1rem;
-         }
+      i {
+        font-size: 1.1rem;
       }
-   }
+    }
+  }
 
-   .result-section {
-      margin-top: 5px;
+  .result-section {
+    margin-top: 5px;
 
-      .booking-list {
-         display: flex;
-         flex-wrap: wrap;
-         gap: 10px;
-         margin-top: 10px;
-
-         .booking-card {
-            background-color: #fff;
-            padding: 15px;
-            border-left: 6px solid gs.$primary-color;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 50%;
-
-            &:nth-child(odd) {
-               width: calc(50% - 10px);
-            }
-
-            &:hover {
-               outline: 2px gs.$primary-color solid;
-            }
-
-            .card-title {
-               display: flex;
-               justify-content: space-between;
-               column-gap: 30px;
-
-               h5 {
-                  margin: 0;
-                  font-weight: bold;
-                  color: gs.$primary-color;
-               }
-
-               .status {
-                  border-radius: 4px;
-                  color: white;
-                  padding: 5px 15px;
-                  font-weight: bold;
-
-                  &.rejected,
-                  &.cancelled {
-                     background-color: red;
-                  }
-                  &.pending {
-                     background-color: gs.$primary-color;
-                  }
-                  &.approved,
-                  &.completed {
-                     background-color: gs.$success-color;
-                  }
-                  &.arrived {
-                     background-color: #7700ff;
-                  }
-               }
-            }
-
-            .card-info {
-               display: flex;
-               justify-content: space-between;
-               flex-wrap: wrap;
-               column-gap: 35px;
-               row-gap: 5px;
-               margin-top: 5px;
-
-               p {
-                  margin: 5px 0;
-               }
-            }
-
-            .reject-reason {
-               color: red;
-               background-color: #ff000029;
-               border-radius: 5px;
-               padding: 5px 10px;
-               margin-top: 10px;
-            }
-
-            .tables-list {
-               background-color: #50cd9f57;
-               border-radius: 5px;
-               padding: 5px 10px;
-               font-weight: bold;
-               margin-top: 10px;
-            }
-
-            .booking-actions {
-               display: flex;
-               align-items: center;
-               justify-content: end;
-               margin-top: 5px;
-               gap: 10px;
-
-               .is-expired {
-                  color: #141414;
-                  font-weight: bold;
-                  padding: 5px 10px;
-                  background-color: lightgray;
-                  width: 100%;
-                  text-align: center;
-               }
-
-               .action-btn {
-                  display: flex;
-                  align-items: center;
-                  gap: 5px;
-                  border-radius: 6px;
-                  background-color: gs.$dark-bg;
-                  color: white;
-                  outline: none;
-                  border: none;
-                  padding: 6px 15px;
-                  text-decoration: none;
-                  border: 2px gs.$dark-bg solid;
-                  margin-top: 5px;
-
-                  &:hover {
-                     background-color: white;
-                     color: gs.$dark-bg;
-
-                     .spinner-border {
-                        color: gs.$dark-bg;
-                     }
-                  }
-
-                  .spinner-border {
-                     display: flex;
-                     height: 19.2px;
-                     width: 19.2px;
-                     color: white;
-                     margin: 0 auto;
-                  }
-               }
-            }
-         }
-      }
-
-      .empty-result {
-         display: flex;
-         width: 100%;
-         padding: 50px;
-
-         .empty-content {
-            display: flex;
-            flex-direction: column;
-            row-gap: 20px;
-            align-items: center;
-            margin: auto;
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: gray;
-
-            i {
-               font-size: 3rem;
-            }
-         }
-      }
-   }
-}
-
-#filter-bookings-form {
-   padding: 16px;
-   background: #f9f9f9;
-   border-radius: 8px;
-   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-   margin: 15px 0 20px;
-
-   .filter-bookings-title {
-      font-size: 1.3rem;
-      font-weight: bold;
-   }
-
-   .form-groups {
-      @include form-groups-styling;
-   }
-
-   .btns {
+    .booking-list {
       display: flex;
-      justify-content: end;
+      flex-wrap: wrap;
       gap: 10px;
       margin-top: 10px;
 
-      .submit-btn {
-         display: flex;
-         align-items: center;
-         gap: 5px;
-         border-radius: 6px;
-         background-color: gs.$dark-bg;
-         color: white;
-         outline: none;
-         border: none;
-         padding: 6px 15px;
-         text-decoration: none;
-         border: 2px gs.$dark-bg solid;
-         margin-top: 5px;
+      .booking-card {
+        background-color: #fff;
+        padding: 15px;
+        border-left: 6px solid gs.$primary-color;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 50%;
 
-         &:hover {
-            background-color: white;
-            color: gs.$dark-bg;
+        &:nth-child(odd) {
+          width: calc(50% - 10px);
+        }
+
+        &:hover {
+          outline: 2px gs.$primary-color solid;
+        }
+
+        .card-title {
+          display: flex;
+          justify-content: space-between;
+          column-gap: 30px;
+
+          h5 {
+            margin: 0;
+            font-weight: bold;
+            color: gs.$primary-color;
+          }
+
+          .status {
+            border-radius: 4px;
+            color: white;
+            padding: 5px 15px;
+            font-weight: bold;
+
+            &.rejected,
+            &.cancelled {
+              background-color: red;
+            }
+            &.pending {
+              background-color: gs.$primary-color;
+            }
+            &.approved,
+            &.completed {
+              background-color: gs.$success-color;
+            }
+            &.arrived {
+              background-color: #7700ff;
+            }
+          }
+        }
+
+        .card-info {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          column-gap: 35px;
+          row-gap: 5px;
+          margin-top: 5px;
+
+          p {
+            margin: 5px 0;
+          }
+        }
+
+        .reject-reason {
+          color: red;
+          background-color: #ff000029;
+          border-radius: 5px;
+          padding: 5px 10px;
+          margin-top: 10px;
+        }
+
+        .tables-list {
+          background-color: #50cd9f57;
+          border-radius: 5px;
+          padding: 5px 10px;
+          font-weight: bold;
+          margin-top: 10px;
+        }
+
+        .booking-actions {
+          display: flex;
+          align-items: center;
+          justify-content: end;
+          margin-top: 5px;
+          gap: 10px;
+
+          .is-expired {
+            color: #141414;
+            font-weight: bold;
+            padding: 5px 10px;
+            background-color: lightgray;
+            width: 100%;
+            text-align: center;
+          }
+
+          .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 6px;
+            background-color: gs.$dark-bg;
+            color: white;
+            outline: none;
+            border: none;
+            padding: 6px 15px;
+            text-decoration: none;
+            border: 2px gs.$dark-bg solid;
+            margin-top: 5px;
+
+            &:hover {
+              background-color: white;
+              color: gs.$dark-bg;
+
+              .spinner-border {
+                color: gs.$dark-bg;
+              }
+            }
 
             .spinner-border {
-               color: gs.$dark-bg;
+              display: flex;
+              height: 19.2px;
+              width: 19.2px;
+              color: white;
+              margin: 0 auto;
             }
-         }
-
-         .spinner-border {
-            display: flex;
-            height: 19.2px;
-            width: 19.2px;
-            color: white;
-            margin: 0 auto;
-         }
+          }
+        }
       }
-   }
+    }
+
+    .empty-result {
+      display: flex;
+      width: 100%;
+      padding: 50px;
+
+      .empty-content {
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+        align-items: center;
+        margin: auto;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: gray;
+
+        i {
+          font-size: 3rem;
+        }
+      }
+    }
+  }
+}
+
+#filter-bookings-form {
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 15px 0 20px;
+
+  .filter-bookings-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+
+  .form-groups {
+    @include form-groups-styling;
+  }
+
+  .btns {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    margin-top: 10px;
+
+    .submit-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 6px;
+      background-color: gs.$dark-bg;
+      color: white;
+      outline: none;
+      border: none;
+      padding: 6px 15px;
+      text-decoration: none;
+      border: 2px gs.$dark-bg solid;
+      margin-top: 5px;
+
+      &:hover {
+        background-color: white;
+        color: gs.$dark-bg;
+
+        .spinner-border {
+          color: gs.$dark-bg;
+        }
+      }
+
+      .spinner-border {
+        display: flex;
+        height: 19.2px;
+        width: 19.2px;
+        color: white;
+        margin: 0 auto;
+      }
+    }
+  }
 }
 
 .modal-dialog {
-   .modal-content {
-      .modal-header {
-         padding: 10px 20px;
+  .modal-content {
+    .modal-header {
+      padding: 10px 20px;
 
-         .modal-title {
-            font-weight: bold;
-         }
+      .modal-title {
+        font-weight: bold;
       }
-   }
+    }
+  }
 }
 
 #reject-booking-modal {
-   .modal-body {
-      .booking-details-title {
-         font-size: 1.2rem;
-         font-weight: bold;
-         border-bottom: 1px gs.$dark-bg solid;
-         padding-bottom: 3px;
-         margin: 0;
-      }
+  .modal-body {
+    .booking-details-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-bottom: 1px gs.$dark-bg solid;
+      padding-bottom: 3px;
+      margin: 0;
+    }
 
-      .form-groups {
-         @include form-groups-styling;
-         margin-bottom: 20px;
-      }
-   }
+    .form-groups {
+      @include form-groups-styling;
+      margin-bottom: 20px;
+    }
+  }
 }
 
 #cancel-booking-modal {
-   .modal-body {
-      .booking-details-title {
-         font-size: 1.2rem;
-         font-weight: bold;
-         border-bottom: 1px gs.$dark-bg solid;
-         padding-bottom: 3px;
-         margin: 0;
-      }
+  .modal-body {
+    .booking-details-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-bottom: 1px gs.$dark-bg solid;
+      padding-bottom: 3px;
+      margin: 0;
+    }
 
-      .form-groups {
-         @include form-groups-styling;
-         margin-bottom: 20px;
-      }
-   }
+    .form-groups {
+      @include form-groups-styling;
+      margin-bottom: 20px;
+    }
+  }
 }
 
 #complete-booking-modal {
-   .modal-body {
-      .booking-details-title {
-         font-size: 1.2rem;
-         font-weight: bold;
-         border-bottom: 1px gs.$dark-bg solid;
-         padding-bottom: 3px;
-         margin: 0;
-      }
+  .modal-body {
+    .booking-details-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-bottom: 1px gs.$dark-bg solid;
+      padding-bottom: 3px;
+      margin: 0;
+    }
 
-      .form-groups {
-         @include form-groups-styling;
-         margin-bottom: 20px;
-      }
-   }
+    .form-groups {
+      @include form-groups-styling;
+      margin-bottom: 20px;
+    }
+  }
 }
 
-#arrived-cus-modal {
-   .modal-body {
-      .booking-details-title {
-         font-size: 1.2rem;
-         font-weight: bold;
-         border-bottom: 1px gs.$dark-bg solid;
-         padding-bottom: 3px;
-         margin: 0;
-      }
+#approve-booking-modal {
+  .modal-body {
+    .booking-details-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-bottom: 1px gs.$dark-bg solid;
+      padding-bottom: 3px;
+      margin: 0;
+    }
 
-      .form-groups {
-         @include form-groups-styling;
-         margin-bottom: 20px;
-      }
-   }
+    .form-groups {
+      @include form-groups-styling;
+      margin-bottom: 20px;
+    }
+  }
 }
 
 #confirm-cancel-form {
-   @include reject-cancel-styling;
+  @include reject-cancel-styling;
 }
 
 #confirm-reject-form {
-   @include reject-cancel-styling;
+  @include reject-cancel-styling;
 }
 
 #confirm-complete-form {
-   @include reject-cancel-styling;
+  @include reject-cancel-styling;
+}
+
+#confirm-approve-form {
+  @include reject-cancel-styling;
 }

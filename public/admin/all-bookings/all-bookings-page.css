@@ -565,14 +565,14 @@ footer p {
   cursor: pointer;
 }
 
-#arrived-cus-modal .modal-body .booking-details-title {
+#approve-booking-modal .modal-body .booking-details-title {
   font-size: 1.2rem;
   font-weight: bold;
   border-bottom: 1px #1f2937 solid;
   padding-bottom: 3px;
   margin: 0;
 }
-#arrived-cus-modal .modal-body .form-groups {
+#approve-booking-modal .modal-body .form-groups {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -581,21 +581,21 @@ footer p {
   margin-top: 10px;
   margin-bottom: 20px;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group {
+#approve-booking-modal .modal-body .form-groups .form-group {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group label {
+#approve-booking-modal .modal-body .form-groups .form-group label {
   font-weight: bold;
   color: #4b5563;
   margin-bottom: 4px;
   padding-left: 5px;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group input,
-#arrived-cus-modal .modal-body .form-groups .form-group p,
-#arrived-cus-modal .modal-body .form-groups .form-group textarea,
-#arrived-cus-modal .modal-body .form-groups .form-group .dropdown-toggle {
+#approve-booking-modal .modal-body .form-groups .form-group input,
+#approve-booking-modal .modal-body .form-groups .form-group p,
+#approve-booking-modal .modal-body .form-groups .form-group textarea,
+#approve-booking-modal .modal-body .form-groups .form-group .dropdown-toggle {
   background-color: white;
   padding: 8px;
   border-radius: 4px;
@@ -605,10 +605,10 @@ footer p {
   border: none;
   flex-grow: 1;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group .dropdown {
+#approve-booking-modal .modal-body .form-groups .form-group .dropdown {
   flex-grow: 1;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle {
+#approve-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -617,10 +617,10 @@ footer p {
   width: 100%;
   height: 100%;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle::after {
+#approve-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-toggle::after {
   color: gray;
 }
-#arrived-cus-modal .modal-body .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
+#approve-booking-modal .modal-body .form-groups .form-group .dropdown .dropdown-menu .dropdown-item {
   padding-top: 8px;
   padding-bottom: 8px;
   cursor: pointer;
@@ -659,15 +659,15 @@ footer p {
   color: white;
   margin: 0 auto;
 }
-#confirm-cancel-form .btns .submit-btn.complete-btn {
+#confirm-cancel-form .btns .submit-btn.approve-btn, #confirm-cancel-form .btns .submit-btn.complete-btn {
   background-color: #1f2937;
   border-color: #1f2937;
 }
-#confirm-cancel-form .btns .submit-btn.complete-btn:hover {
+#confirm-cancel-form .btns .submit-btn.approve-btn:hover, #confirm-cancel-form .btns .submit-btn.complete-btn:hover {
   background-color: white;
   color: #1f2937;
 }
-#confirm-cancel-form .btns .submit-btn.complete-btn:hover .spinner-border {
+#confirm-cancel-form .btns .submit-btn.approve-btn:hover .spinner-border, #confirm-cancel-form .btns .submit-btn.complete-btn:hover .spinner-border {
   color: #1f2937;
 }
 
@@ -704,15 +704,15 @@ footer p {
   color: white;
   margin: 0 auto;
 }
-#confirm-reject-form .btns .submit-btn.complete-btn {
+#confirm-reject-form .btns .submit-btn.approve-btn, #confirm-reject-form .btns .submit-btn.complete-btn {
   background-color: #1f2937;
   border-color: #1f2937;
 }
-#confirm-reject-form .btns .submit-btn.complete-btn:hover {
+#confirm-reject-form .btns .submit-btn.approve-btn:hover, #confirm-reject-form .btns .submit-btn.complete-btn:hover {
   background-color: white;
   color: #1f2937;
 }
-#confirm-reject-form .btns .submit-btn.complete-btn:hover .spinner-border {
+#confirm-reject-form .btns .submit-btn.approve-btn:hover .spinner-border, #confirm-reject-form .btns .submit-btn.complete-btn:hover .spinner-border {
   color: #1f2937;
 }
 
@@ -749,15 +749,60 @@ footer p {
   color: white;
   margin: 0 auto;
 }
-#confirm-complete-form .btns .submit-btn.complete-btn {
+#confirm-complete-form .btns .submit-btn.approve-btn, #confirm-complete-form .btns .submit-btn.complete-btn {
   background-color: #1f2937;
   border-color: #1f2937;
 }
-#confirm-complete-form .btns .submit-btn.complete-btn:hover {
+#confirm-complete-form .btns .submit-btn.approve-btn:hover, #confirm-complete-form .btns .submit-btn.complete-btn:hover {
   background-color: white;
   color: #1f2937;
 }
-#confirm-complete-form .btns .submit-btn.complete-btn:hover .spinner-border {
+#confirm-complete-form .btns .submit-btn.approve-btn:hover .spinner-border, #confirm-complete-form .btns .submit-btn.complete-btn:hover .spinner-border {
+  color: #1f2937;
+}
+
+#confirm-approve-form .notice {
+  font-size: 1.1rem;
+  margin: 0;
+}
+#confirm-approve-form .btns {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+#confirm-approve-form .btns .submit-btn {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: white;
+  border: 2px red solid;
+  border-radius: 4px;
+  padding: 6px 15px;
+  background-color: red;
+}
+#confirm-approve-form .btns .submit-btn:hover {
+  background-color: white;
+  color: red;
+}
+#confirm-approve-form .btns .submit-btn:hover .spinner-border {
+  color: red;
+}
+#confirm-approve-form .btns .submit-btn .spinner-border {
+  display: flex;
+  height: 19.2px;
+  width: 19.2px;
+  color: white;
+  margin: 0 auto;
+}
+#confirm-approve-form .btns .submit-btn.approve-btn, #confirm-approve-form .btns .submit-btn.complete-btn {
+  background-color: #1f2937;
+  border-color: #1f2937;
+}
+#confirm-approve-form .btns .submit-btn.approve-btn:hover, #confirm-approve-form .btns .submit-btn.complete-btn:hover {
+  background-color: white;
+  color: #1f2937;
+}
+#confirm-approve-form .btns .submit-btn.approve-btn:hover .spinner-border, #confirm-approve-form .btns .submit-btn.complete-btn:hover .spinner-border {
   color: #1f2937;
 }
 

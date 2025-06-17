@@ -13,28 +13,20 @@
           <p class="text-center fw-bold text-primary-color mb-4"><%= email %></p>
 
           <% if (error) { %>
-          <div class="alert alert-danger" role="alert">
+          <div class="flex align-items-center alert alert-danger" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <%= error %>
           </div>
           <% } %>
 
-          <form action="/update-bookings" method="POST">
+          <form action="/update-bookings/verify-otp" method="POST">
             <div class="mb-3">
               <label for="otp" class="flex align-items-center form-label">
                 <i class="bi bi-key me-2"></i>
                 Mã OTP
               </label>
-              <input
-                type="text"
-                class="form-control text-center"
-                id="otp"
-                name="otp"
-                placeholder="Nhập mã 6 số"
-                maxlength="6"
-                pattern="[0-9]{6}"
-                required
-              />
+              <input type="text" class="form-control text-center" id="otp" name="otp" placeholder="Nhập mã 6 số"
+                maxlength="6" pattern="[0-9]{6}" required />
               <div class="form-text text-center">
                 Mã OTP có 6 chữ số và có hiệu lực trong 5 phút
               </div>
@@ -45,11 +37,11 @@
                 <i class="bi bi-check-circle me-2"></i>
                 Xác thực
               </button>
-              <a href="/bookings-history/send-otp" class="btn btn-outline-primary">
+              <a href="/update-bookings/resend-otp" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-clockwise me-2"></i>
                 Gửi lại mã OTP
               </a>
-              <a href="/bookings-history/logout" class="btn btn-outline-secondary">
+              <a href="/update-bookings/email-form" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-2"></i>
                 Thay đổi email
               </a>
@@ -60,3 +52,5 @@
     </div>
   </div>
 </main>
+
+<div id="app-error-message" hidden data-error="<%= error %>"></div>

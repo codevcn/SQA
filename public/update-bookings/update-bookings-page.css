@@ -198,6 +198,7 @@ footer p {
   z-index: 10;
   pointer-events: none;
   position: absolute;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 #main-section .update-booking-container .booking .card .status-overlay .background {
   position: absolute;
@@ -215,22 +216,16 @@ footer p {
   transform: rotate(-15deg);
   z-index: 20;
 }
-#main-section .update-booking-container .booking .card .status-overlay.approved .background {
-  border: 6px dashed rgba(16, 185, 129, 0.9019607843);
+#main-section .update-booking-container .booking .card .status-overlay.completed .background {
+  border: 6px dashed #1f2937;
 }
-#main-section .update-booking-container .booking .card .status-overlay.approved .text-content {
-  color: rgba(16, 185, 129, 0.9019607843);
+#main-section .update-booking-container .booking .card .status-overlay.completed .text-content {
+  color: #1f2937;
 }
 #main-section .update-booking-container .booking .card .status-overlay.cancelled .background {
   border: 6px dashed red;
 }
 #main-section .update-booking-container .booking .card .status-overlay.cancelled .text-content {
-  color: red;
-}
-#main-section .update-booking-container .booking .card .status-overlay.rejected .background {
-  border: 6px dashed red;
-}
-#main-section .update-booking-container .booking .card .status-overlay.rejected .text-content {
   color: red;
 }
 #main-section .update-booking-container .booking .card .form-group-row {
