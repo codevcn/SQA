@@ -12,6 +12,7 @@ async function addReservation(req, res) {
     // Lấy dữ liệu từ request body
     const { Cus_Email, Cus_FullName, Cus_Phone, ArrivalTime, NumAdults, NumChildren, Note } =
       req.body
+    console.log('>>> req.body:', req.body)
     const result = await reserve({
       Cus_Email,
       Cus_FullName,

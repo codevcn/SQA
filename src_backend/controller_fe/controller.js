@@ -118,11 +118,25 @@ function formatArrivalTime(arrivalArray) {
   return arrivalDate.toISOString()
 }
 
+const formatArrivalTimeV2 = (isoString) => {
+  const date = new Date(isoString)
+
+  const day = String(date.getDate()).padStart(2, "0")
+  const month = String(date.getMonth() + 1).padStart(2, "0") // Tháng bắt đầu từ 0
+  const year = date.getFullYear()
+
+  const hours = String(date.getHours()).padStart(2, "0")
+  const minutes = String(date.getMinutes()).padStart(2, "0")
+
+  const formatted = `${day}/${month}/${year} ${hours}:${minutes}`
+  return formatted
+}
+
 export const updateBookings = async (req, res, next) => {
   const reservation = req.body
   const admin = req.session.admin
   const user = req.session.user
-  reservation.ArrivalTime = formatArrivalTime(reservation.ArrivalTime)
+  reservation.ArrivalTime = formatArrivalTimeV2(formatArrivalTime(reservation.ArrivalTime))
   console.log(">>> reservation 1:", reservation)
   const result = await updateReservation(reservation.ReservationID, reservation)
   if (result.errorCode) {
@@ -131,7 +145,7 @@ export const updateBookings = async (req, res, next) => {
       reservation: reservation,
       isAdmin: !!admin,
       user: user,
-      appMessage: "Cập nhật đơn thất bại",
+      appMessage: result.message,
       appStatus: "error",
     })
   }
