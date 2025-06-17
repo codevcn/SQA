@@ -83,6 +83,34 @@ export const getAdminAllBookingsPage = async (req, res, next) => {
   }
 }
 
+// Thêm controller cho trang quản lý thời gian hoạt động
+export const getWorkingHoursManagementPage = async (req, res, next) => {
+  const isAdmin = req.session.admin
+  if (!isAdmin) {
+    return res.redirect("/admin/login")
+  }
+
+  try {
+    const { getWorkingHours, getAllClosedDates } = await import("../services/working-hours.service.js")
+    const workingHours = await getWorkingHours()
+    const closedDates = await getAllClosedDates()
+
+    res.render("admin/working-hours/working-hours-page", {
+      isAdmin: true,
+      workingHours: workingHours,
+      closedDates: closedDates,
+    })
+  } catch (error) {
+    console.error("Error in getWorkingHoursManagementPage:", error)
+    res.render("admin/working-hours/working-hours-page", {
+      isAdmin: true,
+      workingHours: null,
+      closedDates: [],
+      error: "Lỗi khi tải dữ liệu",
+    })
+  }
+}
+
 export const getUpdateBookingsPage = async (req, res, next) => {
   const { ReservationID } = req.query
   if (!ReservationID) {

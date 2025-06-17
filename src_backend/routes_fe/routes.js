@@ -6,6 +6,7 @@ import {
   getAdminAllBookingsPage,
   getUpdateBookingsPage,
   updateBookings,
+  getWorkingHoursManagementPage,
 } from "../controller_fe/controller.js"
 import {
   sendOTP,
@@ -23,6 +24,7 @@ router.get("/update-bookings", authenticateUser, getUpdateBookingsPage)
 router.post("/update-bookings", authenticateUser, getUpdateBookingsPage)
 router.get("/admin/login", getAdminLoginPage)
 router.get("/admin/all-bookings", getAdminAllBookingsPage)
+router.get("/admin/working-hours", getWorkingHoursManagementPage)
 router.post("/update-bookings/update", authenticateUser, updateBookings)
 
 // for testing

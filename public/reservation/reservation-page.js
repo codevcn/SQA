@@ -37,7 +37,19 @@ function isValidEmail(email) {
   return emailRegex.test(email)
 }
 
-const validateBooking = (formData) => {
+// Thêm hàm kiểm tra thời gian hoạt động
+const validateWorkingHours = async (date, time) => {
+  try {
+    const response = await fetch(`/api/working-hours/validate-booking-time?date=${date}&time=${time}`)
+    const result = await response.json()
+    return result.data
+  } catch (error) {
+    console.error('Error validating working hours:', error)
+    return { isValid: false, reason: 'Không thể kiểm tra thời gian hoạt động' }
+  }
+}
+
+const validateBooking = async (formData) => {
   let isValid = true
   const fullName = formData["full-name"],
     email = formData["email"],
@@ -85,6 +97,18 @@ const validateBooking = (formData) => {
       isValid = false
       toaster.error("Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!")
     }
+
+    // Kiểm tra thời gian hoạt động
+    if (isValid) {
+      const dateString = bookingDateTime.format('YYYY-MM-DD')
+      const timeString = bookingDateTime.format('HH:mm:ss')
+      const workingHoursValidation = await validateWorkingHours(dateString, timeString)
+      
+      if (!workingHoursValidation.isValid) {
+        isValid = false
+        toaster.error(workingHoursValidation.reason)
+      }
+    }
   } else {
     if (!date) warning("date", "Trường ngày đặt không được để trống!")
     if (!time) warning("time", "Trường giờ đặt không được để trống!")
@@ -124,10 +148,11 @@ const showConfirmBooking = (formData) => {
   confirmBooking.show()
 }
 
-const submitBooking = (e) => {
+const submitBooking = async (e) => {
   e.preventDefault()
   const formData = extractFormData(e.target)
-  if (validateBooking(formData)) {
+  const isValid = await validateBooking(formData)
+  if (isValid) {
     reservationPageShares.bookingData = formData
     showConfirmBooking(formData)
   }

@@ -10,6 +10,7 @@ import sequelize from "../config/db.js"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc.js"
 import timezone from "dayjs/plugin/timezone.js"
+import { validateBookingTime } from "./working-hours.service.js"
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -87,6 +88,17 @@ async function reserve(data, action = "create") {
   try {
     // Chuyển đổi ArrivalTime thành đối tượng Date
     data.ArrivalTime = convertDateTime(data.ArrivalTime)
+    
+    // Kiểm tra thời gian đặt bàn có hợp lệ không
+    const arrivalDateTime = dayjs(data.ArrivalTime)
+    const dateString = arrivalDateTime.format('YYYY-MM-DD')
+    const timeString = arrivalDateTime.format('HH:mm:ss')
+    
+    const timeValidation = await validateBookingTime(dateString, timeString)
+    if (!timeValidation.isValid) {
+      return { errorCode: 400, message: timeValidation.reason }
+    }
+    
     const arrivalTime = dayjs(data.ArrivalTime)
     const oneHourBefore = arrivalTime.subtract(1, "hour")
     const oneHourAfter = arrivalTime.add(1, "hour")

@@ -29,6 +29,11 @@ app.use(
     cookie: { secure: false }, // Đổi thành true nếu dùng HTTPS
   })
 )
+
+// Import và gọi sync database
+import syncDatabase from "./config/sync-database.js"
+syncDatabase()
+
 import routes from "./routes_fe/routes.js"
 // Sử dụng Router
 app.use("/", routes)
@@ -36,6 +41,7 @@ app.use("/", routes)
 // Import route
 import adminRoutes from "./routes/admin.routes.js"
 import reservationRoutes from "./routes/reservation.routes.js"
+import workingHoursRoutes from "./routes/working-hours.routes.js"
 
 app.get("/testLogin", (req, res) => {
   res.json(req?.session?.admin ? req.session.admin : { message: "Not logged in" })
@@ -70,6 +76,9 @@ app.use("/api/admin", adminRoutes)
 
 // Sử dụng route reservations
 app.use("/api/reservations", reservationRoutes)
+
+// Sử dụng route working hours
+app.use("/api/working-hours", workingHoursRoutes)
 
 app.use((err, req, res, next) => {
   console.error('>>> catch uncaught error:', err)
