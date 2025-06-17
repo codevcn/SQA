@@ -7,7 +7,7 @@
         <i class="bi bi-person-circle me-2"></i>
         <span class="user-email"><%= user.email %></span>
       </div>
-      <a href="/bookings-history/logout" class="flex align-items-center btn btn-outline-danger btn-sm">
+      <a href="/update-bookings/logout" class="flex align-items-center btn btn-outline-danger btn-sm">
         <i class="bi bi-box-arrow-right me-1"></i>
         Đăng xuất
       </a>
@@ -78,7 +78,8 @@
     <!-- Right side - Update Form -->
     <section id="booking" class="booking">
       <h4 class="section-title">Đặt Bàn</h4>
-      <form id="booking-form" class="card" method="post" action="/update-bookings/update">
+      <form id="booking-form" class="card" method="post"
+        action="/update-bookings/update?ReservationID=<%= reservation.ReservationID %>">
         <!-- Status Overlay -->
         <% if (reservation.Status === 'Cancelled') { %>
         <div class="status-overlay cancelled">
@@ -102,13 +103,13 @@
         </div>
         <div class="form-group email">
           <label for="email-input">Email</label>
-          <input type="email" id="email-input" class="form-field" value="<%= reservation.Cus_Email %>"
-            name="Cus_Email" placeholder="Nhập email của bạn">
+          <input type="email" id="email-input" class="form-field" value="<%= reservation.Cus_Email %>" name="Cus_Email"
+            placeholder="Nhập email của bạn">
         </div>
         <div class="form-group phone">
           <label for="phone-input">Số điện thoại</label>
-          <input type="number" id="phone-input" class="form-field" value="<%= reservation.Cus_Phone %>"
-            name="Cus_Phone" placeholder="Nhập số điện thoại, ví dụ: 0987654321">
+          <input type="number" id="phone-input" class="form-field" value="<%= reservation.Cus_Phone %>" name="Cus_Phone"
+            placeholder="Nhập số điện thoại, ví dụ: 0987654321">
         </div>
         <div class="form-group-row">
           <div class="form-group date">

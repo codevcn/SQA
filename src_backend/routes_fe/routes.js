@@ -36,13 +36,33 @@ router.get("/bookings-history/test", (req, res) => {
 
 // User authentication routes
 router.get("/update-bookings/email-form", (req, res) => {
+  const { ReservationID } = req.query
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
   res.render("update-bookings/email-form/email-form-page", {
     isAdmin: req.session.admin || false,
     error: null,
+    ReservationID,
+  })
+})
+router.post("/update-bookings/email-form", (req, res) => {
+  const { ReservationID } = req.query
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
+  res.render("update-bookings/email-form/email-form-page", {
+    isAdmin: req.session.admin || false,
+    error: null,
+    ReservationID,
   })
 })
 
 router.get("/update-bookings/verify-otp", (req, res) => {
+  const { ReservationID } = req.query
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
   if (!req.session.user || !req.session.user.otp) {
     return res.redirect("/update-bookings/email-form")
   }
@@ -50,6 +70,7 @@ router.get("/update-bookings/verify-otp", (req, res) => {
     isAdmin: req.session.admin || false,
     email: req.session.user.email,
     error: null,
+    ReservationID,
   })
 })
 

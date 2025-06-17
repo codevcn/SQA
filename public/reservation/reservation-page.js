@@ -21,6 +21,7 @@ const createFormGroupMessage = (message) => {
       <span>${message}</span>`
   return messageEle
 }
+
 function isValidFullName(username) {
   // Kiểm tra nếu rỗng hoặc không phải là chuỗi
   if (!username || typeof username !== "string") return false

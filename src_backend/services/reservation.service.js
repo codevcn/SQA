@@ -43,7 +43,7 @@ function convertDateTime(inputDateTime) {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")} ${timePart}`
 }
 
-async function reserve(data) {
+async function reserve(data, action = "create") {
   // Kiểm tra xem data có phải là đối tượng hợp lệ không
   if (!data || typeof data !== "object") {
     return { errorCode: 400, message: "Dữ liệu đầu vào không hợp lệ." }
@@ -105,16 +105,23 @@ async function reserve(data) {
       return { errorCode: 409, message: "Bạn chỉ có thể đặt chỗ cách nhau ít nhất 1 giờ." }
     }
 
-    const reservation = await Reservation.create({
-      Cus_Email: data.Cus_Email,
-      Cus_FullName: data.Cus_FullName,
-      Cus_Phone: data.Cus_Phone,
-      ArrivalTime: data.ArrivalTime,
-      NumAdults: data.NumAdults,
-      NumChildren: data.NumChildren,
-      Note: data.Note,
-    })
-    return reservation
+    if (action === "create") {
+      const reservation = await Reservation.create({
+        Cus_Email: data.Cus_Email,
+        Cus_FullName: data.Cus_FullName,
+        Cus_Phone: data.Cus_Phone,
+        ArrivalTime: data.ArrivalTime,
+        NumAdults: data.NumAdults,
+        NumChildren: data.NumChildren,
+        Note: data.Note,
+      })
+      return reservation
+    } else {
+      await Reservation.update(data, {
+        where: { ReservationID: data.ReservationID },
+      })
+      return await Reservation.findByPk(data.ReservationID)
+    }
   } catch (error) {
     console.log(">>> error at reserve:", error)
     return { errorCode: 500, message: error.message }
@@ -233,6 +240,7 @@ async function getAllReservation({ ReservationID, Status, Cus_Phone, timeRange, 
         reservationMap.set(reservationID, {
           ReservationID: reservation.ReservationID,
           Cus_FullName: reservation.Cus_FullName,
+          Cus_Email: reservation.Cus_Email,
           Cus_Phone: reservation.Cus_Phone,
           ArrivalTime: reservation.ArrivalTime,
           CreatedAt: reservation.CreatedAt,
@@ -337,11 +345,29 @@ const updateReservation = async (reservationId, data) => {
     if (!reservation) {
       return { errorCode: 404, message: "Reservation not found" }
     }
-    if (reservation.Status === "Rejected" || reservation.Status === "Approved") {
-      return { errorCode: 400, message: "Đơn đặt chỗ đã bị từ chối hoặc đã được duyệt." }
+    if (reservation.Status === "Cancelled" || reservation.Status === "Completed") {
+      return { errorCode: 400, message: "Đơn đặt chỗ đã bị hủy hoặc đã hoàn thành." }
     }
-    await reservation.update(data)
-    return await Reservation.findByPk(reservationId)
+    const { Cus_Email, Cus_FullName, Cus_Phone, ArrivalTime, NumAdults, NumChildren, Note } = data
+    const result = await reserve(
+      {
+        Cus_Email,
+        Cus_FullName,
+        Cus_Phone,
+        ArrivalTime,
+        NumAdults,
+        NumChildren,
+        Note,
+        ReservationID: reservationId,
+      },
+      "update"
+    )
+
+    if (result.errorCode) {
+      return { errorCode: result.errorCode, message: result.message }
+    }
+
+    return result
   } catch (error) {
     console.error(">>> Error updating reservation:", error)
     return { errorCode: 500, message: error.message }

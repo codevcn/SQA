@@ -20,7 +20,7 @@
           </div>
           <% } %>
 
-          <form action="/update-bookings/send-otp" method="POST">
+          <form action="/update-bookings/send-otp?ReservationID=<%= ReservationID %>" method="POST" id="email-form">
             <div class="mb-3">
               <label for="email" class="flex align-items-center form-label">
                 <i class="bi bi-envelope me-2"></i>

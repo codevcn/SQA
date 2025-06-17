@@ -8,18 +8,29 @@ export function authenticateUser(req, res, next) {
   //   otpExpiry: Date.now() + 5 * 60 * 1000, // OTP hết hạn sau 5 phút
   //   verified: true,
   // }
+  const { ReservationID } = req.query
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
+
   const user = req.session.user
-  
+  console.log(">>> authenticate User:", { user })
+
   // Kiểm tra xem user đã có session chưa
   if (!user || !user.email) {
     // Chưa có session - hiển thị form nhập email
-    return res.redirect("/update-bookings/email-form")
+    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
   }
 
   // Có session nhưng chưa xác thực OTP
   if (!user.verified) {
+    if (Date.now() > req.session.user.otpExpiry) {
+      // OTP hết hạn - xóa session và chuyển hướng đến form nhập email
+      delete req.session.user
+      return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    }
     // Hiển thị form nhập OTP
-    return res.redirect("/update-bookings/verify-otp")
+    return res.redirect("/update-bookings/verify-otp?ReservationID=" + ReservationID)
   }
 
   // Đã xác thực - cho phép truy cập
@@ -29,12 +40,14 @@ export function authenticateUser(req, res, next) {
 // Middleware xử lý việc gửi OTP qua email
 export async function sendOTP(req, res, next) {
   const { email } = req.body
+  const { ReservationID } = req.query
+
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
 
   if (!email) {
-    return res.render("update-bookings/email-form/email-form-page", {
-      isAdmin: req.session.admin || false,
-      error: "Email không được để trống",
-    })
+    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
   }
 
   // Tạo OTP ngẫu nhiên 6 số
@@ -51,15 +64,25 @@ export async function sendOTP(req, res, next) {
   await sendOTPEmail(email, otp)
 
   // Chuyển hướng đến trang nhập OTP
-  res.redirect("/update-bookings/verify-otp")
+  res.render("update-bookings/otp-form/otp-form-page", {
+    isAdmin: req.session.admin || false,
+    email: email,
+    error: null,
+    ReservationID,
+  })
 }
 
 // Middleware xử lý việc gửi lại OTP (GET request)
 export async function resendOTP(req, res, next) {
   const user = req.session.user
+  const { ReservationID } = req.query
+
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
 
   if (!user || !user.email) {
-    return res.redirect("/update-bookings/email-form")
+    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
   }
 
   const { email } = user
@@ -75,19 +98,35 @@ export async function resendOTP(req, res, next) {
   await sendOTPEmail(email, otp)
 
   // Chuyển hướng về trang nhập OTP
-  res.redirect("/update-bookings/verify-otp")
+  res.render("update-bookings/otp-form/otp-form-page", {
+    isAdmin: req.session.admin || false,
+    email: email,
+    error: null,
+    ReservationID,
+  })
 }
 
 // Middleware xác thực OTP
 export function verifyOTP(req, res, next) {
   const { otp } = req.body
+  const { ReservationID } = req.query
   const user = req.session.user
   const admin = req.session.admin
 
-  console.log('>>> verify OTP:', { otp, user, admin, sessionOTP: req.session.user.otp })
+  console.log(">>> verify OTP:", {
+    otp,
+    user,
+    admin,
+    sessionOTP: req.session.user.otp,
+    ReservationID,
+  })
+
+  if (!ReservationID) {
+    return res.redirect("/bookings-history")
+  }
 
   if (!user || !user.otp) {
-    return res.redirect("/update-bookings/email-form")
+    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
   }
 
   if (!otp) {
@@ -95,6 +134,7 @@ export function verifyOTP(req, res, next) {
       isAdmin: admin || false,
       email: user.email,
       error: "OTP không được để trống",
+      ReservationID,
     })
   }
 
@@ -104,6 +144,7 @@ export function verifyOTP(req, res, next) {
       isAdmin: admin || false,
       email: user.email,
       error: "OTP không chính xác, vui lòng thử lại",
+      ReservationID,
     })
   }
 
@@ -114,6 +155,7 @@ export function verifyOTP(req, res, next) {
     return res.render("update-bookings/email-form/email-form-page", {
       isAdmin: admin || false,
       error: "OTP đã hết hạn, vui lòng thử lại",
+      ReservationID,
     })
   }
 
@@ -122,8 +164,7 @@ export function verifyOTP(req, res, next) {
   delete req.session.user.otp // Xóa OTP khỏi session
   delete req.session.user.otpExpiry
 
-  // Chuyển hướng về trang lịch sử đặt bàn
-  res.redirect("/update-bookings")
+  res.redirect("/update-bookings?ReservationID=" + ReservationID)
 }
 
 // Middleware đăng xuất user

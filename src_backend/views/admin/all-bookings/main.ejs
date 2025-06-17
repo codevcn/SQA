@@ -67,7 +67,7 @@
   <section class="result-section">
     <% if (bookings && bookings.length > 0) { %>
     <div class="booking-list">
-      <% bookings.forEach(({ReservationID,isExpired,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) => { %>
+      <% bookings.forEach(({ReservationID,isExpired,Cus_FullName,Cus_Email,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) => { %>
       <div class="booking-card" data-kb-booking-id="<%= ReservationID%>">
         <div class="card-title">
           <h5>Đơn #<%= ReservationID %></h5>
@@ -85,6 +85,7 @@
         </div>
         <div class="card-info">
           <p><strong>Họ tên:</strong> <%= Cus_FullName %></p>
+          <p><strong>Email:</strong> <%= Cus_Email %></p>
           <p><strong>Số điện thoại:</strong> <%= Cus_Phone %></p>
           <p><strong>Thời gian đến:</strong> <%= ArrivalTime %></p>
           <p><strong>Người lớn:</strong> <%= NumAdults %>, <strong>Trẻ em:</strong> <%= NumChildren %></p>

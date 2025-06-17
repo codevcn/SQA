@@ -14,3 +14,11 @@
 //   toastError()
 // }
 // init()
+
+// const init = () => {
+//   const params = new URLSearchParams(window.location.search)
+//   const ReservationID = params.get("ReservationID")
+//   const otpFormEle = document.getElementById("otp-form")
+//   otpFormEle.action = "/update-bookings/verify-otp?ReservationID=" + ReservationID
+// }
+// init()

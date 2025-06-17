@@ -19,7 +19,7 @@
           </div>
           <% } %>
 
-          <form action="/update-bookings/verify-otp" method="POST">
+          <form action="/update-bookings/verify-otp?ReservationID=<%= ReservationID %>" method="POST" id="otp-form">
             <div class="mb-3">
               <label for="otp" class="flex align-items-center form-label">
                 <i class="bi bi-key me-2"></i>
@@ -37,11 +37,11 @@
                 <i class="bi bi-check-circle me-2"></i>
                 Xác thực
               </button>
-              <a href="/update-bookings/resend-otp" class="btn btn-outline-secondary">
+              <a href="/update-bookings/resend-otp?ReservationID=<%= ReservationID %>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-clockwise me-2"></i>
                 Gửi lại mã OTP
               </a>
-              <a href="/update-bookings/email-form" class="btn btn-outline-secondary">
+              <a href="/update-bookings/email-form?ReservationID=<%= ReservationID %>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-2"></i>
                 Thay đổi email
               </a>
