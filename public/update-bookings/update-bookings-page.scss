@@ -163,6 +163,12 @@
         .form-group {
           margin-bottom: 1rem;
 
+          &.full-name,
+          &.email,
+          &.phone {
+            pointer-events: none;
+          }
+
           &.warning {
             input,
             textarea {

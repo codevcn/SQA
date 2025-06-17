@@ -244,6 +244,9 @@ footer p {
 #main-section .update-booking-container .booking .card .form-group {
   margin-bottom: 1rem;
 }
+#main-section .update-booking-container .booking .card .form-group.full-name, #main-section .update-booking-container .booking .card .form-group.email, #main-section .update-booking-container .booking .card .form-group.phone {
+  pointer-events: none;
+}
 #main-section .update-booking-container .booking .card .form-group.warning input,
 #main-section .update-booking-container .booking .card .form-group.warning textarea {
   border-color: red;

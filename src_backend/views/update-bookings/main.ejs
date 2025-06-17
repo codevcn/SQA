@@ -100,54 +100,55 @@
         </div>
         <% } %>
 
+        <input type="text" hidden name="ReservationID" value="<%= reservation.ReservationID %>">
         <div class="form-group full-name">
           <label for="full-name-input">Họ và tên</label>
-          <input type="text" id="full-name-input" class="form-field" disabled value="<%= reservation.Cus_FullName %>"
-            name="full-name" placeholder="Nhập họ và tên">
+          <input type="text" id="full-name-input" class="form-field" value="<%= reservation.Cus_FullName %>"
+            name="Cus_FullName" placeholder="Nhập họ và tên">
         </div>
         <div class="form-group email">
           <label for="email-input">Email</label>
-          <input type="email" id="email-input" class="form-field" disabled value="<%= reservation.Cus_Email %>"
-            name="email" placeholder="Nhập email của bạn">
+          <input type="email" id="email-input" class="form-field" value="<%= reservation.Cus_Email %>"
+            name="Cus_Email" placeholder="Nhập email của bạn">
         </div>
         <div class="form-group phone">
           <label for="phone-input">Số điện thoại</label>
-          <input type="number" id="phone-input" class="form-field" disabled value="<%= reservation.Cus_Phone %>"
-            name="phone" placeholder="Nhập số điện thoại, ví dụ: 0987654321">
+          <input type="number" id="phone-input" class="form-field" value="<%= reservation.Cus_Phone %>"
+            name="Cus_Phone" placeholder="Nhập số điện thoại, ví dụ: 0987654321">
         </div>
         <div class="form-group-row">
           <div class="form-group date">
             <label for="date-input">Ngày đặt</label>
-            <input type="date" id="date-input" class="form-field" name="date">
+            <input type="date" id="date-input" class="form-field" name="ArrivalTime">
           </div>
           <div class="form-group time">
             <label for="time-input">Giờ đặt</label>
-            <input type="time" id="time-input" class="form-field" name="time">
+            <input type="time" id="time-input" class="form-field" name="ArrivalTime">
           </div>
         </div>
         <div class="form-group-row">
           <div class="form-group adults-count">
             <label for="adults-count-input">Số người lớn</label>
             <input type="number" id="adults-count-input" class="form-field" value="<%= reservation.NumAdults %>"
-              name="adults-count" placeholder="Số lượng khách">
+              name="NumAdults" placeholder="Số lượng khách">
           </div>
           <div class="form-group children-count">
             <label for="children-count-input">Số trẻ em</label>
             <input type="number" id="children-count-input" class="form-field" value="<%= reservation.NumChildren %>"
-              name="children-count" placeholder="Số lượng khách">
+              name="NumChildren" placeholder="Số lượng trẻ em">
           </div>
         </div>
         <div class="form-group note">
           <label for="note-input">Ghi chú</label>
-          <textarea id="note-input" value="<%= reservation.Note %>" name="note" rows="3" class="form-field"
-            placeholder="Nhập ghi chú cho nhà hàng..."></textarea>
+          <textarea id="note-input" name="Note" rows="3" class="form-field"
+            placeholder="Nhập ghi chú cho nhà hàng..."><%= reservation.Note %></textarea>
         </div>
         <% if (reservation.Status !== 'Cancelled' && reservation.Status !== 'Approved' && reservation.Status !== 'Rejected') { %>
-        <button type="submit">Cập nhật đơn đặt</button>
+        <button type="submit">Cập nhật đơn đặt bàn</button>
         <% } %>
       </form>
     </section>
   </div>
 </main>
 
-<div hidden id="api-message-placeholder" data-app-message="<%= appMessage %>"></div>
+<div hidden id="app-message-placeholder" data-app-message="<%= appMessage %>" data-app-status="<%= appStatus %>"></div>

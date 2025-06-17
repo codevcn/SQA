@@ -71,6 +71,7 @@ export const getAdminAllBookingsPage = async (req, res, next) => {
       isExpired: inputTime.isBefore(dayjs()),
     }
   })
+  console.log(">>> updated Bookings:", updatedBookings)
   const isAdmin = req.session.admin
   if (isAdmin) {
     return res.render("admin/all-bookings/all-bookings-page", {
@@ -97,24 +98,50 @@ export const getUpdateBookingsPage = async (req, res, next) => {
     isAdmin: admin,
     user: user,
     appMessage: "",
+    appStatus: "",
   })
+}
+
+function formatArrivalTime(arrivalArray) {
+  const [datePart, timePart] = arrivalArray // ['18/06/2025', '19:00']
+
+  // Parse phần ngày
+  const [day, month, year] = datePart.split("/").map(Number)
+
+  // Parse phần giờ phút
+  const [hour, minute] = timePart.split(":").map(Number)
+
+  // Tạo đối tượng Date theo local timezone
+  const arrivalDate = new Date(year, month - 1, day, hour, minute)
+
+  // Nếu bạn muốn convert sang ISO string (UTC) thì dùng:
+  return arrivalDate.toISOString()
 }
 
 export const updateBookings = async (req, res, next) => {
   const reservation = req.body
-  const updatedReservation = await updateReservation(reservation.ReservationID, reservation)
-  if (updatedReservation.errorCode) {
+  const admin = req.session.admin
+  const user = req.session.user
+  reservation.ArrivalTime = formatArrivalTime(reservation.ArrivalTime)
+  console.log(">>> reservation 1:", reservation)
+  const result = await updateReservation(reservation.ReservationID, reservation)
+  if (result.errorCode) {
+    console.log(">>> error:", result)
     return res.render("update-bookings/update-bookings-page", {
       reservation: reservation,
-      isAdmin: admin,
+      isAdmin: !!admin,
       user: user,
       appMessage: "Cập nhật đơn thất bại",
+      appStatus: "error",
     })
   }
+  const updatedReservation = result.toJSON()
+  console.log(">>> reservation 2:", updatedReservation)
   res.render("update-bookings/update-bookings-page", {
-    reservation: reservation,
-    isAdmin: admin,
+    reservation: updatedReservation,
+    isAdmin: !!admin,
     user: user,
     appMessage: "Cập nhật đơn thành công",
+    appStatus: "success",
   })
 }

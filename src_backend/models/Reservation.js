@@ -39,7 +39,7 @@ const Reservation = sequelize.define(
       allowNull: true,
     },
     Status: {
-      type: DataTypes.ENUM("Pending", "Approved", "Rejected"),
+      type: DataTypes.ENUM("Pending", "Approved", "Rejected", "Completed"),
       defaultValue: "Pending",
       allowNull: false,
     },

@@ -94,6 +94,7 @@ async function updateReservationCtrl(req, res) {
   try {
     const reservationID = req.params.id
     // const updateData = { ...req.body, ReservationID: reservationID };
+    console.log(">>> req.body:", req.body)
     const result = await updateReservationStatus(reservationID, req.body.Status)
     if (result.errorCode) {
       return res.status(result.errorCode).json({ message: result.message })

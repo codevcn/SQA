@@ -77,6 +77,8 @@
           <div class="status approved">Đã duyệt</div>
           <% } else if (Status === 'Rejected') { %>
           <div class="status rejected">Đã từ chối</div>
+          <% } else if (Status === 'Completed') { %>
+          <div class="status completed">Đã hoàn thành</div>
           <% } %>
         </div>
         <div class="card-info">
@@ -101,13 +103,23 @@
             <span>Đơn đã hết hạn</span>
           </div>
           <% } else if (Status === 'Pending') { %>
-          <button type="button" class="action-btn" id="reject-booking-btn" data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>" onclick="showConfirmRejectBookingModal(event)">
+          <button type="button" class="action-btn" id="reject-booking-btn"
+            data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
+            onclick="showConfirmRejectBookingModal(event)">
             <i class="bi bi-x-lg"></i>
             <span>Từ chối đơn</span>
           </button>
-          <button type="button" class="action-btn" id="complete-booking-btn" data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>" onclick="showConfirmCompleteBookingModal(event)">
+          <button type="button" class="action-btn" id="complete-booking-btn"
+            data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
+            onclick="showConfirmApproveBookingModal(event)">
             <i class="bi bi-clipboard-check"></i>
             <span>Duyệt đơn</span>
+          </button>
+          <button type="button" class="action-btn" id="complete-booking-btn"
+            data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
+            onclick="showConfirmCompleteBookingModal(event)">
+            <i class="bi bi-check-circle"></i>
+            <span>Hoàn thành đơn</span>
           </button>
           <% } %>
         </div>
@@ -235,7 +247,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="complete-booking-modal" tabindex="-1">
+<div class="modal fade" id="approve-booking-modal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -273,11 +285,62 @@
           </div>
         </section>
 
-        <form class="complete-form" id="confirm-complete-form">
+        <form class="approve-form" id="confirm-approve-form">
           <div class="btns">
             <button class="submit-btn complete-btn" onclick="approveBooking(event)">
               <i class="bi bi-trash"></i>
               <span>Duyệt đơn</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="complete-booking-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Hoàn thành đơn</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h3 class="booking-details-title">Thông tin đặt chỗ</h3>
+        <section class="booking-details">
+          <div class="form-groups">
+            <div class="form-group full-name">
+              <label>Họ và tên người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group phone">
+              <label>Số điện thoại người đặt</label>
+              <p></p>
+            </div>
+            <div class="form-group date-time">
+              <label>Thời gian đến</label>
+              <p></p>
+            </div>
+            <div class="form-group people-count">
+              <label>Số người lớn và trẻ em</label>
+              <p></p>
+            </div>
+            <div class="form-group note">
+              <label>Ghi chú cho nhà hàng</label>
+              <p></p>
+            </div>
+            <div class="form-group created-at">
+              <label>Thời gian tạo đơn</label>
+              <p></p>
+            </div>
+          </div>
+        </section>
+
+        <form class="complete-form" id="confirm-complete-form">
+          <div class="btns">
+            <button class="submit-btn complete-btn" onclick="completeBooking(event)">
+              <i class="bi bi-trash"></i>
+              <span>Hoàn thành đơn</span>
             </button>
           </div>
         </form>

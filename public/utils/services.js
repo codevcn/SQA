@@ -54,9 +54,16 @@ class ProcessBookingService {
          Status: "Approved"
       })
    }
+   
    async arrivedCustomer(bookingId) {
       await clientAxios.put(`/api/reservations/update/${bookingId}`, {
          Status: "Arrived"
+      })
+   }
+
+   async completeBooking(bookingId) {
+      await clientAxios.put(`/api/reservations/update/${bookingId}`, {
+         Status: "Completed"
       })
    }
 }

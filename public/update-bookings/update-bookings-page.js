@@ -5,6 +5,13 @@ const getPageData = () => {
   return reservationInStr ? JSON.parse(reservationInStr) : null
 }
 
+const getAppMessage = () => {
+  const appMessageEle = document.getElementById("app-message-placeholder")
+  const appStatus = appMessageEle ? appMessageEle.dataset.appStatus : null
+  const appMessage = appMessageEle ? appMessageEle.dataset.appMessage : null
+  return { appStatus, appMessage }
+}
+
 const initArrivalTime = (reservation) => {
   const dateInput = document.getElementById("date-input")
   const timeInput = document.getElementById("time-input")
@@ -36,6 +43,14 @@ const init = () => {
   if (reservation) {
     disableInputs(reservation)
     initArrivalTime(reservation)
+  }
+  const { appMessage, appStatus } = getAppMessage()
+  if (appMessage) {
+    if (appStatus === "success") {
+      toaster.success("Cập nhật đơn đặt bàn", appMessage)
+    } else {
+      toaster.error("Cập nhật đơn đặt bàn", appMessage)
+    }
   }
 }
 init()

@@ -337,10 +337,11 @@ const updateReservation = async (reservationId, data) => {
     if (!reservation) {
       return { errorCode: 404, message: "Reservation not found" }
     }
-    const updatedReservation = await Reservation.update(data, {
-      where: { ReservationID: reservationId },
-    })
-    return updatedReservation
+    if (reservation.Status === "Rejected" || reservation.Status === "Approved") {
+      return { errorCode: 400, message: "Đơn đặt chỗ đã bị từ chối hoặc đã được duyệt." }
+    }
+    await reservation.update(data)
+    return await Reservation.findByPk(reservationId)
   } catch (error) {
     console.error(">>> Error updating reservation:", error)
     return { errorCode: 500, message: error.message }
