@@ -27,14 +27,34 @@ function isValidFullName(username) {
   if (!username || typeof username !== "string") return false
 
   // Biểu thức chính quy kiểm tra họ và tên hợp lệ
-  const regex = /^[A-ZÀ-Ỹ][a-zà-ỹ]*(?: [A-ZÀ-Ỹ][a-zà-ỹ]*)*$/
+  // Chỉ cho phép chữ cái, dấu cách và dấu tiếng Việt
+  const regex = /^[a-zA-ZÀ-ỹ\s]+$/
 
   return regex.test(username.trim())
 }
 
 function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+  // Kiểm tra email không được rỗng
+  if (!email || email.trim() === '') {
+    return false;
+  }
+  
+  // Biểu thức chính quy kiểm tra email hợp lệ
+  // Không cho phép ký tự đặc biệt trong local part
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
+function isValidPhoneNumber(phoneNumber) {
+  // Kiểm tra số điện thoại không được rỗng
+  if (!phoneNumber || phoneNumber.trim() === '') {
+    return false;
+  }
+  
+  // Biểu thức chính quy kiểm tra số điện thoại Việt Nam
+  // Bắt đầu bằng 0, tiếp theo là 3, 5, 7, 8, 9, và có 9 chữ số tiếp theo
+  const phoneRegex = /^0[35789]\d{8}$/;
+  return phoneRegex.test(phoneNumber.trim());
 }
 
 // Thêm hàm kiểm tra thời gian hoạt động
@@ -67,6 +87,7 @@ const validateBooking = async (formData) => {
     formGroup.appendChild(createFormGroupMessage(message))
   }
 
+  // Validation cơ bản trước
   if (!fullName) {
     warning("full-name", "Trường họ và tên không được để trống!")
   }
@@ -78,28 +99,50 @@ const validateBooking = async (formData) => {
   } else if (!isValidEmail(email)) {
     warning("email", "Email không hợp lệ!")
   }
-  if (phone && !validator.isMobilePhone(phone)) {
+  if (phone && !isValidPhoneNumber(phone)) {
     warning("phone", "Số điện thoại không hợp lệ!")
   } else if (!phone) {
     warning("phone", "Số điện thoại không được để trống!")
   }
-  if (date && time) {
+  if (!date) {
+    warning("date", "Trường ngày đặt không được để trống!")
+  }
+  if (!time) {
+    warning("time", "Trường giờ đặt không được để trống!")
+  }
+  if (!adultsCount || !validator.isInt(adultsCount, { min: 1 })) {
+    warning("adults-count", "Phải có ít nhất 1 người lớn!")
+  }
+  if (childrenCount) {
+    if (!validator.isInt(childrenCount, { min: 0 })) {
+      warning("children-count", "Số trẻ em phải lớn hơn hoặc bằng 0!")
+    }
+  }
+
+  // Nếu validation cơ bản pass, kiểm tra thời gian
+  if (isValid && date && time) {
     dayjs.extend(dayjs_plugin_customParseFormat)
     const now = dayjs() // Thời gian hiện tại
     console.log(`${date} ${time}`)
     const bookingDateTime = dayjs(`${date} ${time}`, "DD/MM/YYYY HH:mm")
-    const maxBookingDate = now.add(2, "month")
-    console.log(bookingDateTime, now)
+    
+    // 1. Kiểm tra thời gian đặt trong quá khứ
     if (bookingDateTime.isBefore(now)) {
       isValid = false
       toaster.error("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
-    } else if (bookingDateTime.isAfter(maxBookingDate)) {
+    } 
+    // 2. Kiểm tra thời gian đặt phải cách hiện tại ít nhất 1 giờ
+    else if (bookingDateTime.isBefore(now.add(1, "hour"))) {
+      isValid = false
+      toaster.error("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
+    }
+    // 3. Kiểm tra không được quá 2 tháng
+    else if (bookingDateTime.isAfter(now.add(2, "month"))) {
       isValid = false
       toaster.error("Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!")
     }
-
-    // Kiểm tra thời gian hoạt động
-    if (isValid) {
+    // 4. Kiểm tra thời gian hoạt động và ngày nghỉ lễ
+    else {
       const dateString = bookingDateTime.format('YYYY-MM-DD')
       const timeString = bookingDateTime.format('HH:mm:ss')
       const workingHoursValidation = await validateWorkingHours(dateString, timeString)
@@ -108,17 +151,6 @@ const validateBooking = async (formData) => {
         isValid = false
         toaster.error(workingHoursValidation.reason)
       }
-    }
-  } else {
-    if (!date) warning("date", "Trường ngày đặt không được để trống!")
-    if (!time) warning("time", "Trường giờ đặt không được để trống!")
-  }
-  if (!adultsCount || !validator.isInt(adultsCount, { min: 1 })) {
-    warning("adults-count", "Phải có ít nhất 1 người lớn!")
-  }
-  if (childrenCount) {
-    if (!validator.isInt(childrenCount, { min: 0 })) {
-      warning("children-count", "Số trẻ em phải lớn hơn hoặc bằng 0!")
     }
   }
 
@@ -184,20 +216,20 @@ const confirmBooking = () => {
 }
 
 const autoFillForm = () => {
-  const staticData = {
-    "full-name": "Nguyễn Văn A",
-    email: "hanmunmun000@gmail.com",
-    phone: "0909090909",
-    date: "17/06/2025",
-    time: "18:00",
-    "adults-count": 2,
-    "children-count": 1,
-    note: Math.random() > 0.5 ? "Có bánh sinh nhật" : "",
-  }
-  const formFields = bookingFormEle.elements
-  for (const field of formFields) {
-    field.value = staticData[field.name]
-  }
+  // const staticData = {
+  //   "full-name": "Nguyễn Văn A",
+  //   email: "hanmunmun000@gmail.com",
+  //   phone: "0909090909",
+  //   date: "17/06/2025",
+  //   time: "18:00",
+  //   "adults-count": 2,
+  //   "children-count": 1,
+  //   note: Math.random() > 0.5 ? "Có bánh sinh nhật" : "",
+  // }
+  // const formFields = bookingFormEle.elements
+  // for (const field of formFields) {
+  //   field.value = staticData[field.name]
+  // }
 }
 
 const init = () => {

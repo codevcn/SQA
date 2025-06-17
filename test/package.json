@@ -1,0 +1,25 @@
+{
+  "name": "unit_test",
+  "version": "1.0.0",
+  "main": "nat.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "mocha ./nat.js",
+    "test:report": "npx mocha ./nat.js --reporter mochawesome"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.8.3",
+    "chai": "^4.3.6",
+    "dotenv": "^16.4.7",
+    "mocha": "^11.1.0",
+    "open-cli": "^8.0.0",
+    "selenium-webdriver": "^4.29.0"
+  },
+  "devDependencies": {
+    "mochawesome": "^7.1.3"
+  }
+}

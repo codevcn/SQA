@@ -50,21 +50,62 @@ app.get("/testLogin", (req, res) => {
 import sequelize from "./config/db.js"
 import crypto from "crypto"
 import Admin from "./models/Admin.js"
+import WorkingHours from "./models/WorkingHours.js"
+import ClosedDates from "./models/ClosedDates.js"
+
 app.get("/reset-database", async (req, res) => {
   try {
     // Xóa toàn bộ dữ liệu trong database
     await sequelize.sync({ force: true }) // Dùng `force: true` để xóa toàn bộ bảng và tạo lại
     console.log("Database reset thành công!")
+    
     // Thêm admin mẫu
     const hashedPassword = crypto.createHash("md5").update("123456").digest("hex")
     await Admin.create({
       Username: "admin",
       PasswordHash: hashedPassword,
     })
-
     console.log("Admin mặc định đã được thêm!")
 
-    return res.status(200).json({ message: "Database đã được reset và admin mặc định đã thêm!" })
+    // Thêm giờ làm việc mặc định (8:00 - 22:00)
+    await WorkingHours.create({
+      open_time: "08:00:00",
+      close_time: "22:00:00",
+    })
+    console.log("Giờ làm việc mặc định đã được thêm!")
+
+    // Thêm một số ngày nghỉ lễ mẫu
+    const currentYear = new Date().getFullYear()
+    const nextYear = currentYear + 1
+    const sampleClosedDates = [
+      {
+        closed_date: `${currentYear}-01-01`,
+        reason: "Năm mới"
+      },
+      {
+        closed_date: `${currentYear}-04-30`,
+        reason: "Giải phóng miền Nam"
+      },
+      {
+        closed_date: `${currentYear}-05-01`,
+        reason: "Quốc tế Lao động"
+      },
+      {
+        closed_date: `${currentYear}-09-02`,
+        reason: "Quốc khánh"
+      },
+      {
+        closed_date: `${nextYear}-01-01`,
+        reason: "Năm mới"
+      }
+    ]
+
+    for (const closedDate of sampleClosedDates) {
+      await ClosedDates.create(closedDate)
+    }
+    console.log("Ngày nghỉ lễ mẫu đã được thêm!")
+
+    return res.status(200).json({ message: "Database đã được reset và dữ liệu mặc định đã thêm!" })
   } catch (error) {
     console.error("Lỗi khi reset database:", error)
     return res.status(500).json({ error: "Lỗi khi reset database" })

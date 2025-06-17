@@ -5,6 +5,7 @@ import {
   isPositiveIntegerString,
   isIntegerString,
   validateEmail,
+  validateFullName,
 } from "../utils/validation.js"
 import sequelize from "../config/db.js"
 import dayjs from "dayjs"
@@ -69,6 +70,9 @@ async function reserve(data, action = "create") {
   if (!validatePhoneNumber(data["Cus_Phone"])) {
     return { errorCode: 400, message: "Số điện thoại không hợp lệ." }
   }
+  if (!validateFullName(data["Cus_FullName"])) {
+    return { errorCode: 400, message: "Trường họ và tên không hợp lệ!" }
+  }
   if (!isPositiveIntegerString(data.NumAdults))
     return {
       errorCode: 400,
@@ -93,26 +97,49 @@ async function reserve(data, action = "create") {
     const arrivalDateTime = dayjs(data.ArrivalTime)
     const dateString = arrivalDateTime.format('YYYY-MM-DD')
     const timeString = arrivalDateTime.format('HH:mm:ss')
-    
+
+    // 1. Kiểm tra ngày nghỉ lễ trước
+    const { isClosedDate } = await import("./working-hours.service.js")
+    const isClosed = await isClosedDate(dateString)
+    if (isClosed) {
+      return { errorCode: 400, message: "Nhà hàng đóng cửa vào ngày này!" }
+    }
+
+    // 2. Kiểm tra thời gian đặt trong quá khứ
+    const now = dayjs()
+    if (arrivalDateTime.isBefore(now)) {
+      return { errorCode: 400, message: "Thời gian đặt phải từ thời điểm hiện tại trở đi!" }
+    }
+
+    // 2.5. Kiểm tra thời gian đặt phải cách hiện tại ít nhất 1 giờ
+    const oneHourFromNow = now.add(1, "hour")
+    if (arrivalDateTime.isBefore(oneHourFromNow)) {
+      return { errorCode: 400, message: "Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!" }
+    }
+
+    // 3. Kiểm tra không được quá 2 tháng
+    const maxBookingDate = now.add(2, "month")
+    if (arrivalDateTime.isAfter(maxBookingDate)) {
+      return { errorCode: 400, message: "Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!" }
+    }
+
+    // 4. Kiểm tra thời gian hoạt động (giờ mở cửa/đóng cửa)
     const timeValidation = await validateBookingTime(dateString, timeString)
     if (!timeValidation.isValid) {
       return { errorCode: 400, message: timeValidation.reason }
     }
-    
-    const arrivalTime = dayjs(data.ArrivalTime)
-    const oneHourBefore = arrivalTime.subtract(1, "hour")
-    const oneHourAfter = arrivalTime.add(1, "hour")
 
-    // Kiểm tra xem có đơn nào trong khoảng thời gian 1 giờ trước & sau không
+    // 5. Kiểm tra xem có đơn nào trong khoảng thời gian 1 giờ trước & sau không
+    const oneHourBefore = arrivalDateTime.subtract(1, "hour")
+    const oneHourAfter = arrivalDateTime.add(1, "hour")
     const conflictingReservation = await Reservation.findOne({
       where: {
         Cus_Phone: data.Cus_Phone,
         ArrivalTime: {
-          [Op.between]: [oneHourBefore.toDate(), oneHourAfter.toDate()], // Kiểm tra khoảng thời gian ±1h
+          [Op.between]: [oneHourBefore.toDate(), oneHourAfter.toDate()],
         },
       },
     })
-    console.log("tick", arrivalTime, data.ArrivalTime, conflictingReservation)
     if (conflictingReservation) {
       return { errorCode: 409, message: "Bạn chỉ có thể đặt chỗ cách nhau ít nhất 1 giờ." }
     }

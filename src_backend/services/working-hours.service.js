@@ -98,7 +98,7 @@ export const validateBookingTime = async (date, time) => {
       })
       return {
         isValid: false,
-        reason: `Nhà hàng nghỉ vào ngày ${date} - Lý do: ${closedDate.reason}`,
+        reason: "Nhà hàng đóng cửa vào ngày này!",
       }
     }
 
@@ -115,10 +115,17 @@ export const validateBookingTime = async (date, time) => {
     const openTime = new Date(`${date} ${workingHours.open_time}`)
     const closeTime = new Date(`${date} ${workingHours.close_time}`)
 
-    if (bookingTime < openTime || bookingTime > closeTime) {
+    if (bookingTime < openTime) {
       return {
         isValid: false,
-        reason: `Thời gian đặt bàn phải trong khoảng ${workingHours.open_time} - ${workingHours.close_time}`,
+        reason: "Nhà hàng chưa mở cửa vào thời gian này!",
+      }
+    }
+
+    if (bookingTime > closeTime) {
+      return {
+        isValid: false,
+        reason: "Nhà hàng đã đóng cửa vào thời gian này!",
       }
     }
 
