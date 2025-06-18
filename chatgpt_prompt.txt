@@ -1,0 +1,142 @@
+# THÔNG TIN CHO CHATGPT - PHÂN TÍCH YÊU CẦU VÀ TESTCASE HỆ THỐNG ĐẶT BÀN NHÀ HÀNG
+
+## HOÀN CẢNH DỰ ÁN
+- Dự án: Hệ thống đặt bàn nhà hàng KingBuf
+- Công nghệ: Node.js, Express, EJS, MySQL/Sequelize
+- Kiến trúc: MVC (Model-View-Controller)
+- Giao diện: Responsive web với Bootstrap, SCSS
+- Authentication: Session-based, OTP qua email
+
+## CÁC CHỨC NĂNG ỨNG DỤNG HIỆN TẠI
+
+### 1. TRANG CHỦ (/) - Đặt bàn
+- Hero section giới thiệu nhà hàng
+- Form đặt bàn với các trường:
+  + Họ và tên (text)
+  + Email (email)
+  + Số điện thoại (number)
+  + Ngày đặt (date picker)
+  + Giờ đặt (time picker)
+  + Số người lớn (number)
+  + Số trẻ em (number)
+  + Ghi chú (textarea)
+- Modal xác nhận đặt chỗ
+- Validation client-side và server-side
+
+### 2. TRANG TRA CỨU ĐƠN (/bookings-history)
+- Form tìm kiếm theo số điện thoại và tên
+- Hiển thị danh sách đơn đặt bàn với thông tin:
+  + Mã đơn, trạng thái (Pending/Approved/Cancelled/Arrived/Completed/Rejected)
+  + Thông tin khách hàng
+  + Thời gian đến, số người, ghi chú
+  + Ngày tạo đơn
+  + Lý do từ chối (nếu có)
+  + Danh sách bàn (nếu đã duyệt)
+- Nút "Cập nhật" cho đơn chưa hoàn thành
+
+### 3. HỆ THỐNG XÁC THỰC EMAIL/OTP
+- Trang nhập email (/update-bookings/email-form)
+- Trang xác thực OTP (/update-bookings/verify-otp)
+- Gửi OTP qua email, hiệu lực 5 phút
+- Resend OTP functionality
+
+### 4. TRANG CẬP NHẬT ĐƠN (/update-bookings)
+- Hiển thị thông tin đơn hiện tại
+- Form cập nhật thông tin tương tự form đặt bàn
+- Overlay thông báo cho đơn đã hủy/hoàn thành
+- Thông tin người dùng đã đăng nhập
+
+### 5. TRANG ADMIN ĐĂNG NHẬP (/admin/login)
+- Form đăng nhập username/password
+- Session management cho admin
+- Chuyển hướng sau đăng nhập
+
+### 6. TRANG QUẢN LÝ ĐƠN (/admin/all-bookings)
+- Form lọc đơn theo trạng thái, thời gian, số điện thoại, ngày
+- Hiển thị danh sách đơn với thông tin chi tiết
+- Các nút thao tác cho đơn pending:
+  + Duyệt đơn
+  + Từ chối đơn (có nhập lý do)
+  + Hoàn thành đơn
+  + Hủy đơn
+- Modal xác nhận cho các thao tác
+
+### 7. TRANG QUẢN LÝ THỜI GIAN (/admin/working-hours)
+- Cập nhật giờ mở cửa/đóng cửa
+- Quản lý ngày nghỉ lễ
+- Hiển thị lịch tháng
+- Toast notifications
+
+## 3 USECASE CHÍNH
+
+### USECASE 1: ĐẶT BÀN
+"- Chức năng "Đặt bàn" cho phép người dùng điền thông tin cần thiết để gửi yêu cầu đặt bàn tại nhà hàng. Người dùng cần nhập họ tên (chỉ gồm chữ cái), số điện thoại hợp lệ (tối thiểu 10 chữ số), email hợp lệ, ngày giờ muốn đến, số người lớn và trẻ em, ghi chú đi kèm.
+- Hệ thống kiểm tra tính hợp lệ của các thông tin, bao gồm: tên không chứa ký tự đặc biệt, số điện thoại đúng định dạng, thời gian đặt phải nằm trong khung giờ hoạt động do nhà hàng cấu hình, và không trùng với các đơn đặt đã có.
+- Ngoài ra, hệ thống đảm bảo thời điểm đặt phải cách thời gian hiện tại ít nhất 1 giờ và không rơi vào ngày nhà hàng đã chọn nghỉ. Sau khi xác nhận thông tin, hệ thống hiển thị bản tóm tắt để người dùng kiểm tra trước khi gửi yêu cầu.
+- Khi người dùng gửi yêu cầu đặt chỗ, hệ thống xử lý, kiểm tra tính khả dụng của bàn, sau đó phản hồi kết quả đặt chỗ: thành công hoặc thất bại (kèm lý do rõ ràng đặt ngoài giờ,...).
+- Sau khi đặt thành công, người dùng sẽ được chuyển đến trang tra cứu để tiện theo dõi trạng thái đơn đặt chỗ của mình và các thông tin liên quan."
+
+### USECASE 2: CẬP NHẬT ĐƠN ĐẶT BÀN
+"- Tra cứu đơn đặt bàn: Người dùng truy cập chức năng tra cứu, nhập họ tên và số điện thoại để tìm kiếm các đơn đặt bàn đã tạo trước đó.
+- Chọn đơn cần chỉnh sửa: Sau khi hệ thống hiển thị kết quả tìm kiếm, người dùng chọn đơn cần cập nhật và nhấn nút "Cập nhật đơn".
+- Xác thực bảo mật bằng OTP: Hệ thống gửi mã OTP qua email của người dùng để xác thực quyền chỉnh sửa; người dùng nhập OTP vào hệ thống.
+- Chỉnh sửa thông tin đơn: Sau khi xác thực thành công, người dùng thực hiện các thay đổi thông tin đơn như thời gian đến, số lượng khách, ghi chú... trên giao diện chỉnh sửa.
+- Lưu thông tin cập nhật: Người dùng nhấn nút hoàn tất cập nhật; hệ thống kiểm tra, lưu thông tin mới vào cơ sở dữ liệu và thông báo thành công"
+
+### USECASE 3: XỬ LÝ ĐƠN ĐẶT BÀN
+"- Nhân viên đăng nhập vào hệ thống và truy cập giao diện quản lý đơn với các chức năng tìm kiếm, lọc và phân loại trạng thái đơn.
+- Khi chọn một đơn, phần mềm hiển thị chi tiết: ngày giờ, số khách, yêu cầu, thông tin liên hệ và trạng thái hiện tại.
+- Với đơn Chờ duyệt, nhân viên có thể Duyệt để chuyển sang Đã duyệt, Từ chối hoặc Huỷ đơn, nhập lý do và thông báo kết quả cho khách.
+- Với đơn Đã duyệt, nhân viên có thể Hoàn thành để kết thúc quy trình phục vụ, hoặc chọn Huỷ đơn, nhập lý do, lưu thời gian và gửi thông báo cho khách.
+- Tất cả thay đổi trạng thái đều được hệ thống lưu lại đầy đủ thông tin thời gian, lý do (nếu có)."
+
+## YÊU CẦU CHO CHATGPT
+
+Hãy viết báo cáo phân tích yêu cầu và testcase cho hệ thống đặt bàn nhà hàng KingBuf với các yêu cầu sau:
+
+### 1. PHÂN TÍCH YÊU CẦU
+- Chuyển đổi 3 usecase thành các Functional Requirements (FR) và Non-Functional Requirements (NFR)
+- Áp dụng kỹ thuật Validation/Verification Traceability:
+  + **Derive**: Yêu cầu được dẫn xuất từ đâu
+  + **Impact**: Ảnh hưởng đến những gì
+  + **Coverage**: Bao phủ những chức năng nào
+
+### 2. PHÂN TÍCH TESTCASE THEO BLACKBOX TESTING
+- **Equivalence Partitioning**: Phân vùng tương đương cho các trường input
+- **Decision Table**: Bảng quyết định cho logic xử lý
+- **Cause Effect Graph**: Đồ thị nguyên nhân - kết quả
+- **Positive/Negative Test Cases**: Test cases hợp lệ và không hợp lệ
+
+### 3. ĐẶC TẢ CHI TIẾT TESTCASE
+Mỗi testcase cần có:
+- **Dẫn xuất từ**: Yêu cầu nào
+- **Loại**: Functional hay Non-functional
+- **Nội dung test**: Mô tả test
+- **Kỹ thuật**: Equivalence Partitioning/Decision Table/Cause Effect Graph
+- **Dữ liệu test**: Input và Expected Output cụ thể
+- **Các bước thực hiện**: Step-by-step
+
+### 4. TRACEABILITY MATRIX
+Bảng mapping giữa testcase và functional requirements
+
+### 5. CẤU TRÚC BÁO CÁO
+1. Phân tích Usecase và Yêu cầu
+2. Phân tích Testcase theo kỹ thuật Blackbox
+3. Đặc tả chi tiết Testcase
+4. Traceability Matrix
+5. Kết luận
+
+### 6. LƯU Ý QUAN TRỌNG
+- Tập trung vào 3 usecase chính
+- Sử dụng thông tin từ các chức năng hiện có
+- Đảm bảo tính traceability từ yêu cầu đến testcase
+- Mỗi testcase phải có dữ liệu cụ thể để thực hiện
+- Áp dụng đầy đủ các kỹ thuật testing đã nêu
+
+## THÔNG TIN BỔ SUNG
+- Database: MySQL với các bảng Admin, Reservation, WorkingHours, ClosedDates
+- Authentication: Session-based cho admin, OTP cho user
+- Email service: Gửi OTP qua email
+- Validation: Client-side và server-side
+- UI Framework: Bootstrap 5, Bootstrap Icons
+- Date/Time: Flatpickr cho date/time picker 

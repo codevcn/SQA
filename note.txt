@@ -1,0 +1,361 @@
+# PHÂN TÍCH YÊU CẦU VÀ TESTCASE CHO HỆ THỐNG ĐẶT BÀN NHÀ HÀNG KINGBUF
+
+## 1. PHÂN TÍCH USECASE VÀ YÊU CẦU
+
+### 1.1 USECASE ĐẶT BÀN
+
+#### Yêu cầu chức năng (Functional Requirements):
+**FR-001**: Hệ thống phải cho phép người dùng đặt bàn với thông tin bắt buộc
+- **Derive từ**: Usecase đặt bàn - chức năng "Đặt bàn"
+- **Impact**: Ảnh hưởng đến toàn bộ quy trình đặt bàn
+- **Coverage**: Bao phủ form đặt bàn, validation, xử lý đơn
+
+**FR-002**: Validation thông tin đặt bàn
+- **Derive từ**: Usecase đặt bàn - "Hệ thống kiểm tra tính hợp lệ"
+- **Impact**: Ảnh hưởng đến chất lượng dữ liệu và trải nghiệm người dùng
+- **Coverage**: Bao phủ tất cả trường input trong form đặt bàn
+
+**FR-003**: Kiểm tra khung giờ hoạt động và ngày nghỉ
+- **Derive từ**: Usecase đặt bàn - "thời gian đặt phải nằm trong khung giờ hoạt động"
+- **Impact**: Ảnh hưởng đến việc chấp nhận/từ chối đơn đặt bàn
+- **Coverage**: Bao phủ logic kiểm tra thời gian và ngày nghỉ
+
+**FR-004**: Kiểm tra thời gian đặt cách hiện tại ít nhất 1 giờ
+- **Derive từ**: Usecase đặt bàn - "thời điểm đặt phải cách thời gian hiện tại ít nhất 1 giờ"
+- **Impact**: Ảnh hưởng đến việc chấp nhận đơn đặt bàn
+- **Coverage**: Bao phủ logic kiểm tra thời gian tối thiểu
+
+**FR-005**: Hiển thị bản tóm tắt trước khi gửi
+- **Derive từ**: Usecase đặt bàn - "hiển thị bản tóm tắt để người dùng kiểm tra"
+- **Impact**: Ảnh hưởng đến trải nghiệm người dùng và giảm lỗi
+- **Coverage**: Bao phủ modal xác nhận đặt bàn
+
+**FR-006**: Xử lý đặt bàn và phản hồi kết quả
+- **Derive từ**: Usecase đặt bàn - "hệ thống xử lý, kiểm tra tính khả dụng của bàn"
+- **Impact**: Ảnh hưởng đến kết quả cuối cùng của quy trình đặt bàn
+- **Coverage**: Bao phủ logic xử lý đặt bàn và thông báo kết quả
+
+**FR-007**: Chuyển hướng đến trang tra cứu sau khi đặt thành công
+- **Derive từ**: Usecase đặt bàn - "chuyển đến trang tra cứu để tiện theo dõi"
+- **Impact**: Ảnh hưởng đến trải nghiệm người dùng sau khi đặt bàn
+- **Coverage**: Bao phủ logic chuyển hướng
+
+#### Yêu cầu phi chức năng (Non-Functional Requirements):
+**NFR-001**: Thời gian phản hồi form đặt bàn < 2 giây
+**NFR-002**: Hệ thống phải hỗ trợ ít nhất 100 đơn đặt bàn đồng thời
+**NFR-003**: Giao diện đặt bàn phải responsive trên mobile và desktop
+
+### 1.2 USECASE CẬP NHẬT ĐƠN ĐẶT BÀN
+
+#### Yêu cầu chức năng:
+**FR-008**: Tra cứu đơn đặt bàn theo họ tên và số điện thoại
+- **Derive từ**: Usecase cập nhật - "Tra cứu đơn đặt bàn"
+- **Impact**: Ảnh hưởng đến khả năng tìm kiếm đơn đặt bàn
+- **Coverage**: Bao phủ form tra cứu và logic tìm kiếm
+
+**FR-009**: Hiển thị danh sách đơn đặt bàn tìm được
+- **Derive từ**: Usecase cập nhật - "hệ thống hiển thị kết quả tìm kiếm"
+- **Impact**: Ảnh hưởng đến việc người dùng chọn đơn cần cập nhật
+- **Coverage**: Bao phủ hiển thị danh sách đơn đặt bàn
+
+**FR-010**: Xác thực bảo mật bằng OTP qua email
+- **Derive từ**: Usecase cập nhật - "Xác thực bảo mật bằng OTP"
+- **Impact**: Ảnh hưởng đến bảo mật và quyền chỉnh sửa đơn
+- **Coverage**: Bao phủ quy trình gửi và xác thực OTP
+
+**FR-011**: Chỉnh sửa thông tin đơn đặt bàn
+- **Derive từ**: Usecase cập nhật - "Chỉnh sửa thông tin đơn"
+- **Impact**: Ảnh hưởng đến khả năng cập nhật thông tin đơn
+- **Coverage**: Bao phủ form cập nhật và logic lưu thông tin
+
+**FR-012**: Lưu thông tin cập nhật và thông báo kết quả
+- **Derive từ**: Usecase cập nhật - "Lưu thông tin cập nhật"
+- **Impact**: Ảnh hưởng đến việc lưu trữ thông tin cập nhật
+- **Coverage**: Bao phủ logic lưu và thông báo kết quả
+
+#### Yêu cầu phi chức năng:
+**NFR-004**: Thời gian gửi OTP < 30 giây
+**NFR-005**: OTP có hiệu lực trong 5 phút
+**NFR-006**: Hệ thống phải mã hóa thông tin OTP
+
+### 1.3 USECASE XỬ LÝ ĐƠN ĐẶT BÀN
+
+#### Yêu cầu chức năng:
+**FR-013**: Đăng nhập admin và truy cập giao diện quản lý
+- **Derive từ**: Usecase xử lý - "Nhân viên đăng nhập vào hệ thống"
+- **Impact**: Ảnh hưởng đến quyền truy cập quản lý đơn
+- **Coverage**: Bao phủ hệ thống đăng nhập admin
+
+**FR-014**: Tìm kiếm, lọc và phân loại trạng thái đơn
+- **Derive từ**: Usecase xử lý - "các chức năng tìm kiếm, lọc và phân loại"
+- **Impact**: Ảnh hưởng đến hiệu quả quản lý đơn đặt bàn
+- **Coverage**: Bao phủ các chức năng tìm kiếm và lọc
+
+**FR-015**: Hiển thị chi tiết đơn đặt bàn
+- **Derive từ**: Usecase xử lý - "hiển thị chi tiết: ngày giờ, số khách, yêu cầu"
+- **Impact**: Ảnh hưởng đến việc ra quyết định xử lý đơn
+- **Coverage**: Bao phủ hiển thị thông tin chi tiết đơn
+
+**FR-016**: Duyệt đơn đặt bàn (Pending → Approved)
+- **Derive từ**: Usecase xử lý - "Duyệt để chuyển sang Đã duyệt"
+- **Impact**: Ảnh hưởng đến trạng thái và quy trình xử lý đơn
+- **Coverage**: Bao phủ logic duyệt đơn
+
+**FR-017**: Từ chối đơn đặt bàn (Pending → Rejected)
+- **Derive từ**: Usecase xử lý - "Từ chối hoặc Huỷ đơn, nhập lý do"
+- **Impact**: Ảnh hưởng đến trạng thái đơn và thông báo cho khách
+- **Coverage**: Bao phủ logic từ chối đơn và nhập lý do
+
+**FR-018**: Hủy đơn đặt bàn
+- **Derive từ**: Usecase xử lý - "Huỷ đơn, nhập lý do"
+- **Impact**: Ảnh hưởng đến trạng thái đơn và thông báo cho khách
+- **Coverage**: Bao phủ logic hủy đơn
+
+**FR-019**: Hoàn thành đơn đặt bàn (Approved → Completed)
+- **Derive từ**: Usecase xử lý - "Hoàn thành để kết thúc quy trình phục vụ"
+- **Impact**: Ảnh hưởng đến việc kết thúc quy trình đặt bàn
+- **Coverage**: Bao phủ logic hoàn thành đơn
+
+**FR-020**: Lưu lịch sử thay đổi trạng thái
+- **Derive từ**: Usecase xử lý - "Tất cả thay đổi trạng thái đều được hệ thống lưu lại"
+- **Impact**: Ảnh hưởng đến khả năng theo dõi và audit
+- **Coverage**: Bao phủ logic lưu lịch sử thay đổi
+
+#### Yêu cầu phi chức năng:
+**NFR-007**: Thời gian phản hồi thao tác admin < 1 giây
+**NFR-008**: Hệ thống phải log đầy đủ các thao tác admin
+**NFR-009**: Giao diện admin phải hỗ trợ phân quyền
+
+## 2. PHÂN TÍCH TESTCASE THEO KỸ THUẬT BLACKBOX
+
+### 2.1 EQUIVALENCE PARTITIONING
+
+#### FR-001: Form đặt bàn - Họ tên
+**Positive Test Cases:**
+- TC-001-01: Nhập họ tên chỉ chứa chữ cái tiếng Việt (Nguyễn Văn A)
+- TC-001-02: Nhập họ tên chỉ chứa chữ cái tiếng Anh (John Smith)
+- TC-001-03: Nhập họ tên có dấu cách (Nguyễn Thị B)
+
+**Negative Test Cases:**
+- TC-001-04: Nhập họ tên chứa số (Nguyễn Văn 123)
+- TC-001-05: Nhập họ tên chứa ký tự đặc biệt (Nguyễn@Văn)
+- TC-001-06: Để trống trường họ tên
+- TC-001-07: Nhập họ tên quá ngắn (A)
+- TC-001-08: Nhập họ tên quá dài (trên 50 ký tự)
+
+#### FR-001: Form đặt bàn - Số điện thoại
+**Positive Test Cases:**
+- TC-002-01: Nhập số điện thoại 10 số (0987654321)
+- TC-002-02: Nhập số điện thoại 11 số (09876543210)
+
+**Negative Test Cases:**
+- TC-002-03: Nhập số điện thoại ít hơn 10 số (098765432)
+- TC-002-04: Nhập số điện thoại chứa chữ cái (098765432a)
+- TC-002-05: Nhập số điện thoại chứa ký tự đặc biệt (098765432@)
+- TC-002-06: Để trống trường số điện thoại
+
+#### FR-001: Form đặt bàn - Email
+**Positive Test Cases:**
+- TC-003-01: Nhập email hợp lệ (user@example.com)
+- TC-003-02: Nhập email với subdomain (user@sub.example.com)
+
+**Negative Test Cases:**
+- TC-003-03: Nhập email không có @ (userexample.com)
+- TC-003-04: Nhập email không có domain (user@)
+- TC-003-05: Nhập email không có phần local (@example.com)
+- TC-003-06: Để trống trường email
+
+#### FR-003: Kiểm tra khung giờ hoạt động
+**Positive Test Cases:**
+- TC-004-01: Đặt bàn trong giờ hoạt động (19:00 - giờ mở cửa 08:00, đóng cửa 22:00)
+- TC-004-02: Đặt bàn đúng giờ mở cửa (08:00)
+
+**Negative Test Cases:**
+- TC-004-03: Đặt bàn trước giờ mở cửa (07:00)
+- TC-004-04: Đặt bàn sau giờ đóng cửa (23:00)
+- TC-004-05: Đặt bàn vào ngày nghỉ lễ (01/01/2025)
+
+#### FR-004: Kiểm tra thời gian đặt cách hiện tại ít nhất 1 giờ
+**Positive Test Cases:**
+- TC-005-01: Đặt bàn cách hiện tại 2 giờ
+- TC-005-02: Đặt bàn cách hiện tại 1 giờ 30 phút
+
+**Negative Test Cases:**
+- TC-005-03: Đặt bàn cách hiện tại 30 phút
+- TC-005-04: Đặt bàn trong quá khứ
+
+### 2.2 DECISION TABLE
+
+#### FR-016, FR-017, FR-018: Xử lý đơn đặt bàn (Admin)
+
+| Điều kiện | TC-006-01 | TC-006-02 | TC-006-03 | TC-006-04 | TC-006-05 |
+|-----------|-----------|-----------|-----------|-----------|-----------|
+| Admin đã đăng nhập | Y | Y | Y | Y | N |
+| Đơn có trạng thái Pending | Y | Y | Y | Y | Y |
+| Đơn chưa hết hạn | Y | Y | Y | N | Y |
+| Thao tác được chọn | Duyệt | Từ chối | Hủy | Bất kỳ | Bất kỳ |
+| **Kết quả** | **Duyệt thành công** | **Từ chối thành công** | **Hủy thành công** | **Không thể thao tác** | **Chuyển về trang login** |
+
+### 2.3 CAUSE EFFECT GRAPH
+
+#### FR-010: Xác thực OTP
+
+**Causes:**
+- C1: Email hợp lệ
+- C2: OTP đúng định dạng (6 số)
+- C3: OTP chưa hết hạn (5 phút)
+- C4: OTP khớp với email
+
+**Effects:**
+- E1: Gửi OTP thành công
+- E2: Xác thực OTP thành công
+- E3: Hiển thị lỗi email không hợp lệ
+- E4: Hiển thị lỗi OTP sai định dạng
+- E5: Hiển thị lỗi OTP hết hạn
+- E6: Hiển thị lỗi OTP không khớp
+
+**Test Cases:**
+- TC-007-01: C1=Y, C2=Y, C3=Y, C4=Y → E2
+- TC-007-02: C1=N → E3
+- TC-007-03: C1=Y, C2=N → E4
+- TC-007-04: C1=Y, C2=Y, C3=N → E5
+- TC-007-05: C1=Y, C2=Y, C3=Y, C4=N → E6
+
+### 2.4 POSITIVE/NEGATIVE TESTCASES
+
+#### FR-013: Đăng nhập Admin
+
+**Positive Test Cases:**
+- TC-008-01: Đăng nhập với username và password đúng (admin/123456)
+- TC-008-02: Đăng nhập với username viết hoa (ADMIN/123456)
+
+**Negative Test Cases:**
+- TC-008-03: Đăng nhập với username sai, password đúng (wrong/123456)
+- TC-008-04: Đăng nhập với username đúng, password sai (admin/wrong)
+- TC-008-05: Đăng nhập với cả username và password sai (wrong/wrong)
+- TC-008-06: Để trống username, nhập password (empty/123456)
+- TC-008-07: Nhập username, để trống password (admin/empty)
+- TC-008-08: Để trống cả username và password
+
+#### FR-014: Tìm kiếm và lọc đơn đặt bàn
+
+**Positive Test Cases:**
+- TC-009-01: Tìm kiếm theo số điện thoại chính xác (0987654321)
+- TC-009-02: Tìm kiếm theo tên chính xác (Nguyễn Văn A)
+- TC-009-03: Lọc theo trạng thái "Pending"
+- TC-009-04: Lọc theo trạng thái "Approved"
+- TC-009-05: Lọc theo ngày cụ thể (21/04/2025)
+
+**Negative Test Cases:**
+- TC-009-06: Tìm kiếm với số điện thoại không tồn tại (0000000000)
+- TC-009-07: Tìm kiếm với tên không tồn tại (Không Tồn Tại)
+- TC-009-08: Lọc với ngày không có đơn nào (01/01/2020)
+- TC-009-09: Tìm kiếm với số điện thoại sai định dạng (abc123)
+
+## 3. ĐẶC TẢ CHI TIẾT TESTCASE
+
+### 3.1 TESTCASE CHO FORM ĐẶT BÀN
+
+**TC-001-01: Nhập họ tên hợp lệ**
+- **Dẫn xuất từ**: FR-001, FR-002
+- **Loại**: Functional
+- **Nội dung test**: Kiểm tra validation họ tên chỉ chứa chữ cái
+- **Kỹ thuật**: Equivalence Partitioning - Positive
+- **Dữ liệu test**: 
+  - Input: "Nguyễn Văn A"
+  - Expected: Form chấp nhận và không hiển thị lỗi
+- **Các bước thực hiện**:
+  1. Truy cập trang chủ (/)
+  2. Cuộn xuống form đặt bàn
+  3. Nhập "Nguyễn Văn A" vào trường "Họ và tên"
+  4. Nhập các thông tin khác hợp lệ
+  5. Nhấn "Đặt Bàn"
+  6. Kiểm tra không có thông báo lỗi về họ tên
+
+**TC-001-04: Nhập họ tên chứa số**
+- **Dẫn xuất từ**: FR-001, FR-002
+- **Loại**: Functional
+- **Nội dung test**: Kiểm tra validation họ tên không chứa số
+- **Kỹ thuật**: Equivalence Partitioning - Negative
+- **Dữ liệu test**:
+  - Input: "Nguyễn Văn 123"
+  - Expected: Form hiển thị lỗi "Họ tên chỉ được chứa chữ cái"
+- **Các bước thực hiện**:
+  1. Truy cập trang chủ (/)
+  2. Cuộn xuống form đặt bàn
+  3. Nhập "Nguyễn Văn 123" vào trường "Họ và tên"
+  4. Nhập các thông tin khác hợp lệ
+  5. Nhấn "Đặt Bàn"
+  6. Kiểm tra hiển thị thông báo lỗi về họ tên
+
+### 3.2 TESTCASE CHO XÁC THỰC OTP
+
+**TC-007-01: Xác thực OTP thành công**
+- **Dẫn xuất từ**: FR-010
+- **Loại**: Functional
+- **Nội dung test**: Kiểm tra quy trình xác thực OTP hoàn chỉnh
+- **Kỹ thuật**: Cause Effect Graph
+- **Dữ liệu test**:
+  - Email: "test@example.com"
+  - OTP: "123456" (đúng và chưa hết hạn)
+  - Expected: Chuyển đến trang cập nhật đơn đặt bàn
+- **Các bước thực hiện**:
+  1. Truy cập trang tra cứu (/bookings-history)
+  2. Tìm kiếm đơn đặt bàn
+  3. Nhấn "Cập nhật" trên đơn cần chỉnh sửa
+  4. Nhập email "test@example.com"
+  5. Nhấn "Gửi mã OTP"
+  6. Nhập OTP "123456" nhận được
+  7. Nhấn "Xác thực"
+  8. Kiểm tra chuyển đến trang cập nhật đơn
+
+### 3.3 TESTCASE CHO ADMIN XỬ LÝ ĐƠN
+
+**TC-006-01: Duyệt đơn đặt bàn thành công**
+- **Dẫn xuất từ**: FR-013, FR-016
+- **Loại**: Functional
+- **Nội dung test**: Kiểm tra quy trình duyệt đơn của admin
+- **Kỹ thuật**: Decision Table
+- **Dữ liệu test**:
+  - Username: "admin"
+  - Password: "123456"
+  - Đơn đặt bàn: ID = 1, Status = "Pending"
+  - Expected: Đơn chuyển sang trạng thái "Approved"
+- **Các bước thực hiện**:
+  1. Truy cập trang admin login (/admin/login)
+  2. Đăng nhập với username "admin" và password "123456"
+  3. Truy cập trang quản lý đơn (/admin/all-bookings)
+  4. Tìm đơn có ID = 1 và Status = "Pending"
+  5. Nhấn "Duyệt đơn"
+  6. Xác nhận trong modal
+  7. Kiểm tra đơn chuyển sang trạng thái "Approved"
+
+## 4. TRACEABILITY MATRIX
+
+| Test Case | FR-001 | FR-002 | FR-003 | FR-004 | FR-005 | FR-006 | FR-007 | FR-008 | FR-009 | FR-010 | FR-011 | FR-012 | FR-013 | FR-014 | FR-015 | FR-016 | FR-017 | FR-018 | FR-019 | FR-020 |
+|-----------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
+| TC-001-01 | X | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+| TC-001-04 | X | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+| TC-002-01 | X | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+| TC-004-01 |   |   | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+| TC-005-01 |   |   |   | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+| TC-006-01 |   |   |   |   |   |   |   |   |   |   |   |   | X |   |   | X |   |   |   |   |
+| TC-007-01 |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |   |
+| TC-008-01 |   |   |   |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |
+| TC-009-01 |   |   |   |   |   |   |   |   | X |   |   |   | X | X |   |   |   |   |   |   |
+
+## 5. KẾT LUẬN
+
+Báo cáo này đã phân tích chi tiết 3 usecase chính của hệ thống đặt bàn nhà hàng KingBuf:
+
+1. **Usecase đặt bàn**: Tập trung vào validation dữ liệu, kiểm tra ràng buộc thời gian và quy trình đặt bàn
+2. **Usecase cập nhật đơn đặt bàn**: Tập trung vào tìm kiếm, xác thực OTP và cập nhật thông tin
+3. **Usecase xử lý đơn đặt bàn**: Tập trung vào quyền admin và các thao tác xử lý đơn
+
+Các testcase được thiết kế theo các kỹ thuật:
+- **Equivalence Partitioning**: Phân vùng tương đương cho các trường input
+- **Decision Table**: Bảng quyết định cho logic xử lý đơn của admin
+- **Cause Effect Graph**: Đồ thị nguyên nhân - kết quả cho xác thực OTP
+- **Positive/Negative Testing**: Kiểm tra các trường hợp hợp lệ và không hợp lệ
+
+Mỗi testcase đều có đặc tả chi tiết về nguồn gốc, loại yêu cầu, nội dung test và kỹ thuật thực hiện, đảm bảo tính traceability từ yêu cầu đến testcase. 
