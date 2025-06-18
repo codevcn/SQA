@@ -203,8 +203,8 @@ const confirmBooking = () => {
     .submitBooking(reservationPageShares.bookingData)
     .then(() => {
       toaster.success("Đặt bàn thành công", "", () => {
-      //   window.location.href = `/bookings-history?Cus_FullName=${reservationPageShares.bookingData["full-name"]}&Cus_Phone=${reservationPageShares.bookingData["phone"]}`
-        window.location.href = `/bookings-history`
+        window.location.href = `/bookings-history?Cus_FullName=${reservationPageShares.bookingData["full-name"]}&Cus_Phone=${reservationPageShares.bookingData["phone"]}`
+        // window.location.href = `/bookings-history`
       })
     })
     .catch((error) => {
