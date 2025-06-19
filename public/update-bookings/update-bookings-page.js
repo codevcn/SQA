@@ -27,7 +27,7 @@ const initArrivalTime = (reservation) => {
 }
 
 const disableInputs = (reservation) => {
-  if (reservation.Status === "Completed" || reservation.Status === "Cancelled") {
+  if (reservation.Status !== "Pending") {
     const inputs = document.querySelectorAll(".form-field")
     for (const input of inputs) {
       input.disabled = true

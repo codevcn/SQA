@@ -16,6 +16,7 @@ import {
   authenticateUser,
 } from "../middlewares/user-auth.middleware.js"
 import { otpMap } from "../utils/maps.js"
+import Reservation from "../models/Reservation.js"
 
 console.log(">>> node_env:", process.env.NODE_ENV)
 
@@ -95,6 +96,26 @@ if (process.env.NODE_ENV === "development") {
       bookings: [],
       user: { email: "hanmunmun000@gmail.com" },
     })
+  })
+  // create sample bookings with one of each status: 1 pending, 1 approved, 1 rejected, 1 completed, 1 cancelled
+  router.get("/create-sample-bookings", async (req, res, next) => {
+    const { Status } = req.query
+    const booking = await Reservation.create({
+      Cus_Email: "hanmunmun000@gmail.com",
+      Cus_FullName: "Nguyễn Văn A",
+      Cus_Phone: "0909090909",
+      ArrivalTime: "28/06/2025 18:00",
+      NumAdults: 2,
+      NumChildren: 0,
+      Note: "Bàn gần cửa sổ",
+      Status,
+    })
+    res.status(200).json({ booking })
+  })
+  router.delete("/delete-sample-bookings", async (req, res, next) => {
+    const { ReservationID } = req.query
+    await Reservation.destroy({ where: { ReservationID } })
+    res.status(200).json({ message: "Booking deleted successfully" })
   })
 }
 

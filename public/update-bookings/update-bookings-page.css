@@ -172,7 +172,7 @@ footer p {
 #main-section .update-booking-container .current-details .details-card .detail-item span.status-cancelled {
   color: #ef4444;
 }
-#main-section .update-booking-container .current-details .details-card .detail-item span.status-arrived {
+#main-section .update-booking-container .current-details .details-card .detail-item span.status-completed {
   color: #10b981;
 }
 #main-section .update-booking-container .booking {
@@ -210,22 +210,21 @@ footer p {
 #main-section .update-booking-container .booking .card .status-overlay .text-content {
   font-size: 1.5rem;
   font-weight: bold;
-  text-transform: uppercase;
   letter-spacing: 2px;
   text-shadow: 2px 2px 4px rgb(255, 255, 255);
   transform: rotate(-15deg);
   z-index: 20;
 }
-#main-section .update-booking-container .booking .card .status-overlay.completed .background {
+#main-section .update-booking-container .booking .card .status-overlay.completed .background, #main-section .update-booking-container .booking .card .status-overlay.approved .background {
   border: 6px dashed #1f2937;
 }
-#main-section .update-booking-container .booking .card .status-overlay.completed .text-content {
+#main-section .update-booking-container .booking .card .status-overlay.completed .text-content, #main-section .update-booking-container .booking .card .status-overlay.approved .text-content {
   color: #1f2937;
 }
-#main-section .update-booking-container .booking .card .status-overlay.cancelled .background {
+#main-section .update-booking-container .booking .card .status-overlay.cancelled .background, #main-section .update-booking-container .booking .card .status-overlay.rejected .background {
   border: 6px dashed red;
 }
-#main-section .update-booking-container .booking .card .status-overlay.cancelled .text-content {
+#main-section .update-booking-container .booking .card .status-overlay.cancelled .text-content, #main-section .update-booking-container .booking .card .status-overlay.rejected .text-content {
   color: red;
 }
 #main-section .update-booking-container .booking .card .form-group-row {
