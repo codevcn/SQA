@@ -1,0 +1,85 @@
+Rất tốt, bây giờ tôi sẽ viết đầy đủ đặc tả use case **"Cập nhật đơn đặt bàn"** theo đúng chuẩn tài liệu nghiệp vụ (Use Case Specification).
+
+---
+
+# Use Case Specification: Cập nhật đơn đặt bàn
+
+---
+
+### 1. Tên Use Case
+
+Cập nhật đơn đặt bàn
+
+### 2. Mục tiêu
+
+Cho phép người dùng chỉnh sửa thông tin đơn đặt bàn đã tạo trước đó, đảm bảo bảo mật bằng xác thực OTP qua email.
+
+### 3. Mô tả ngắn gọn
+
+Người dùng tra cứu đơn đặt bàn bằng họ tên và số điện thoại, sau đó xác thực bằng OTP qua email để có quyền chỉnh sửa nội dung đơn. Sau khi chỉnh sửa, thông tin mới được lưu vào hệ thống.
+
+### 4. Tác nhân (Actors)
+
+* **Primary Actor:** Người dùng (User)
+* **Secondary Actor:** Hệ thống Email (dùng để gửi OTP)
+
+### 5. Các bên liên quan (Stakeholders)
+
+* Người dùng: muốn có thể dễ dàng chỉnh sửa đơn đặt bàn nếu có thay đổi.
+* Quản trị hệ thống: muốn hệ thống bảo mật, không cho người khác chỉnh sửa đơn nếu không có xác thực.
+* Bộ phận vận hành nhà hàng: nhận được thông tin chính xác, kịp thời từ các đơn đặt bàn.
+
+### 6. Điều kiện tiên quyết (Preconditions)
+
+* Người dùng đã có ít nhất một đơn đặt bàn đã được tạo từ trước.
+* Hệ thống email hoạt động bình thường để gửi OTP.
+* Người dùng nhớ chính xác họ tên và số điện thoại đã dùng khi đặt bàn.
+
+### 7. Điều kiện hậu (Postconditions)
+
+* Thông tin đơn đặt bàn được cập nhật thành công và lưu vào hệ thống.
+* Trạng thái của đơn đặt bàn được giữ nguyên (trừ khi người dùng chỉnh sửa mục trạng thái nếu được phép).
+
+### 8. Luồng sự kiện chính (Main Flow / Basic Flow)
+
+| Bước | Mô tả                                                                                                    |
+| ---- | -------------------------------------------------------------------------------------------------------- |
+| 1    | Người dùng truy cập vào mục "Tra cứu đơn đặt bàn".                                                       |
+| 2    | Người dùng nhập thông tin tìm kiếm: Họ tên và Số điện thoại.                                             |
+| 3    | Hệ thống kiểm tra và hiển thị danh sách đơn đặt bàn phù hợp.                                             |
+| 4    | Người dùng chọn đơn muốn cập nhật và nhấn nút "Cập nhật đơn".                                            |
+| 5    | Hệ thống hiển thị giao diện xác thực OTP và gửi mã OTP tới email đã dùng khi đặt bàn.                    |
+| 6    | Người dùng nhập mã OTP vào hệ thống.                                                                     |
+| 7    | Hệ thống xác thực OTP: nếu hợp lệ, chuyển sang giao diện chỉnh sửa đơn; nếu không hợp lệ, thông báo lỗi. |
+| 8    | Người dùng thực hiện các chỉnh sửa cần thiết trên đơn đặt bàn.                                           |
+| 9    | Người dùng nhấn nút "Cập nhật đơn đặt bàn".                                                              |
+| 10   | Hệ thống kiểm tra dữ liệu và lưu thông tin mới vào cơ sở dữ liệu.                                        |
+| 11   | Hệ thống thông báo cập nhật thành công.                                                                  |
+
+---
+
+### 9. Luồng phụ (Alternate Flow)
+
+#### 9.1. OTP sai
+
+* Nếu người dùng nhập sai OTP, hệ thống hiển thị thông báo lỗi và cho phép nhập lại OTP.
+
+#### 9.2. Không tìm thấy đơn đặt bàn
+
+* Nếu không tìm thấy đơn nào khớp với Họ tên và Số điện thoại, hệ thống thông báo "Không tìm thấy đơn đặt bàn".
+
+#### 9.3. OTP hết hạn
+
+* Nếu mã OTP đã hết hạn (quá thời gian cho phép), hệ thống yêu cầu gửi lại OTP mới.
+
+---
+
+### 10. Luồng ngoại lệ (Exception Flow)
+
+#### 10.1. Lỗi hệ thống email
+
+* Nếu không gửi được email chứa OTP, hệ thống thông báo "Hiện tại không thể gửi OTP. Vui lòng thử lại sau".
+
+#### 10.2. Lỗi lưu dữ liệu
+
+* Nếu khi lưu dữ liệu bị lỗi (VD: lỗi database), hệ thống thông báo "Cập nhật thất bại. Vui lòng thử lại".

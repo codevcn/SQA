@@ -1,0 +1,98 @@
+DevTools listening on ws://127.0.0.1:60184/devtools/browser/34583d87-835f-463a-9643-19e112e99f94
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1750314407.732226    1224 voice_transcription.cc:58] Registering VoiceTranscriptionCapability
+    1) TC1: Đơn không tồn tại
+Created TensorFlow Lite XNNPACK delegate for CPU.
+Attempting to use a delegate that only supports static-sized tensors with a graph that has dynamic-sized tensors (tensor#-1 is a dynamic-sized tensor).
+    2) TC2: OTP sai
+    3) TC3.1: Thời gian đến quá khứ
+    4) TC3.2: Thời gian ngoài giờ
+    5) TC3.3: Thời gian < 1h so với hiện tại
+    6) TC3.4: Số lượng người lớn = 0
+    7) TC3.5: Số lượng người lớn < 0
+    8) TC3.6: Số lượng người lớn rỗng
+    9) TC4: Lưu dữ liệu thất bại
+    10) TC5: Luồng chuẩn, thành công
+
+
+  0 passing (1m)
+  10 failing
+
+  1) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC1: Đơn không tồn tại:
+     NoSuchElementError: no such element: Unable to locate element: {"method":"css selector","selector":".alert-danger"}
+  (Session info: chrome=137.0.7151.104)
+      at Object.throwDecodedError (node_modules\selenium-webdriver\lib\error.js:521:15)
+      at parseHttpResponse (node_modules\selenium-webdriver\lib\http.js:524:13)
+      at Executor.execute (node_modules\selenium-webdriver\lib\http.js:456:28)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async Driver.execute (node_modules\selenium-webdriver\lib\webdriver.js:745:17)
+      at async Context.<anonymous> (updateReservation.test.js:155:30)
+
+  2) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC2: OTP sai:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5063ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  3) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC3.1: Thời gian đến quá khứ:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5040ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  4) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC3.2: Thời gian ngoài giờ:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5039ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  5) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC3.3: Thời gian < 1h so với hiện tại:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5083ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  6) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC3.4: Số lượng người lớn = 0:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5026ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  7) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC3.5: Số lượng người lớn < 0:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5017ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  8) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC3.6: Số lượng người lớn rỗng:
+
+      AssertionError: expected 'Cập nhật thành công' to equal 'Cập nhật thất bại'
+      + expected - actual
+
+      -Cập nhật thành công
+      +Cập nhật thất bại
+
+      at Context.<anonymous> (updateReservation.test.js:306:42)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  9) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC4: Lưu dữ liệu thất bại:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5057ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  10) Các testcase cho chức năng cập nhật đơn đặt chỗ
+       TC5: Luồng chuẩn, thành công:
+     TimeoutError: Waiting for element to be located By(css selector, .toast)
+Wait timed out after 5067ms
+      at D:\D-Documents\SHCOOL-Teamwork\Mon-thu-4-thay-Hao\WebsiteSource\test\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

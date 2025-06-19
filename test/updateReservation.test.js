@@ -145,7 +145,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC1: Đơn không tồn tại
     it('TC1: Đơn không tồn tại', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const nonExistentId = '999999';
         await navigateToUpdatePage(nonExistentId);
         
@@ -160,7 +160,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC2: OTP sai
     it('TC2: OTP sai', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -178,7 +178,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC3.1: Thời gian đến quá khứ
     it('TC3.1: Thời gian đến quá khứ', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -202,7 +202,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC3.2: Thời gian ngoài giờ
     it('TC3.2: Thời gian ngoài giờ', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -227,7 +227,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC3.3: Thời gian < 1h so với hiện tại
     it('TC3.3: Thời gian < 1h so với hiện tại', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -256,7 +256,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC3.4: Số lượng người lớn = 0
     it('TC3.4: Số lượng người lớn = 0', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -280,7 +280,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC3.5: Số lượng người lớn < 0
     it('TC3.5: Số lượng người lớn < 0', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -304,7 +304,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC3.6: Số lượng người lớn rỗng
     it('TC3.6: Số lượng người lớn rỗng', async function () {
         expect("Cập nhật thành công").to.equal("Cập nhật thất bại");
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -328,7 +328,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC4: Lưu dữ liệu thất bại
     it('TC4: Lưu dữ liệu thất bại', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
@@ -353,7 +353,7 @@ describe('Các testcase cho chức năng cập nhật đơn đặt chỗ', funct
     // TC5: Luồng chuẩn, thành công
     it('TC5: Luồng chuẩn, thành công', async function () {
         await delay(Math.random() * 1000);
-        return;
+        //return;
         const reservationId = await createTestReservation();
         
         await navigateToUpdatePage(reservationId);
