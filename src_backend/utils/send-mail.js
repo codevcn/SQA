@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer"
+import { otpMap } from "./maps.js"
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -8,15 +9,22 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export function genOTP() {
+export function genOTP(reservationId) {
   let otp = ""
   for (let i = 0; i < 6; i++) {
     otp += Math.floor(Math.random() * 10)
   }
+  otpMap.set(reservationId, otp)
+  console.log(">>> otp:", otp)
   return otp
 }
 
-export async function sendOTPEmail(toEmail, otp) {
+export function getOTPExpiry() {
+  return Date.now() + 1 * 60 * 1000 // OTP hết hạn sau 1 phút
+}
+
+export async function sendOTPEmail(toEmail, reservationId) {
+  const otp = otpMap.get(reservationId)
   const mailOptions = {
     from: "kingbuf.vn@gmail.com",
     to: toEmail,
@@ -24,7 +32,7 @@ export async function sendOTPEmail(toEmail, otp) {
     html: `
       <h3>Mã OTP để xác thực email</h3>
       <p><strong>${otp}</strong></p>
-      <p>Mã OTP này có hiệu lực trong 5 phút.</p>
+      <p>Mã OTP này có hiệu lực trong 2 phút.</p>
     `,
   }
 

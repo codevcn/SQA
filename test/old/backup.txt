@@ -19,13 +19,13 @@ const {
   clickOkToast,
   getRelativeDateFormatted,
 } = require("./utils/helper")
-const { login, logout, placeOrderOnStaticForm } = require("./utils/func")
+const { login, logout, placeOrder } = require("./utils/func")
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const TEST_CASE_TIMEOUT = 1000000
 
 const dataOnTestingFlow = {
-  GENERAL: {
+  TC_UDTR_003: {
     bookingData: {
       Cus_Email: "hanmunmun000@gmail.com",
       Cus_FullName: "Nguyễn Văn A",
@@ -36,16 +36,6 @@ const dataOnTestingFlow = {
       Note: "Bàn gần cửa sổ",
     },
   },
-  PLACE_ORDER: (date, time) => ({
-    fullName: "Nguyễn Văn A",
-    phone: "0987654321",
-    email: "nguyenvana@gmail.com",
-    date: date,
-    time: time,
-    adults: "2",
-    children: "0",
-    note: "Bàn gần cửa sổ",
-  }),
 }
 
 const obfuscateTextContent = (data) => {
@@ -108,50 +98,72 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await driver.get(`${DOMAIN}/`)
   })
 
+  // Helper functions
+  async function getErrorMessage(inputId) {
+    let element = await driver.findElement(By.css(`#${inputId} ~ .message span`))
+    return await element.getText()
+  }
+
   async function seedTestReservationData(type) {
     switch (type) {
-      case "GENERAL":
+      case "TC_UDTR_003":
         /**
          * required fields: "Cus_Email", "Cus_FullName", "Cus_Phone", "ArrivalTime", "NumAdults"
          */
         const { data } = await axios.post(
           `${DOMAIN}/api/reservations/reserve`,
-          dataOnTestingFlow["GENERAL"].bookingData
+          dataOnTestingFlow["TC_UDTR_003"].bookingData
         )
         return data.reservation
     }
   }
 
+  // async function autoPlaceOrder() {
+  //   const futureTime = getRelativeTimeFormatted(2)
+  //   const [date, time] = futureTime.split(" ")
+
+  //   await placeOrder(driver, {
+  //     fullName: "Nguyễn Anh Tuấn",
+  //     phone: "0987794267",
+  //     email: "nguyenanhtuan@gmail.com",
+  //     date: date,
+  //     time: time,
+  //     adults: "2",
+  //     children: "1",
+  //     note: "Bàn gần cửa sổ",
+  //   })
+
+  //   await clickButton(driver, "//*[@id='confirm-booking-details']/button/span")
+
+  //   // Đợi thông báo thành công
+  //   await driver.wait(until.elementLocated(By.className("toast")), 5000)
+
+  //   // Lấy ReservationID từ database hoặc từ response
+  //   // Trong thực tế, bạn cần implement cách lấy ReservationID
+  //   return "1" // Giả sử ReservationID là 1
+  // }
+
+  async function navigateToUpdatePage(reservationId) {
+    await driver.get(`${DOMAIN}/update-bookings/email-form?ReservationID=${reservationId}`)
+  }
+
+  async function submitEmail(email, reservationId) {
+    const emailInput = await driver.findElement(By.id("email"))
+    // await delay(1000000) // Dừng 1000ms (1 giây)
+    await emailInput.sendKeys(email)
+    await emailInput.clear()
+
+    const submitBtn = await driver.findElement(By.css('button[type="submit"]'))
+    await submitBtn.click()
+  }
+
   async function submitOTP(otp) {
-    const otpInput = await driver.wait(until.elementLocated(By.id("otp")), 5000)
+    const otpInput = await driver.findElement(By.id("otp"))
     await otpInput.clear()
     await otpInput.sendKeys(otp)
 
-    // Chờ layout ổn định nhẹ sau khi nhập OTP (giúp browser render UI)
-    await driver.sleep(300)
-
-    // Re-locate lại submit button để đảm bảo bounding box chuẩn
-    const submitBtn = await driver.wait(
-      until.elementLocated(By.css('#otp-form button[type="submit"]')),
-      5000
-    )
-    await driver.wait(until.elementIsEnabled(submitBtn), 5000)
-
-    // Sử dụng Selenium Actions để click trực tiếp theo element reference, không phụ thuộc pixel tọa độ cũ
-    const actions = driver.actions({ bridge: true })
-    await actions.move({ origin: submitBtn }).click().perform()
-  }
-
-  async function autoSubmitSearchForm(data) {
-    await driver.findElement(By.id("name-input")).sendKeys(data.Cus_FullName)
-    await driver.findElement(By.id("phone-input")).sendKeys(data.Cus_Phone)
-    await driver.findElement(By.css('#search-form button[type="submit"]')).click()
-  }
-
-  async function clickUpdateBookingButton() {
-    await driver.wait(until.elementLocated(By.css(".booking-card")), 5000)
-    const bookingCard = await driver.findElement(By.css(".booking-card"))
-    await bookingCard.findElement(By.css(".update-booking-btn")).click()
+    const submitBtn = await driver.findElement(By.css('#otp-form button[type="submit"]'))
+    await submitBtn.click()
   }
 
   async function updateReservationData(data) {
@@ -181,7 +193,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await submitBtn.click()
   }
 
-  async function isBookingsHistoryRoute(phone, fullName) {
+  async function isUrlWithPhoneAndFullName(phone, fullName) {
     const fullNameEncoded = encodeURIComponent(fullName)
     const phoneEncoded = encodeURIComponent(phone)
     const searchUrl = `${DOMAIN}/bookings-history/?Cus_Phone=${phoneEncoded}&Cus_FullName=${fullNameEncoded}`
@@ -193,15 +205,9 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await driver.wait(until.urlIs(url), 5000)
   }
 
-  async function isVerifyOTPRoute(reservationId) {
+  async function isUrlWithReservationId(reservationId) {
     const reservationIdEncoded = encodeURIComponent(reservationId)
     const url = `${DOMAIN}/update-bookings/verify-otp?ReservationID=${reservationIdEncoded}`
-    await driver.wait(until.urlIs(url), 5000)
-  }
-
-  async function isSendOTPRoute(reservationId) {
-    const reservationIdEncoded = encodeURIComponent(reservationId)
-    const url = `${DOMAIN}/update-bookings/send-otp?ReservationID=${reservationIdEncoded}`
     await driver.wait(until.urlIs(url), 5000)
   }
 
@@ -216,80 +222,31 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     }, 1000)
   }
 
-  async function placeBookingAtPastTime() {
-    const tomorrow = dayjs().add(0, "day")
-    const shortTime = tomorrow.hour(12).minute(30) // 12:30 ngày mai
-    const date = shortTime.format("DD/MM/YYYY")
-    const time = shortTime.format("HH:mm")
-
-    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
-    const message = await getMessageFromToast(driver)
-    expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
-  }
-
-  // TC 0.1: Bỏ trống trường phone
-  /*
-  it("TC 0.1: Bỏ trống trường phone", async function () {
-    await seedTestReservationData("GENERAL")
-
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
-
-    const errorMessage = await driver.wait(
-      until.elementLocated(By.id("swal2-html-container")),
-      5000
-    )
-    await delay(3000)
-    expect(await errorMessage.getText()).to.include(
-      "Trường số điện thoại phải có ít nhất 10 chữ số!"
-    )
-  })
-	*/
-
-  // TC 0.2: Bỏ trống trường họ tên
-  /*
-  it("TC 0.2: Bỏ trống trường họ tên", async function () {
-    await seedTestReservationData("GENERAL")
-
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
-
-    const errorMessage = await driver.wait(
-      until.elementLocated(By.id("swal2-html-container")),
-      5000
-    )
-    await delay(3000)
-    expect(await errorMessage.getText()).to.include("Trường tên không được để trống!")
-  })
-	*/
-
-  // TC 0.3: Nhập sai định dạng phone
-  /*
-  it("TC 0.3: Nhập sai định dạng số điện thoại", async function () {
-    await seedTestReservationData("GENERAL")
-
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
-
-    const errorMessage = await driver.wait(
-      until.elementLocated(By.id("swal2-html-container")),
-      5000
-    )
-    await delay(3000)
-    expect(await errorMessage.getText()).to.include("Trường số điện thoại không hợp lệ!")
-  })
-	*/
-
   // TC 1: Đơn không tồn tại
+  // it("TC 1: Đơn không tồn tại", async function () {
+  //   await delay(Math.random() * 1000)
+  //   //return;
+  //   const nonExistentId = "999999"
+  //   await navigateToUpdatePage(nonExistentId)
+
+  //   await submitEmail("test@gmail.com", nonExistentId)
+
+  //   // Kiểm tra thông báo lỗi
+  //   const errorElement = await driver.findElement(By.className("alert-danger"))
+  //   const errorMessage = await errorElement.getText()
+  //   expect(errorMessage).to.include("Đơn đặt bàn không tồn tại")
+  // })
   /*
   it("TC 1: Không tìm thấy đơn đặt bàn", async function () {
-    await seedTestReservationData("GENERAL")
+    await seedTestReservationData("TC_UDTR_003")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    const obfuscatedData = obfuscateTextContent(dataOnTestingFlow["GENERAL"].bookingData)
-    await autoSubmitSearchForm(obfuscatedData)
+    const obfuscatedData = obfuscateTextContent(dataOnTestingFlow["TC_UDTR_003"].bookingData)
+    await driver.findElement(By.id("name-input")).sendKeys(obfuscatedData.Cus_FullName)
+    await driver.findElement(By.id("phone-input")).sendKeys(obfuscatedData.Cus_Phone)
+    await driver.findElement(By.css('#search-form button[type="submit"]')).click()
 
-    await isBookingsHistoryRoute(obfuscatedData.Cus_Phone, obfuscatedData.Cus_FullName)
+    await isUrlWithPhoneAndFullName(obfuscatedData.Cus_Phone, obfuscatedData.Cus_FullName)
 
     await driver.wait(until.elementLocated(By.css(".empty-result")), 5000)
     const emptyText = await driver.findElement(By.css(".empty-content")).getText()
@@ -298,40 +255,64 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 	*/
 
   // TC 2: OTP sai
+  // it('TC 2: OTP sai', async function () {
+  //     await delay(Math.random() * 1000);
+  //     //return;
+  //     const reservationId = await createTestReservation();
+
+  //     await navigateToUpdatePage(reservationId);
+  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+
+  //     // Nhập OTP sai
+  //     await submitOTP('000000', reservationId);
+
+  //     // Kiểm tra thông báo lỗi
+  //     const errorElement = await driver.findElement(By.className('alert-danger'));
+  //     const errorMessage = await errorElement.getText();
+  //     expect(errorMessage).to.include('OTP không chính xác');
+  // });
   /*
   it("TC 2: Nhập OTP sai", async function () {
-		const reservation = await seedTestReservationData("GENERAL")
+		const reservation = await seedTestReservationData("TC_UDTR_003")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-		const data=dataOnTestingFlow["GENERAL"].bookingData
-    await autoSubmitSearchForm(data)
+    const data = dataOnTestingFlow["TC_UDTR_003"].bookingData
+    await driver.findElement(By.id("name-input")).sendKeys(data.Cus_FullName)
+    await driver.findElement(By.id("phone-input")).sendKeys(data.Cus_Phone)
+    await driver.findElement(By.css('#search-form button[type="submit"]')).click()
 
-    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
+    await isUrlWithPhoneAndFullName(data.Cus_Phone, data.Cus_FullName)
 
-		await clickUpdateBookingButton()
+    await driver.wait(until.elementLocated(By.css(".booking-card")), 5000)
+    const bookingCard = await driver.findElement(By.css(".booking-card"))
+    await bookingCard.findElement(By.css(".update-booking-btn")).click()
 
     await submitOTP("000000")
 
-    await isVerifyOTPRoute(ReservationID)
+    await isUrlWithReservationId(ReservationID)
     const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
     expect(await errorMessage.getText()).to.equal("OTP không chính xác, vui lòng thử lại")
   })
 	*/
 
-  // TC 3: OTP hết hạn
-  /*
+	// TC 3: OTP hết hạn
+	/*
   it("TC 3: OTP hết hạn", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
+    const reservation = await seedTestReservationData("TC_UDTR_003")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-		const data=dataOnTestingFlow["GENERAL"].bookingData
-    await autoSubmitSearchForm(data)
+    const data = dataOnTestingFlow["TC_UDTR_003"].bookingData
+    await driver.findElement(By.id("name-input")).sendKeys(data.Cus_FullName)
+    await driver.findElement(By.id("phone-input")).sendKeys(data.Cus_Phone)
+    await driver.findElement(By.css('#search-form button[type="submit"]')).click()
 
-    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
+    await isUrlWithPhoneAndFullName(data.Cus_Phone, data.Cus_FullName)
 
-    await clickUpdateBookingButton()
+    await driver.wait(until.elementLocated(By.css(".booking-card")), 5000)
+    const bookingCard = await driver.findElement(By.css(".booking-card"))
+    await bookingCard.findElement(By.css(".update-booking-btn")).click()
 
     // chờ OTP hết hạn (hơn 1 phút)
     const timeToWait = 61000
@@ -343,86 +324,35 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
     await submitOTP(otp)
 
-    await isVerifyOTPRoute(ReservationID)
+    await isUrlWithReservationId(ReservationID)
     const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
     expect(await errorMessage.getText()).to.equal("OTP đã hết hạn, vui lòng thử lại")
   })
 	*/
+	
+  // // TC3.1: Thời gian đến quá khứ
+  // it('TC3.1: Thời gian đến quá khứ', async function () {
+  //     await delay(Math.random() * 1000);
+  //     //return;
+  //     const reservationId = await createTestReservation();
 
-  // TC 4: Gửi lại OTP
-  /*
-  it("TC 4: Gửi lại OTP", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
-    const { ReservationID } = reservation
+  //     await navigateToUpdatePage(reservationId);
+  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
 
-    await driver.get(`${DOMAIN}/bookings-history`)
-    const data = dataOnTestingFlow["GENERAL"].bookingData
-    await autoSubmitSearchForm(data)
+  //     const correctOTP = '123456';
+  //     await submitOTP(correctOTP, reservationId);
 
-    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
+  //     // Cập nhật với thời gian quá khứ
+  //     await updateReservationData({
+  //         date: '01/01/2020',
+  //         time: '10:00',
+  //         adults: '2'
+  //     });
 
-    await clickUpdateBookingButton()
-    await isSendOTPRoute(ReservationID)
-
-    const {
-      data: { otp: oldOTP },
-    } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-    // console.log(">>> oldOTP:", oldOTP)
-    const resendOTPBtn = await driver.wait(until.elementLocated(By.id("resend-otp-btn")), 5000)
-    await resendOTPBtn.click()
-
-    await isUrl(`${DOMAIN}/update-bookings/resend-otp?ReservationID=${ReservationID}`)
-
-    await submitOTP(oldOTP)
-
-    await isVerifyOTPRoute(ReservationID)
-    const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
-    expect(await errorMessage.getText()).to.equal("OTP không chính xác, vui lòng thử lại")
-
-    const {
-      data: { otp: newOTP },
-    } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-    // console.log(">>> newOTP:", newOTP)
-		await submitOTP(newOTP)
-		
-    await isUrl(`${DOMAIN}/update-bookings/?ReservationID=${ReservationID}`)
-    const pageTitle = await driver.wait(
-      until.elementLocated(By.id("update-bookings-page-title")),
-      5000
-    )
-    expect(await pageTitle.getText()).to.equal("Cập nhật thông tin đặt bàn")
-  })
-	*/
-
-  // TC 5: Thời gian đến quá khứ
-  it("TC 5: Thời gian đến quá khứ", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
-    const { ReservationID } = reservation
-
-    await driver.get(`${DOMAIN}/bookings-history`)
-    const data = dataOnTestingFlow["GENERAL"].bookingData
-    await autoSubmitSearchForm(data)
-
-    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
-
-    await clickUpdateBookingButton()
-
-    await isSendOTPRoute(ReservationID)
-
-    const {
-      data: { otp },
-    } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-    await submitOTP(otp)
-
-    await isUrl(`${DOMAIN}/update-bookings/?ReservationID=${ReservationID}`)
-    const pageTitle = await driver.wait(
-      until.elementLocated(By.id("update-bookings-page-title")),
-      5000
-    )
-    expect(await pageTitle.getText()).to.equal("Cập nhật thông tin đặt bàn")
-
-    await placeBookingAtPastTime()
-  })
+  //     // Kiểm tra thông báo lỗi
+  //     const message = await getMessageFromToast(driver);
+  //     expect(message).to.equal('Thời gian đặt phải từ thời điểm hiện tại trở đi!');
+  // });
 
   // // TC3.2: Thời gian ngoài giờ
   // it('TC3.2: Thời gian ngoài giờ', async function () {

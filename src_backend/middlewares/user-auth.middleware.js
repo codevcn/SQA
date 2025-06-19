@@ -1,4 +1,4 @@
-import { genOTP, sendOTPEmail } from "../utils/send-mail.js"
+import { genOTP, getOTPExpiry, sendOTPEmail } from "../utils/send-mail.js"
 
 // Middleware xác thực user cho route getReservationsByUserInfo
 export function authenticateUser(req, res, next) {
@@ -10,7 +10,8 @@ export function authenticateUser(req, res, next) {
   // }
   const { ReservationID } = req.query
   if (!ReservationID) {
-    return res.redirect("/bookings-history")
+    const encodedMessage = encodeURIComponent("ReservationID không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   const user = req.session.user
@@ -19,7 +20,8 @@ export function authenticateUser(req, res, next) {
   // Kiểm tra xem user đã có session chưa
   if (!user || !user.email) {
     // Chưa có session - hiển thị form nhập email
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    const encodedMessage = encodeURIComponent("User không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   // Có session nhưng chưa xác thực OTP
@@ -27,7 +29,8 @@ export function authenticateUser(req, res, next) {
     if (Date.now() > req.session.user.otpExpiry) {
       // OTP hết hạn - xóa session và chuyển hướng đến form nhập email
       delete req.session.user
-      return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+      const encodedMessage = encodeURIComponent("OTP đã hết hạn")
+      return res.redirect(`/bookings-history?message=${encodedMessage}`)
     }
     // Hiển thị form nhập OTP
     return res.redirect("/update-bookings/verify-otp?ReservationID=" + ReservationID)
@@ -43,25 +46,27 @@ export async function sendOTP(req, res, next) {
   const { ReservationID } = req.query
 
   if (!ReservationID) {
-    return res.redirect("/bookings-history")
+    const encodedMessage = encodeURIComponent("ReservationID không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   if (!email) {
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    const encodedMessage = encodeURIComponent("Email không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   // Tạo OTP ngẫu nhiên 6 số
-  const otp = genOTP()
+  const otp = genOTP(ReservationID)
 
   // Lưu thông tin user và OTP vào session
   req.session.user = {
     email: email,
     otp: otp,
-    otpExpiry: Date.now() + 5 * 60 * 1000, // OTP hết hạn sau 5 phút
+    otpExpiry: getOTPExpiry(),
     verified: false,
   }
 
-  await sendOTPEmail(email, otp)
+  await sendOTPEmail(email, ReservationID)
 
   // Chuyển hướng đến trang nhập OTP
   res.render("update-bookings/otp-form/otp-form-page", {
@@ -69,6 +74,7 @@ export async function sendOTP(req, res, next) {
     email: email,
     error: null,
     ReservationID,
+    isResendOTP: false,
   })
 }
 
@@ -78,24 +84,26 @@ export async function resendOTP(req, res, next) {
   const { ReservationID } = req.query
 
   if (!ReservationID) {
-    return res.redirect("/bookings-history")
+    const encodedMessage = encodeURIComponent("ReservationID không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   if (!user || !user.email) {
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    const encodedMessage = encodeURIComponent("User không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   const { email } = user
 
   // Tạo OTP mới
-  const otp = genOTP()
+  const otp = genOTP(ReservationID)
 
   // Cập nhật OTP trong session
   req.session.user.otp = otp
-  req.session.user.otpExpiry = Date.now() + 5 * 60 * 1000
+  req.session.user.otpExpiry = getOTPExpiry()
 
   // Trong thực tế, bạn sẽ gửi OTP qua email
-  await sendOTPEmail(email, otp)
+  await sendOTPEmail(email, ReservationID)
 
   // Chuyển hướng về trang nhập OTP
   res.render("update-bookings/otp-form/otp-form-page", {
@@ -103,6 +111,7 @@ export async function resendOTP(req, res, next) {
     email: email,
     error: null,
     ReservationID,
+    isResendOTP: true,
   })
 }
 
@@ -122,11 +131,13 @@ export function verifyOTP(req, res, next) {
   })
 
   if (!ReservationID) {
-    return res.redirect("/bookings-history")
+    const encodedMessage = encodeURIComponent("ReservationID không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   if (!user || !user.otp) {
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    const encodedMessage = encodeURIComponent("User không tồn tại")
+    return res.redirect(`/bookings-history?message=${encodedMessage}`)
   }
 
   if (!otp) {
@@ -135,27 +146,31 @@ export function verifyOTP(req, res, next) {
       email: user.email,
       error: "OTP không được để trống",
       ReservationID,
+      isResendOTP: false,
     })
   }
 
   // Kiểm tra OTP có đúng không
-  if (otp !== req.session.user.otp) {
+  if (otp !== user.otp) {
     return res.render("update-bookings/otp-form/otp-form-page", {
       isAdmin: admin || false,
       email: user.email,
       error: "OTP không chính xác, vui lòng thử lại",
       ReservationID,
+      isResendOTP: false,
     })
   }
 
   // Kiểm tra OTP có hết hạn không
-  if (Date.now() > req.session.user.otpExpiry) {
+  if (Date.now() > user.otpExpiry) {
     // Xóa session cũ
     delete req.session.user
-    return res.render("update-bookings/email-form/email-form-page", {
+    return res.render("update-bookings/otp-form/otp-form-page", {
       isAdmin: admin || false,
+      email: user.email,
       error: "OTP đã hết hạn, vui lòng thử lại",
       ReservationID,
+      isResendOTP: false,
     })
   }
 

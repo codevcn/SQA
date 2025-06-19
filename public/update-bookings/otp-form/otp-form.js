@@ -9,16 +9,20 @@
 //   }
 // }
 
-// const init = () => {
-//   console.log('>>> run this')
-//   toastError()
-// }
-// init()
+const init = () => {
+  // const params = new URLSearchParams(window.location.search)
+  // const ReservationID = params.get("ReservationID")
+  // const otpFormEle = document.getElementById("otp-form")
+  // otpFormEle.action = "/update-bookings/verify-otp?ReservationID=" + ReservationID
+  // console.log('>>> run this')
+  // toastError()
 
-// const init = () => {
-//   const params = new URLSearchParams(window.location.search)
-//   const ReservationID = params.get("ReservationID")
-//   const otpFormEle = document.getElementById("otp-form")
-//   otpFormEle.action = "/update-bookings/verify-otp?ReservationID=" + ReservationID
-// }
-// init()
+  // const isResendOTP = document.getElementById("app-is-resend-otp")
+  // if (isResendOTP) {
+  //   const isResendOTP = isResendOTP.dataset.isResendOTP
+  //   if (isResendOTP && isResendOTP === "true") {
+  //     toaster.success("Gửi lại mã OTP thành công")
+  //   }
+  // }
+}
+init()
