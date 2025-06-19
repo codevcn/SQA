@@ -131,12 +131,6 @@
             <i class="bi bi-check-circle"></i>
             <span>Hoàn thành đơn</span>
           </button>
-          <button type="button" class="action-btn" id="reject-booking-btn"
-            data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
-            onclick="showConfirmRejectBookingModal(event)">
-            <i class="bi bi-x-lg"></i>
-            <span>Từ chối đơn</span>
-          </button>
           <button type="button" class="action-btn" id="cancel-booking-btn"
             data-kb-booking-data="<%= JSON.stringify({ReservationID,Cus_FullName,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,reject_reason}) %>"
             onclick="showConfirmCancelBookingModal(event)">
