@@ -8,7 +8,7 @@ async function getBookingDetails(driver) {
   let bookings = []
 
   // Tìm tất cả các thẻ "booking-card"
-  let bookingCards = await driver.findElements(By.className("booking-card"))
+  let bookingCards = await driver.findElements(By.className("booking-card"), 20000)
 
   for (let card of bookingCards) {
     let bookingData = {}

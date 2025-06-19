@@ -11,7 +11,38 @@ console.log(`Testing on: ${DOMAIN}`);
 
 const { convertDateFormat, addMinutesToDate, getRelativeTimeFormatted, getTomorrowDateFormatted, getMessageFromToast, clickButton, clickOkToast, getRelativeDateFormatted } = require("./utils/helper")
 const { login, logout, placeOrder, getBookingDetails } = require("./utils/func")
+async function getBookingDetailsNew(driver) {
+    let bookings = [];
+    // Tìm tất cả các thẻ "booking-card"
+    let bookingCards = await driver.findElements(By.className('booking-card'));
 
+    for (let card of bookingCards) {
+        let bookingData = {};
+
+        // Lấy thông tin từ phần card-info
+        bookingData.fullName = await card.findElement(By.xpath(".//p[strong[text()='Họ tên:']]")).getText();
+        bookingData.phone = await card.findElement(By.xpath(".//p[strong[text()='Số điện thoại:']]")).getText();
+        bookingData.arrivalTime = await card.findElement(By.xpath(".//p[strong[text()='Thời gian đến:']]")).getText();
+        bookingData.adultsChildren = await card.findElement(By.xpath(".//p[strong[text()='Người lớn:']]")).getText();
+        bookingData.note = await card.findElement(By.xpath(".//p[strong[text()='Ghi chú:']]")).getText();
+        bookingData.createdAt = await card.findElement(By.xpath(".//p[strong[text()='Ngày tạo đơn:']]")).getText();
+
+        // Lấy trạng thái đơn (Đã từ chối, Chưa xử lý, ...)
+        let statusElements = await card.findElements(By.xpath(".//div[contains(@class, 'status')]"));
+        bookingData.status = statusElements.length > 0 ? await statusElements[0].getText() : "Không có trạng thái";
+        // Lấy 2 nút "Từ chối đơn" & "Duyệt đơn" (nếu có)
+        let rejectButton = await card.findElements(By.id("reject-booking-btn"));
+        let approveButton = await card.findElements(By.id("complete-booking-btn"));
+
+        bookingData.rejectButton = rejectButton.length > 0 ? rejectButton[0] : null;
+        bookingData.approveButton = approveButton.length > 0 ? approveButton[0] : null;
+
+        // Thêm vào danh sách bookings
+        bookings.push(bookingData);
+    }
+
+    return bookings;
+}
 describe('Các testcase cho chức năng đặt đơn đặt chỗ', function () {
     this.timeout(15000)
     let driver;
@@ -363,7 +394,7 @@ describe('Các testcase cho chức năng đặt đơn đặt chỗ', function ()
         await driver.get(`${DOMAIN}/bookings-history/?Cus_Phone=${encodedPhone}&Cus_FullName=${encodedName}`);
 
         // Lấy danh sách booking-card và kiểm tra thông tin
-        const bookings = await getBookingDetails(driver);
+        const bookings = await getBookingDetailsNew(driver);
         // Kiểm tra có ít nhất 1 booking đúng thông tin
         const found = bookings.some(b =>
             b.fullName.includes(fullName) &&

@@ -228,6 +228,20 @@ describe('API Tests - Chức năng đặt bàn', function() {
             }
         });
 
+        // TC14: C4 – Ngày giờ - "" - Rỗng
+        it('TC14: Giờ đặt rỗng', async function() {
+            const data = getValidReservationData();
+            data.ArrivalTime = '';
+            
+            try {
+                await axios.post(`${BASE_URL}/reserve`, data);
+                expect.fail('Expected request to fail');
+            } catch (error) {
+                expect(error.response.status).to.equal(400);
+                expect(error.response.data.message).to.include('Thiếu thông tin: Thời gian đặt bàn');
+            }
+        });
+
         // TC15: C7 – Số lượng người lớn - 0 - Bằng 0
         it('TC15: Số người lớn bằng 0', async function() {
             const data = getValidReservationData();
