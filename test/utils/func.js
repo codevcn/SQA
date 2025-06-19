@@ -165,10 +165,43 @@ async function placeOrder(driver, data) {
   }
 }
 
-async function placeOrderOnStaticForm(driver, data) {
-  console.log(">>> data at placeOrderOnStaticForm:", data)
+async function waitForFlatpickrReady(driver, selector, timeout = 15000) {
+  await driver.wait(async () => {
+    return await driver.executeScript(
+      `
+      const el = document.querySelector(arguments[0]);
+      return el && el._flatpickr != null;
+    `,
+      selector
+    )
+  }, timeout)
+}
+
+async function placeOrderOnStaticForm(driver, data, missingFields = []) {
+  // console.log(">>> data at placeOrderOnStaticForm:", data)
   try {
-    // Đợi các input xuất hiện
+    await waitForFlatpickrReady(driver, "#date-input", 3000)
+    await waitForFlatpickrReady(driver, "#time-input", 3000)
+
+    // Set ngày/giờ nếu có
+    if (!missingFields.includes("date") && data.date) {
+      await driver.executeScript(
+        `if (document.getElementById("date-input")._flatpickr) {
+						document.getElementById("date-input")._flatpickr.setDate(arguments[0], true, "d/m/Y");
+					}`,
+        data.date
+      )
+    }
+    if (!missingFields.includes("time") && data.time) {
+      await driver.executeScript(
+        `if (document.getElementById("time-input")._flatpickr) {
+		         document.getElementById("time-input")._flatpickr.setDate(arguments[0], true, "H:i");
+	        }`,
+        data.time
+      )
+    }
+
+    // Sau khi set xong Flatpickr, tìm lại các element input còn lại:
     // const dateInput = await driver.wait(until.elementLocated(By.id("date-input")), 5000)
     // const timeInput = await driver.wait(until.elementLocated(By.id("time-inp")), 5000)
     const adultsInput = await driver.wait(until.elementLocated(By.id("adults-count-input")), 5000)
@@ -178,32 +211,34 @@ async function placeOrderOnStaticForm(driver, data) {
     )
     const noteInput = await driver.wait(until.elementLocated(By.id("note-input")), 5000)
 
-    // Set ngày/giờ nếu có
-    if (data.date) {
-      await driver.executeScript(
-        `if (document.querySelector("#date-input")._flatpickr) {
-						document.querySelector("#date-input")._flatpickr.setDate(arguments[0], true);
-					}`,
-        data.date
-      )
-    }
-    if (data.time) {
-      await driver.executeScript(
-        `if (document.querySelector("#time-inp")._flatpickr) {
-		         document.querySelector("#time-inp")._flatpickr.setDate(arguments[0], true);
-	        }`,
-        data.time
-      )
+    if (!missingFields.includes("adults") && data.adults) {
+      await adultsInput.clear()
+      await adultsInput.sendKeys(data.adults)
     }
 
-    await adultsInput.clear()
-    if (data.adults) await adultsInput.sendKeys(data.adults)
+    if (!missingFields.includes("children") && data.children !== undefined) {
+      await childrenInput.clear()
+      await childrenInput.sendKeys(data.children)
+    }
 
-    await childrenInput.clear()
-    if (data.children !== undefined) await childrenInput.sendKeys(data.children)
+    if (!missingFields.includes("note") && data.note) {
+      await noteInput.clear()
+      await noteInput.sendKeys(data.note)
+    }
 
-    await noteInput.clear()
-    if (data.note) await noteInput.sendKeys(data.note)
+    if (missingFields.includes("date")) {
+      await driver.executeScript(`
+        document.querySelector("#date-input")._flatpickr.clear();
+      `)
+    }
+    if (missingFields.includes("time")) {
+      await driver.executeScript(`
+        document.querySelector("#time-input")._flatpickr.clear();
+      `)
+    }
+    if (missingFields.includes("adults")) await adultsInput.clear()
+    if (missingFields.includes("children")) await childrenInput.clear()
+    if (missingFields.includes("note")) await noteInput.clear()
 
     const submitButton = await driver.wait(
       until.elementLocated(By.css("#booking-form button[type='submit']")),
