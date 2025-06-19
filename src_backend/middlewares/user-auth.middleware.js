@@ -19,7 +19,7 @@ export function authenticateUser(req, res, next) {
   // Kiểm tra xem user đã có session chưa
   if (!user || !user.email) {
     // Chưa có session - hiển thị form nhập email
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    return res.redirect("/bookings-history")
   }
 
   // Có session nhưng chưa xác thực OTP
@@ -27,7 +27,7 @@ export function authenticateUser(req, res, next) {
     if (Date.now() > req.session.user.otpExpiry) {
       // OTP hết hạn - xóa session và chuyển hướng đến form nhập email
       delete req.session.user
-      return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+      return res.redirect("/bookings-history")
     }
     // Hiển thị form nhập OTP
     return res.redirect("/update-bookings/verify-otp?ReservationID=" + ReservationID)
@@ -47,7 +47,7 @@ export async function sendOTP(req, res, next) {
   }
 
   if (!email) {
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    return res.redirect("/bookings-history")
   }
 
   // Tạo OTP ngẫu nhiên 6 số
@@ -82,7 +82,7 @@ export async function resendOTP(req, res, next) {
   }
 
   if (!user || !user.email) {
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    return res.redirect("/bookings-history")
   }
 
   const { email } = user
@@ -126,7 +126,7 @@ export function verifyOTP(req, res, next) {
   }
 
   if (!user || !user.otp) {
-    return res.redirect("/update-bookings/email-form?ReservationID=" + ReservationID)
+    return res.redirect("/bookings-history")
   }
 
   if (!otp) {
@@ -152,7 +152,7 @@ export function verifyOTP(req, res, next) {
   if (Date.now() > req.session.user.otpExpiry) {
     // Xóa session cũ
     delete req.session.user
-    return res.render("update-bookings/email-form/email-form-page", {
+    return res.render("bookings-history/bookings-history-page", {
       isAdmin: admin || false,
       error: "OTP đã hết hạn, vui lòng thử lại",
       ReservationID,

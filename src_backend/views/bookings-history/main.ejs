@@ -14,7 +14,7 @@
     <% if (bookings && bookings.length > 0) { %>
     <div class="booking-list">
       <% bookings.forEach(({ReservationID,Cus_FullName,Cus_Email,Cus_Phone,ArrivalTime,NumAdults,NumChildren,Note,Status,CreatedAt,TablesList,Reason}) => { %>
-      <div class="booking-card">
+      <form class="booking-card" action="/update-bookings/send-otp?ReservationID=<%= ReservationID %>" method="post">
         <div class="card-title">
           <h5>Đơn #<%= ReservationID %></h5>
           <% if (Status === 'Pending') { %>
@@ -57,7 +57,8 @@
         <!-- Nút cập nhật đơn đặt bàn -->
         <% if (Status !== 'Completed' && Status !== 'Cancelled') { %>
         <div class="card-actions mt-2">
-          <button class="update-booking-btn" data-booking-id="<%= ReservationID %>" data-booking-data="<%= JSON.stringify({
+          <input name="email" value="<%= Cus_Email %>" style="display: none;">
+          <button type="submit" class="update-booking-btn" data-booking-id="<%= ReservationID %>" data-booking-data="<%= JSON.stringify({
               ReservationID: ReservationID,
               Cus_FullName: Cus_FullName,
               Cus_Email: Cus_Email,
@@ -73,7 +74,7 @@
           </button>
         </div>
         <% } %>
-      </div>
+      </form>
       <% }) %>
     </div>
     <% } else { %>

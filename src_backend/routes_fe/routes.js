@@ -66,7 +66,7 @@ router.get("/update-bookings/verify-otp", (req, res) => {
     return res.redirect("/bookings-history")
   }
   if (!req.session.user || !req.session.user.otp) {
-    return res.redirect("/update-bookings/email-form")
+    return res.redirect("/bookings-history")
   }
   res.render("update-bookings/otp-form/otp-form-page", {
     isAdmin: req.session.admin || false,

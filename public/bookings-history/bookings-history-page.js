@@ -63,14 +63,27 @@ const handleUpdateBooking = (e) => {
    window.location.href = `/update-bookings?ReservationID=${bookingId}`
 }
 
+const autoFillForm = () => {
+   const { Cus_FullName, Cus_Phone } = getQueryParams();
+   if (Cus_FullName && Cus_Phone) {
+      document.getElementById("name-input").value = decodeURIComponent(Cus_FullName);
+      document.getElementById("phone-input").value = decodeURIComponent(Cus_Phone);
+   } else {
+      document.getElementById("name-input").value = "Nguyễn Văn A";
+      document.getElementById("phone-input").value = "0909090909";
+   }
+}
+
 const init = () => {
    searchFormEle.addEventListener("submit", searchBookings)
    
    // Thêm event listener cho các nút cập nhật
-   const updateButtons = document.querySelectorAll('.update-booking-btn')
-   for (const button of updateButtons) {
-      button.addEventListener('click', handleUpdateBooking)
-   }
+   // const updateButtons = document.querySelectorAll('.update-booking-btn')
+   // for (const button of updateButtons) {
+   //    button.addEventListener('click', handleUpdateBooking)
+   // }
+
+   autoFillForm()
 }
 init()
 function getQueryParams() {

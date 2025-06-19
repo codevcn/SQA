@@ -216,20 +216,20 @@ const confirmBooking = () => {
 }
 
 const autoFillForm = () => {
-  // const staticData = {
-  //   "full-name": "Nguyễn Văn A",
-  //   email: "hanmunmun000@gmail.com",
-  //   phone: "0909090909",
-  //   date: "17/06/2025",
-  //   time: "18:00",
-  //   "adults-count": 2,
-  //   "children-count": 1,
-  //   note: Math.random() > 0.5 ? "Có bánh sinh nhật" : "",
-  // }
-  // const formFields = bookingFormEle.elements
-  // for (const field of formFields) {
-  //   field.value = staticData[field.name]
-  // }
+  const staticData = {
+    "full-name": "Nguyễn Văn A",
+    email: "hanmunmun000@gmail.com",
+    phone: "0909090909",
+    date: "17/06/2025",
+    time: "18:00",
+    "adults-count": 2,
+    "children-count": 1,
+    note: Math.random() > 0.5 ? "Có bánh sinh nhật" : "",
+  }
+  const formFields = bookingFormEle.elements
+  for (const field of formFields) {
+    field.value = staticData[field.name]
+  }
 }
 
 const init = () => {
