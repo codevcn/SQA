@@ -15,6 +15,9 @@ import {
   resendOTP,
   authenticateUser,
 } from "../middlewares/user-auth.middleware.js"
+import { otpMap } from "../utils/maps.js"
+
+console.log(">>> node_env:", process.env.NODE_ENV)
 
 const router = express.Router()
 
@@ -26,15 +29,6 @@ router.get("/admin/login", getAdminLoginPage)
 router.get("/admin/all-bookings", getAdminAllBookingsPage)
 router.get("/admin/working-hours", getWorkingHoursManagementPage)
 router.post("/update-bookings/update", authenticateUser, updateBookings)
-
-// for testing
-router.get("/bookings-history/test", (req, res) => {
-  res.render("bookings-history/bookings-history-page", {
-    isAdmin: req.session.admin || false,
-    bookings: [],
-    user: { email: "hanmunmun000@gmail.com" },
-  })
-})
 
 // User authentication routes
 router.get("/update-bookings/email-form", (req, res) => {
@@ -80,5 +74,28 @@ router.post("/update-bookings/send-otp", sendOTP)
 router.get("/update-bookings/resend-otp", resendOTP)
 router.post("/update-bookings/verify-otp", verifyOTP)
 router.get("/update-bookings/logout", logoutUser)
+
+if (process.env.NODE_ENV === "development") {
+  router.get("/api/get-otp", (req, res) => {
+    const { ReservationID } = req.query
+    if (!ReservationID) {
+      return res.status(400).json({ error: "ReservationID is required" })
+    }
+    // console.log("\n>>> start printing otpMap")
+    // for (const [key, value] of otpMap) {
+    //   console.log(`${key} => ${value}`)
+    // }
+    // console.log(">>> end printing otpMap\n")
+    const otp = otpMap.get(ReservationID)
+    res.status(200).json({ otp })
+  })
+  router.get("/bookings-history/test", (req, res) => {
+    res.render("bookings-history/bookings-history-page", {
+      isAdmin: req.session.admin || false,
+      bookings: [],
+      user: { email: "hanmunmun000@gmail.com" },
+    })
+  })
+}
 
 export default router

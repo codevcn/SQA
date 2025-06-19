@@ -3,6 +3,7 @@ import session from "express-session"
 import dotenv from "dotenv"
 import path from "path"
 import { fileURLToPath } from "url"
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -58,7 +59,7 @@ app.get("/reset-database", async (req, res) => {
     // Xóa toàn bộ dữ liệu trong database
     await sequelize.sync({ force: true }) // Dùng `force: true` để xóa toàn bộ bảng và tạo lại
     console.log("Database reset thành công!")
-    
+
     // Thêm admin mẫu
     const hashedPassword = crypto.createHash("md5").update("123456").digest("hex")
     await Admin.create({
@@ -80,24 +81,24 @@ app.get("/reset-database", async (req, res) => {
     const sampleClosedDates = [
       {
         closed_date: `${currentYear}-01-01`,
-        reason: "Năm mới"
+        reason: "Năm mới",
       },
       {
         closed_date: `${currentYear}-04-30`,
-        reason: "Giải phóng miền Nam"
+        reason: "Giải phóng miền Nam",
       },
       {
         closed_date: `${currentYear}-05-01`,
-        reason: "Quốc tế Lao động"
+        reason: "Quốc tế Lao động",
       },
       {
         closed_date: `${currentYear}-09-02`,
-        reason: "Quốc khánh"
+        reason: "Quốc khánh",
       },
       {
         closed_date: `${nextYear}-01-01`,
-        reason: "Năm mới"
-      }
+        reason: "Năm mới",
+      },
     ]
 
     for (const closedDate of sampleClosedDates) {
@@ -122,7 +123,7 @@ app.use("/api/reservations", reservationRoutes)
 app.use("/api/working-hours", workingHoursRoutes)
 
 app.use((err, req, res, next) => {
-  console.error('>>> catch uncaught error:', err)
+  console.error(">>> catch uncaught error:", err)
   res.status(500).json({ message: "Internal Server Error" })
 })
 

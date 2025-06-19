@@ -220,7 +220,7 @@ const autoFillForm = () => {
     "full-name": "Nguyễn Văn A",
     email: "hanmunmun000@gmail.com",
     phone: "0909090909",
-    date: "17/06/2025",
+    date: "29/06/2025",
     time: "18:00",
     "adults-count": 2,
     "children-count": 1,

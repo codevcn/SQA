@@ -1,6 +1,6 @@
 <main id="main-section" data-reservation="<%= JSON.stringify(reservation) %>">
   <section class="title-section flex align-items-center justify-content-between">
-    <h3>Cập nhật thông tin đặt bàn</h3>
+    <h3 id="update-bookings-page-title">Cập nhật thông tin đặt bàn</h3>
     <% if (typeof isAdmin === 'undefined' && !isAdmin && typeof user !== 'undefined' && user) { %>
     <div class="flex align-items-center user-info gap-2">
       <div class="flex align-items-center user-details">
