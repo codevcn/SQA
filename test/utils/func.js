@@ -13,39 +13,37 @@ async function getBookingDetails(driver) {
   for (let card of bookingCards) {
     let bookingData = {}
 
-    // Lấy thông tin từ phần card-info
-    bookingData.fullName = await card
-      .findElement(By.xpath(".//p[strong[text()='Họ tên:']]"))
-      .getText()
-    bookingData.phone = await card
-      .findElement(By.xpath(".//p[strong[text()='Số điện thoại:']]"))
-      .getText()
-    bookingData.arrivalTime = await card
-      .findElement(By.xpath(".//p[strong[text()='Thời gian đến:']]"))
-      .getText()
-    bookingData.adultsChildren = await card
-      .findElement(By.xpath(".//p[strong[text()='Người lớn:']]"))
-      .getText()
-    bookingData.note = await card.findElement(By.xpath(".//p[strong[text()='Ghi chú:']]")).getText()
-    bookingData.createdAt = await card
-      .findElement(By.xpath(".//p[strong[text()='Ngày tạo đơn:']]"))
-      .getText()
-
     // Lấy trạng thái đơn (Đã từ chối, Chưa xử lý, ...)
     let statusElements = await card.findElements(By.xpath(".//div[contains(@class, 'status')]"))
     bookingData.status =
       statusElements.length > 0 ? await statusElements[0].getText() : "Không có trạng thái"
     // Lấy 2 nút "Từ chối đơn" & "Duyệt đơn" (nếu có)
-    let rejectButton = await card.findElements(By.id("reject-booking-btn"))
-    let approveButton = await card.findElements(By.id("complete-booking-btn"))
+    bookingData.rejectButton = null
+    bookingData.approveButton = null
+    bookingData.cancelButton = null
+    bookingData.completeBookingButton = null
 
-    bookingData.rejectButton = rejectButton.length > 0 ? rejectButton[0] : null
-    bookingData.approveButton = approveButton.length > 0 ? approveButton[0] : null
+    try {
+      let btn = await card.findElement(By.id("reject-booking-btn"))
+      bookingData.rejectButton = btn
+    } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("approve-booking-btn"))
+      bookingData.approveButton = btn
+    } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("cancel-booking-btn"))
+      bookingData.cancelButton = btn
+    } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("complete-booking-btn"))
+      bookingData.completeBookingButton = btn
+    } catch (e) {}
 
-    // Thêm vào danh sách bookings
     bookings.push(bookingData)
   }
-
+  // Thêm vào danh sách bookings
+  bookings.push(bookingData)
   return bookings
 }
 async function login(driver, username, password) {
@@ -165,10 +163,123 @@ async function placeOrder(driver, data) {
   }
 }
 
-async function placeOrderOnStaticForm(driver, data) {
+/**
+ * Lọc đơn đặt bàn theo các tiêu chí
+ * @param {WebDriver} driver - Đối tượng WebDriver của Selenium
+ * @param {Object} filters - Các tiêu chí lọc
+ * @returns {Promise<Array>} - Mảng chứa các đơn đặt bàn sau khi lọc
+ */
+async function filterBookings(driver, filters) {
+  try {
+    // Chọn trạng thái đơn nếu có
+    if (filters.status) {
+      // Click dropdown
+      const statusDropdown = await driver.findElement(By.css("#booking-status-select > button"))
+      await statusDropdown.click()
+      await driver.sleep(200) // Đợi dropdown mở
+
+      // Chọn item theo text tiếng Việt
+      let statusText = ""
+      switch (filters.status) {
+        case "Chưa được xử lý":
+          statusText = "Chưa được xử lý"
+          break
+        case "Đã duyệt":
+          statusText = "Đã duyệt"
+          break
+        case "Đã từ chối":
+          statusText = "Đã từ chối"
+          break
+        case "Tất cả":
+          statusText = "Tất cả"
+          break
+        default:
+          statusText = filters.status
+      }
+      const statusOption = await driver.findElement(
+        By.xpath(`//div[contains(@class, 'dropdown-item') and text()='${statusText}']`)
+      )
+      await statusOption.click()
+      await driver.sleep(200)
+    }
+
+    // Nhập số điện thoại nếu có
+    if (filters.phone) {
+      const phoneInput = await driver.findElement(By.css('input[name="phonenumber"]'))
+      await phoneInput.clear()
+      await phoneInput.sendKeys(filters.phone)
+    }
+
+    // Nhập ngày nếu có
+    if (filters.date) {
+      const dateInput = await driver.findElement(By.css('input[name="date"]'))
+      await dateInput.clear()
+      const [dd, mm, yyyy] = filters.date.split("/")
+      const formattedDate = `${mm}/${dd}/${yyyy}`
+      await dateInput.sendKeys(formattedDate)
+    }
+
+    // Nhập số giờ đến hạn nếu có
+    if (filters.expires_in_hours) {
+      const hourInput = await driver.findElement(By.css('input[name="expires_in_hours"]'))
+      await hourInput.clear()
+      await hourInput.sendKeys(filters.expires_in_hours)
+    }
+
+    // Click nút áp dụng bộ lọc (bạn cần xác nhận lại selector, ví dụ id='apply-filter-btn')
+    const applyFilterBtn = await driver.findElement(
+      By.xpath('//*[@id="filter-bookings-form"]/div[2]/button')
+    )
+    await applyFilterBtn.click()
+
+    // Đợi loading
+    await driver.sleep(1000)
+
+    // Lấy kết quả sau khi lọc
+    return await getBookingDetails(driver)
+  } catch (error) {
+    console.error("Error in filterBookings:", error)
+    throw error
+  }
+}
+
+async function waitForFlatpickrReady(driver, selector, timeout = 15000) {
+  await driver.wait(async () => {
+    return await driver.executeScript(
+      `
+      const el = document.querySelector(arguments[0]);
+      return el && el._flatpickr != null;
+    `,
+      selector
+    )
+  }, timeout)
+}
+
+async function placeOrderOnStaticForm(driver, data, missingFields = []) {
   console.log(">>> data at placeOrderOnStaticForm:", data)
   try {
-    // Đợi các input xuất hiện
+    await waitForFlatpickrReady(driver, "#date-input", 3000)
+    await waitForFlatpickrReady(driver, "#time-input", 3000)
+
+    // Set ngày/giờ nếu có
+    if (!missingFields.includes("date") && data.date) {
+      await driver.executeScript(
+        `if (document.getElementById("date-input")._flatpickr) {
+						document.getElementById("date-input")._flatpickr.setDate(arguments[0], true, "d/m/Y");
+					}`,
+        data.date
+      )
+    }
+    if (!missingFields.includes("time") && data.time) {
+      await driver.executeScript(
+        `if (document.getElementById("time-input")._flatpickr) {
+		         document.getElementById("time-input")._flatpickr.setDate(arguments[0], true, "H:i");
+	        }`,
+        data.time
+      )
+    }
+
+    // Sau khi set xong Flatpickr, tìm lại các element input còn lại:
     // const dateInput = await driver.wait(until.elementLocated(By.id("date-input")), 5000)
     // const timeInput = await driver.wait(until.elementLocated(By.id("time-inp")), 5000)
     const adultsInput = await driver.wait(until.elementLocated(By.id("adults-count-input")), 5000)
@@ -178,32 +289,34 @@ async function placeOrderOnStaticForm(driver, data) {
     )
     const noteInput = await driver.wait(until.elementLocated(By.id("note-input")), 5000)
 
-    // Set ngày/giờ nếu có
-    if (data.date) {
-      await driver.executeScript(
-        `if (document.querySelector("#date-input")._flatpickr) {
-						document.querySelector("#date-input")._flatpickr.setDate(arguments[0], true);
-					}`,
-        data.date
-      )
-    }
-    if (data.time) {
-      await driver.executeScript(
-        `if (document.querySelector("#time-inp")._flatpickr) {
-		         document.querySelector("#time-inp")._flatpickr.setDate(arguments[0], true);
-	        }`,
-        data.time
-      )
+    if (!missingFields.includes("adults") && data.adults) {
+      await adultsInput.clear()
+      await adultsInput.sendKeys(data.adults)
     }
 
-    await adultsInput.clear()
-    if (data.adults) await adultsInput.sendKeys(data.adults)
+    if (!missingFields.includes("children") && data.children !== undefined) {
+      await childrenInput.clear()
+      await childrenInput.sendKeys(data.children)
+    }
 
-    await childrenInput.clear()
-    if (data.children !== undefined) await childrenInput.sendKeys(data.children)
+    if (!missingFields.includes("note") && data.note) {
+      await noteInput.clear()
+      await noteInput.sendKeys(data.note)
+    }
 
-    await noteInput.clear()
-    if (data.note) await noteInput.sendKeys(data.note)
+    if (missingFields.includes("date")) {
+      await driver.executeScript(`
+        document.querySelector("#date-input")._flatpickr.clear();
+      `)
+    }
+    if (missingFields.includes("time")) {
+      await driver.executeScript(`
+        document.querySelector("#time-input")._flatpickr.clear();
+      `)
+    }
+    if (missingFields.includes("adults")) await adultsInput.clear()
+    if (missingFields.includes("children")) await childrenInput.clear()
+    if (missingFields.includes("note")) await noteInput.clear()
 
     const submitButton = await driver.wait(
       until.elementLocated(By.css("#booking-form button[type='submit']")),
@@ -223,4 +336,5 @@ module.exports = {
   getBookingDetails,
   placeOrder,
   placeOrderOnStaticForm,
+  filterBookings,
 }

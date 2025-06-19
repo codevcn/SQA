@@ -91,7 +91,9 @@ export const getWorkingHoursManagementPage = async (req, res, next) => {
   }
 
   try {
-    const { getWorkingHours, getAllClosedDates } = await import("../services/working-hours.service.js")
+    const { getWorkingHours, getAllClosedDates } = await import(
+      "../services/working-hours.service.js"
+    )
     const workingHours = await getWorkingHours()
     const closedDates = await getAllClosedDates()
 
@@ -119,10 +121,11 @@ export const getUpdateBookingsPage = async (req, res, next) => {
 
   const { user, admin } = req.session
   const reservation = await getReservationById(ReservationID)
-  console.log(">>> req credentials:", { user, admin })
+  const dataInJson = reservation.toJSON()
+  console.log(">>> get update bookings page:", { user, admin, dataInJson })
 
   res.render("update-bookings/update-bookings-page", {
-    reservation: reservation,
+    reservation: dataInJson,
     isAdmin: admin,
     user: user,
     appMessage: "",

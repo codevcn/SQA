@@ -14,10 +14,12 @@ const {
   addMinutesToDate,
   getRelativeTimeFormatted,
   getTomorrowDateFormatted,
-  getMessageFromToast,
   clickButton,
   clickOkToast,
   getRelativeDateFormatted,
+  extractContentFromToast,
+  extractErrorMessageFromInput,
+  getMessageFromToast,
 } = require("./utils/helper")
 const { login, logout, placeOrderOnStaticForm } = require("./utils/func")
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -26,42 +28,37 @@ const TEST_CASE_TIMEOUT = 1000000
 
 const dataOnTestingFlow = {
   GENERAL: {
-    bookingData: {
+    bookingData: (isPhoneEmpty, isFullNameEmpty) => ({
       Cus_Email: "hanmunmun000@gmail.com",
-      Cus_FullName: "Nguyễn Văn A",
-      Cus_Phone: "0909090909",
+      Cus_FullName: isFullNameEmpty ? "" : "Nguyễn Văn A",
+      Cus_Phone: isPhoneEmpty ? "" : "0909090909",
       ArrivalTime: "28/06/2025 18:00",
       NumAdults: 2,
-      NumChildren: 0,
-      Note: "Bàn gần cửa sổ",
-    },
+    }),
   },
-  PLACE_ORDER: (date, time) => ({
+  PLACE_ORDER: (date, time, adultsCount, childrenCount) => ({
     fullName: "Nguyễn Văn A",
     phone: "0987654321",
     email: "nguyenvana@gmail.com",
     date: date,
     time: time,
-    adults: "2",
-    children: "0",
+    adults: adultsCount || "2",
+    children: childrenCount || "0",
     note: "Bàn gần cửa sổ",
   }),
 }
 
 const obfuscateTextContent = (data) => {
   return {
+    ...data,
     Cus_FullName: data.Cus_FullName.split("").reverse().join(""),
-    Cus_Phone: data.Cus_Phone.split("").sort().join(""),
-    Cus_Email:
-      data.Cus_Email.split("@")[0].split("").reverse().join("") +
-      "@" +
-      data.Cus_Email.split("@")[1],
   }
 }
 
 describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", function () {
   this.timeout(TEST_CASE_TIMEOUT)
   let driver
+  let savedData = {}
 
   before(async function () {
     let options = new chrome.Options()
@@ -95,6 +92,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
     driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build()
     await driver.manage().setTimeouts({ implicit: 5000 })
+    await driver.get(`${DOMAIN}/`)
   })
 
   after(async function () {
@@ -105,8 +103,19 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
   beforeEach(async function () {
     await axios.get("http://localhost:3000/reset-database")
-    await driver.get(`${DOMAIN}/`)
   })
+
+  async function waitForSoLong() {
+    await delay(500000)
+  }
+
+  async function waitForLooking() {
+    await delay(3000)
+  }
+
+  async function waitForCloseToast() {
+    await delay(3000)
+  }
 
   async function seedTestReservationData(type) {
     switch (type) {
@@ -116,7 +125,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
          */
         const { data } = await axios.post(
           `${DOMAIN}/api/reservations/reserve`,
-          dataOnTestingFlow["GENERAL"].bookingData
+          dataOnTestingFlow["GENERAL"].bookingData()
         )
         return data.reservation
     }
@@ -154,33 +163,6 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await bookingCard.findElement(By.css(".update-booking-btn")).click()
   }
 
-  async function updateReservationData(data) {
-    // Cập nhật các trường trong form
-    if (data.date) {
-      const dateInput = await driver.findElement(By.id("date-input"))
-      await dateInput.clear()
-      await dateInput.sendKeys(data.date)
-    }
-
-    if (data.time) {
-      const timeInput = await driver.findElement(By.id("time-input"))
-      await timeInput.clear()
-      await timeInput.sendKeys(data.time)
-    }
-
-    if (data.adults !== undefined) {
-      const adultsInput = await driver.findElement(By.id("adults-count-input"))
-      await adultsInput.clear()
-      if (data.adults !== "") {
-        await adultsInput.sendKeys(data.adults)
-      }
-    }
-
-    // Submit form
-    const submitBtn = await driver.findElement(By.css('button[type="submit"]'))
-    await submitBtn.click()
-  }
-
   async function isBookingsHistoryRoute(phone, fullName) {
     const fullNameEncoded = encodeURIComponent(fullName)
     const phoneEncoded = encodeURIComponent(phone)
@@ -216,77 +198,87 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     }, 1000)
   }
 
-  async function placeBookingAtPastTime() {
-    const tomorrow = dayjs().add(0, "day")
-    const shortTime = tomorrow.hour(12).minute(30) // 12:30 ngày mai
-    const date = shortTime.format("DD/MM/YYYY")
-    const time = shortTime.format("HH:mm")
+  async function navToUpdateBookingPage(reservationId) {
+    await driver.get(`${DOMAIN}/bookings-history`)
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
+    await autoSubmitSearchForm(data)
 
-    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
-    const message = await getMessageFromToast(driver)
-    expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
+    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
+
+    await clickUpdateBookingButton()
+
+    await isSendOTPRoute(reservationId)
+
+    const {
+      data: { otp },
+    } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${reservationId}`)
+    await submitOTP(otp)
+
+    await isUrl(`${DOMAIN}/update-bookings/?ReservationID=${reservationId}`)
+    const pageTitle = await driver.wait(
+      until.elementLocated(By.id("update-bookings-page-title")),
+      5000
+    )
+    expect(await pageTitle.getText()).to.equal("Cập nhật thông tin đặt bàn")
   }
 
-  // TC 0.1: Bỏ trống trường phone
-  /*
-  it("TC 0.1: Bỏ trống trường phone", async function () {
-    await seedTestReservationData("GENERAL")
-
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
-
-    const errorMessage = await driver.wait(
-      until.elementLocated(By.id("swal2-html-container")),
+  async function closeToast() {
+    const swalOkBtn = await driver.wait(
+      until.elementLocated(By.css(".swal2-actions .swal2-confirm")),
       5000
     )
-    await delay(3000)
-    expect(await errorMessage.getText()).to.include(
-      "Trường số điện thoại phải có ít nhất 10 chữ số!"
-    )
-  })
-	*/
+    await swalOkBtn.click()
+    await waitForCloseToast()
+  }
 
-  // TC 0.2: Bỏ trống trường họ tên
-  /*
-  it("TC 0.2: Bỏ trống trường họ tên", async function () {
+  // TC 1: Bỏ trống trường phone
+  it("TC 1: Bỏ trống trường phone", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
+    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(true, false))
 
-    const errorMessage = await driver.wait(
-      until.elementLocated(By.id("swal2-html-container")),
-      5000
-    )
-    await delay(3000)
-    expect(await errorMessage.getText()).to.include("Trường tên không được để trống!")
+    await waitForLooking()
+
+    const errorMessage = await extractContentFromToast(driver)
+    expect(errorMessage).to.include("Trường số điện thoại phải có ít nhất 10 chữ số!")
   })
-	*/
 
-  // TC 0.3: Nhập sai định dạng phone
-  /*
-  it("TC 0.3: Nhập sai định dạng số điện thoại", async function () {
+  // TC 2: Bỏ trống trường họ tên
+  it("TC 2: Bỏ trống trường họ tên", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
+    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(false, true))
 
-    const errorMessage = await driver.wait(
-      until.elementLocated(By.id("swal2-html-container")),
-      5000
-    )
-    await delay(3000)
-    expect(await errorMessage.getText()).to.include("Trường số điện thoại không hợp lệ!")
+    await waitForLooking()
+
+    const errorMessage = await extractContentFromToast(driver)
+    expect(errorMessage).to.include("Trường tên không được để trống!")
   })
-	*/
 
-  // TC 1: Đơn không tồn tại
-  /*
-  it("TC 1: Không tìm thấy đơn đặt bàn", async function () {
+  // TC 3: Nhập sai định dạng phone
+  it("TC 3: Nhập sai định dạng số điện thoại", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    const obfuscatedData = obfuscateTextContent(dataOnTestingFlow["GENERAL"].bookingData)
+    await autoSubmitSearchForm({
+      ...dataOnTestingFlow["GENERAL"].bookingData(),
+      Cus_Phone: "1234567890",
+    })
+
+    await waitForLooking()
+
+    const errorMessage = await extractContentFromToast(driver)
+    expect(errorMessage).to.include("Trường số điện thoại không hợp lệ!")
+  })
+
+  // TC 4: Đơn không tồn tại
+  it("TC 4: Không tìm thấy đơn đặt bàn", async function () {
+    await seedTestReservationData("GENERAL")
+
+    await driver.get(`${DOMAIN}/bookings-history`)
+    const obfuscatedData = obfuscateTextContent(dataOnTestingFlow["GENERAL"].bookingData())
     await autoSubmitSearchForm(obfuscatedData)
 
     await isBookingsHistoryRoute(obfuscatedData.Cus_Phone, obfuscatedData.Cus_FullName)
@@ -295,21 +287,19 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const emptyText = await driver.findElement(By.css(".empty-content")).getText()
     expect(emptyText).to.include("Không có đơn đặt bàn nào")
   })
-	*/
 
-  // TC 2: OTP sai
-  /*
-  it("TC 2: Nhập OTP sai", async function () {
-		const reservation = await seedTestReservationData("GENERAL")
+  // TC 5: OTP sai
+  it("TC 5: Nhập OTP sai", async function () {
+    const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-		const data=dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
 
-		await clickUpdateBookingButton()
+    await clickUpdateBookingButton()
 
     await submitOTP("000000")
 
@@ -317,16 +307,14 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
     expect(await errorMessage.getText()).to.equal("OTP không chính xác, vui lòng thử lại")
   })
-	*/
 
-  // TC 3: OTP hết hạn
-  /*
-  it("TC 3: OTP hết hạn", async function () {
+  // TC 6: OTP hết hạn
+  it("TC 6: OTP hết hạn", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-		const data=dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
@@ -347,16 +335,14 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
     expect(await errorMessage.getText()).to.equal("OTP đã hết hạn, vui lòng thử lại")
   })
-	*/
 
-  // TC 4: Gửi lại OTP
-  /*
-  it("TC 4: Gửi lại OTP", async function () {
+  // TC 7: Gửi lại OTP
+  it("TC 7: Gửi lại OTP", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    const data = dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
@@ -367,9 +353,12 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const {
       data: { otp: oldOTP },
     } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-    // console.log(">>> oldOTP:", oldOTP)
+
     const resendOTPBtn = await driver.wait(until.elementLocated(By.id("resend-otp-btn")), 5000)
-    await resendOTPBtn.click()
+    await driver.wait(until.elementIsEnabled(resendOTPBtn), 5000)
+    // Sử dụng Selenium Actions để click trực tiếp theo element reference, không phụ thuộc pixel tọa độ cũ
+    const actions = driver.actions({ bridge: true })
+    await actions.move({ origin: resendOTPBtn }).click().perform()
 
     await isUrl(`${DOMAIN}/update-bookings/resend-otp?ReservationID=${ReservationID}`)
 
@@ -382,9 +371,8 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const {
       data: { otp: newOTP },
     } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-    // console.log(">>> newOTP:", newOTP)
-		await submitOTP(newOTP)
-		
+    await submitOTP(newOTP)
+
     await isUrl(`${DOMAIN}/update-bookings/?ReservationID=${ReservationID}`)
     const pageTitle = await driver.wait(
       until.elementLocated(By.id("update-bookings-page-title")),
@@ -392,225 +380,168 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     )
     expect(await pageTitle.getText()).to.equal("Cập nhật thông tin đặt bàn")
   })
-	*/
 
-  // TC 5: Thời gian đến quá khứ
-  it("TC 5: Thời gian đến quá khứ", async function () {
+  // TC 8: Thời gian đến quá khứ
+  it("TC 8: Thời gian đặt bàn ở quá khứ", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
-    await driver.get(`${DOMAIN}/bookings-history`)
-    const data = dataOnTestingFlow["GENERAL"].bookingData
-    await autoSubmitSearchForm(data)
+    await navToUpdateBookingPage(ReservationID)
 
-    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
+    const tomorrow = dayjs().add(0, "day")
+    const shortTime = tomorrow.hour(0).minute(30) // 12:30 ngày mai
+    const date = shortTime.format("DD/MM/YYYY")
+    const time = shortTime.format("HH:mm")
 
-    await clickUpdateBookingButton()
-
-    await isSendOTPRoute(ReservationID)
-
-    const {
-      data: { otp },
-    } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-    await submitOTP(otp)
-
-    await isUrl(`${DOMAIN}/update-bookings/?ReservationID=${ReservationID}`)
-    const pageTitle = await driver.wait(
-      until.elementLocated(By.id("update-bookings-page-title")),
-      5000
-    )
-    expect(await pageTitle.getText()).to.equal("Cập nhật thông tin đặt bàn")
-
-    await placeBookingAtPastTime()
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
+    await waitForLooking()
+    const message = await extractContentFromToast(driver)
+		expect(message).to.equal("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
+    await closeToast()
   })
 
-  // // TC3.2: Thời gian ngoài giờ
-  // it('TC3.2: Thời gian ngoài giờ', async function () {
-  //     await delay(Math.random() * 1000);
-  //     //return;
-  //     const reservationId = await createTestReservation();
+  // TC 9: Thời gian ngoài giờ làm việc
+	it("TC 9: Thời gian ngoài giờ làm việc", async function () {
+		await seedTestReservationData("GENERAL")
+		
+    // đặt vào 23h
+    const daysLater = dayjs().add(3, "day")
+    const shortTimeV23h = daysLater.hour(23).minute(30)
+    const dateV23h = shortTimeV23h.format("DD/MM/YYYY")
+    const timeV23h = shortTimeV23h.format("HH:mm")
 
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](dateV23h, timeV23h))
+		const message = await extractContentFromToast(driver)
+    expect(message).to.equal("Nhà hàng đã đóng cửa vào thời gian này!")
 
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
+    await closeToast()
 
-  //     // Cập nhật với thời gian ngoài giờ làm việc
-  //     const tomorrow = dayjs().add(1, 'day').format('DD/MM/YYYY');
-  //     await updateReservationData({
-  //         date: tomorrow,
-  //         time: '23:30',
-  //         adults: '2'
-  //     });
+    // đặt vào 5h sáng
+    const shortTimeV5h = daysLater.hour(5).minute(30)
+    const dateV5h = shortTimeV5h.format("DD/MM/YYYY")
+    const timeV5h = shortTimeV5h.format("HH:mm")
 
-  //     // Kiểm tra thông báo lỗi
-  //     const message = await getMessageFromToast(driver);
-  //     expect(message).to.equal('Nhà hàng đã đóng cửa vào thời gian này!');
-  // });
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](dateV5h, timeV5h))
+    await waitForLooking()
+    const messageV5h = await extractContentFromToast(driver)
+    expect(messageV5h).to.equal("Nhà hàng chưa mở cửa vào thời gian này!")
+    await closeToast()
+  })
 
-  // // TC3.3: Thời gian < 1h so với hiện tại
-  // it('TC3.3: Thời gian < 1h so với hiện tại', async function () {
-  //     await delay(Math.random() * 1000);
-  //     //return;
-  //     const reservationId = await createTestReservation();
+  // TC 10: Đặt vào thời gian nghỉ của nhà hàng
+	it("TC 10: Đặt vào thời gian nghỉ", async function () {
+		await seedTestReservationData("GENERAL")
 
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+    const daytime = dayjs().month(8).date(2).add(1, "hours") // tháng 9 (0-based index nên là 8)
+    const date = daytime.format("DD/MM/YYYY")
+    const time = daytime.format("HH:mm")
 
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
+    await waitForLooking()
+    const message = await extractContentFromToast(driver)
+    expect(message).to.equal("Nhà hàng đóng cửa vào ngày này!")
+    await closeToast()
+  })
 
-  //     // Cập nhật với thời gian cách hiện tại dưới 1 giờ
-  //     const tomorrow = dayjs().add(1, 'day');
-  //     const shortTime = tomorrow.hour(12).minute(30); // 12:30 ngày mai
-  //     const date = shortTime.format('DD/MM/YYYY');
-  //     const time = shortTime.format('HH:mm');
+  // TC 11: Thời gian < 1h so với hiện tại
+	it("TC 11: Thời gian nhỏ hơn 1h so với hiện tại", async function () {
+		await seedTestReservationData("GENERAL")
 
-  //     await updateReservationData({
-  //         date: date,
-  //         time: time,
-  //         adults: '2'
-  //     });
+    const dayTime = dayjs().add(30, "minutes")
+    const date = dayTime.format("DD/MM/YYYY")
+    const time = dayTime.format("HH:mm")
 
-  //     // Kiểm tra thông báo lỗi
-  //     const message = await getMessageFromToast(driver);
-  //     expect(message).to.equal('Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!');
-  // });
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
+    await waitForLooking()
+    const message = await extractContentFromToast(driver)
+    expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
+    await closeToast()
+  })
 
-  // // TC3.4: Số lượng người lớn = 0
-  // it('TC3.4: Số lượng người lớn = 0', async function () {
-  //     await delay(Math.random() * 1000);
-  //     //return;
-  //     const reservationId = await createTestReservation();
+  // TC 12: Bỏ trống trường số lượng người lớn
+  it("TC 12: Bỏ trống trường số lượng người lớn", async function () {
+		await seedTestReservationData("GENERAL")
 
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+    const dayTime = dayjs().hour(12).minute(30)
+    const date = dayTime.format("DD/MM/YYYY")
+    const time = dayTime.format("HH:mm")
 
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time), ["adults"])
+    await waitForLooking()
+    const message = await extractErrorMessageFromInput(
+      driver,
+      "#booking-form .form-group.adults-count .message"
+    )
+    expect(message).to.equal("Phải có ít nhất 1 người lớn!")
+  })
 
-  //     // Cập nhật với số người lớn = 0
-  //     await updateReservationData({
-  //         date: getTomorrowDateFormatted(),
-  //         time: '18:00',
-  //         adults: '0'
-  //     });
+  // TC 13: Số lượng người lớn = 0
+  it("TC 13: Số lượng người lớn = 0", async function () {
+		await seedTestReservationData("GENERAL")
 
-  //     // Kiểm tra thông báo lỗi
-  //     const message = await getErrorMessage("adults-count-input");
-  //     expect(message).to.equal('Phải có ít nhất 1 người lớn!');
-  // });
+    const dayTime = dayjs().hour(12).minute(30)
+    const date = dayTime.format("DD/MM/YYYY")
+    const time = dayTime.format("HH:mm")
 
-  // // TC3.5: Số lượng người lớn < 0
-  // it('TC3.5: Số lượng người lớn < 0', async function () {
-  //     await delay(Math.random() * 1000);
-  //     //return;
-  //     const reservationId = await createTestReservation();
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time, "0"))
+    await waitForLooking()
+    const message = await extractErrorMessageFromInput(
+      driver,
+      "#booking-form .form-group.adults-count .message"
+    )
+    expect(message).to.equal("Phải có ít nhất 1 người lớn!")
+  })
 
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+  // TC 14: Số lượng người lớn < 0
+  it("TC 14: Số lượng người lớn < 0", async function () {
+		await seedTestReservationData("GENERAL")
 
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
+    const dayTime = dayjs().hour(12).minute(30)
+    const date = dayTime.format("DD/MM/YYYY")
+    const time = dayTime.format("HH:mm")
 
-  //     // Cập nhật với số người lớn âm
-  //     await updateReservationData({
-  //         date: getTomorrowDateFormatted(),
-  //         time: '18:00',
-  //         adults: '-3'
-  //     });
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time, "-1"))
+    await waitForLooking()
+    const message = await extractErrorMessageFromInput(
+      driver,
+      "#booking-form .form-group.adults-count .message"
+    )
+    expect(message).to.equal("Phải có ít nhất 1 người lớn!")
+  })
 
-  //     // Kiểm tra thông báo lỗi
-  //     const message = await getErrorMessage("adults-count-input");
-  //     expect(message).to.equal('Phải có ít nhất 1 người lớn!');
-  // });
+  // TC 15: Số lượng trẻ em < 0
+  it("TC 15: Số lượng trẻ em < 0", async function () {
+		await seedTestReservationData("GENERAL")
 
-  // // TC3.6: Số lượng người lớn rỗng
-  // it('TC3.6: Số lượng người lớn rỗng', async function () {
-  //     expect("Cập nhật thành công").to.equal("Cập nhật thất bại");
-  //     //return;
-  //     const reservationId = await createTestReservation();
+    const dayTime = dayjs().hour(12).minute(30)
+    const date = dayTime.format("DD/MM/YYYY")
+    const time = dayTime.format("HH:mm")
 
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time, "1", "-1"))
+    await waitForLooking()
+    const message = await extractErrorMessageFromInput(
+      driver,
+      "#booking-form .form-group.children-count .message"
+    )
+    expect(message).to.equal("Số trẻ em phải lớn hơn hoặc bằng 0!")
+  })
 
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
+  // TC 16: Luồng chuẩn, thành công (backbone)
+  it("TC 16: Luồng chuẩn, thành công", async function () {
+    const reservation = await seedTestReservationData("GENERAL")
+    const { ReservationID } = reservation
 
-  //     // Cập nhật với số người lớn rỗng
-  //     await updateReservationData({
-  //         date: getTomorrowDateFormatted(),
-  //         time: '18:00',
-  //         adults: ''
-  //     });
+    await navToUpdateBookingPage(ReservationID)
 
-  //     // Kiểm tra thông báo lỗi
-  //     const message = await getErrorMessage("adults-count-input");
-  //     expect(message).to.equal('Trường số người lớn không được để trống!');
-  // });
+    const dayTime = dayjs().hour(12).minute(30)
+    const date = dayTime.format("DD/MM/YYYY")
+    const time = dayTime.format("HH:mm")
 
-  // // TC4: Lưu dữ liệu thất bại
-  // it('TC4: Lưu dữ liệu thất bại', async function () {
-  //     await delay(Math.random() * 1000);
-  //     //return;
-  //     const reservationId = await createTestReservation();
+    await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
 
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
+    await waitForLooking()
 
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
-
-  //     // Cập nhật với dữ liệu hợp lệ nhưng giả lập lỗi hệ thống
-  //     // Trong thực tế, bạn có thể mock database để trả về lỗi
-  //     await updateReservationData({
-  //         date: getTomorrowDateFormatted(),
-  //         time: '18:00',
-  //         adults: '2'
-  //     });
-
-  //     // Kiểm tra thông báo lỗi hệ thống
-  //     const message = await getMessageFromToast(driver);
-  //     expect(message).to.include('Lỗi hệ thống');
-  // });
-
-  // // TC5: Luồng chuẩn, thành công
-  // it('TC5: Luồng chuẩn, thành công', async function () {
-  //     await delay(Math.random() * 1000);
-  //     //return;
-  //     const reservationId = await createTestReservation();
-
-  //     await navigateToUpdatePage(reservationId);
-  //     await submitEmail('nguyenanhtuan@gmail.com', reservationId);
-
-  //     const correctOTP = '123456';
-  //     await submitOTP(correctOTP, reservationId);
-
-  //     // Cập nhật với dữ liệu hợp lệ
-  //     const newDate = getTomorrowDateFormatted();
-  //     const newTime = '19:00';
-
-  //     await updateReservationData({
-  //         date: newDate,
-  //         time: newTime,
-  //         adults: '3'
-  //     });
-
-  //     // Kiểm tra thông báo thành công
-  //     const message = await getMessageFromToast(driver);
-  //     expect(message).to.equal('Cập nhật đơn thành công');
-
-  //     // Kiểm tra URL sau khi cập nhật thành công
-  //     // Hệ thống chuyển đến trang bookings-history với query parameters
-  //     await driver.wait(until.urlContains('/bookings-history'), 5000);
-  //     const currentUrl = await driver.getCurrentUrl();
-  //     expect(currentUrl).to.include('/bookings-history');
-  //     expect(currentUrl).to.include('Cus_Phone=0987794267');
-  //     expect(currentUrl).to.include('Cus_FullName=Nguyễn Anh Tuấn');
-
-  //     // Kiểm tra xem có ở trang bookings-history không
-  //     const pageTitle = await driver.getTitle();
-  //     expect(pageTitle).to.include('Lịch sử đặt bàn');
-  // });
+    const message = await extractContentFromToast(driver)
+    expect(message).to.equal("Cập nhật đơn thành công")
+  })
 })

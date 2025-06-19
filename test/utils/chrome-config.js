@@ -24,7 +24,7 @@ async function createChromeDriver(options = {}) {
     }
     
     // Cấu hình ChromeDriver từ thư mục tùy chỉnh
-    const chromeDriverPath = 'D:\\A_DOANMONHOC_NEW\\MONT4\\chrome-win64\\chromedriver.exe';
+    const chromeDriverPath = '"C:\Users\trung\Downloads\zip_rar file\chromedriver-win64\chromedriver-win64\chromedriver.exe"';
     const service = new chrome.ServiceBuilder(chromeDriverPath);
     
     const driver = await new Builder()
