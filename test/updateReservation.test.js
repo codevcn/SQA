@@ -28,15 +28,13 @@ const TEST_CASE_TIMEOUT = 1000000
 
 const dataOnTestingFlow = {
   GENERAL: {
-    bookingData: {
+    bookingData: (isPhoneEmpty, isFullNameEmpty) => ({
       Cus_Email: "hanmunmun000@gmail.com",
-      Cus_FullName: "Nguyễn Văn A",
-      Cus_Phone: "0909090909",
+      Cus_FullName: isFullNameEmpty ? "" : "Nguyễn Văn A",
+      Cus_Phone: isPhoneEmpty ? "" : "0909090909",
       ArrivalTime: "28/06/2025 18:00",
       NumAdults: 2,
-      NumChildren: 0,
-      Note: "Bàn gần cửa sổ",
-    },
+    }),
   },
   PLACE_ORDER: (date, time, adultsCount, childrenCount) => ({
     fullName: "Nguyễn Văn A",
@@ -52,12 +50,8 @@ const dataOnTestingFlow = {
 
 const obfuscateTextContent = (data) => {
   return {
+    ...data,
     Cus_FullName: data.Cus_FullName.split("").reverse().join(""),
-    Cus_Phone: data.Cus_Phone.split("").sort().join(""),
-    Cus_Email:
-      data.Cus_Email.split("@")[0].split("").reverse().join("") +
-      "@" +
-      data.Cus_Email.split("@")[1],
   }
 }
 
@@ -131,7 +125,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
          */
         const { data } = await axios.post(
           `${DOMAIN}/api/reservations/reserve`,
-          dataOnTestingFlow["GENERAL"].bookingData
+          dataOnTestingFlow["GENERAL"].bookingData()
         )
         return data.reservation
     }
@@ -167,33 +161,6 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await driver.wait(until.elementLocated(By.css(".booking-card")), 5000)
     const bookingCard = await driver.findElement(By.css(".booking-card"))
     await bookingCard.findElement(By.css(".update-booking-btn")).click()
-  }
-
-  async function updateReservationData(data) {
-    // Cập nhật các trường trong form
-    if (data.date) {
-      const dateInput = await driver.findElement(By.id("date-input"))
-      await dateInput.clear()
-      await dateInput.sendKeys(data.date)
-    }
-
-    if (data.time) {
-      const timeInput = await driver.findElement(By.id("time-input"))
-      await timeInput.clear()
-      await timeInput.sendKeys(data.time)
-    }
-
-    if (data.adults !== undefined) {
-      const adultsInput = await driver.findElement(By.id("adults-count-input"))
-      await adultsInput.clear()
-      if (data.adults !== "") {
-        await adultsInput.sendKeys(data.adults)
-      }
-    }
-
-    // Submit form
-    const submitBtn = await driver.findElement(By.css('button[type="submit"]'))
-    await submitBtn.click()
   }
 
   async function isBookingsHistoryRoute(phone, fullName) {
@@ -233,7 +200,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
   async function navToUpdateBookingPage(reservationId) {
     await driver.get(`${DOMAIN}/bookings-history`)
-    const data = dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
@@ -264,60 +231,54 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await waitForCloseToast()
   }
 
-  // TC 0.1: Bỏ trống trường phone
-  /*
-  it("TC 0.1: Bỏ trống trường phone", async function () {
+  // TC 1: Bỏ trống trường phone
+  it("TC 1: Bỏ trống trường phone", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
+    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(true, false))
 
     await waitForLooking()
 
     const errorMessage = await extractContentFromToast(driver)
-    expect(errorMessage).to.include(
-      "Trường số điện thoại phải có ít nhất 10 chữ số!"
-    )
+    expect(errorMessage).to.include("Trường số điện thoại phải có ít nhất 10 chữ số!")
   })
-	*/
 
-  // TC 0.2: Bỏ trống trường họ tên
-  /*
-  it("TC 0.2: Bỏ trống trường họ tên", async function () {
+  // TC 2: Bỏ trống trường họ tên
+  it("TC 2: Bỏ trống trường họ tên", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
+    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(false, true))
 
     await waitForLooking()
 
     const errorMessage = await extractContentFromToast(driver)
     expect(errorMessage).to.include("Trường tên không được để trống!")
   })
-	*/
 
-  // TC 0.3: Nhập sai định dạng phone
-  /*
-  it("TC 0.3: Nhập sai định dạng số điện thoại", async function () {
+  // TC 3: Nhập sai định dạng phone
+  it("TC 3: Nhập sai định dạng số điện thoại", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData)
+    await autoSubmitSearchForm({
+      ...dataOnTestingFlow["GENERAL"].bookingData(),
+      Cus_Phone: "1234567890",
+    })
 
     await waitForLooking()
 
     const errorMessage = await extractContentFromToast(driver)
     expect(errorMessage).to.include("Trường số điện thoại không hợp lệ!")
   })
-	*/
 
-  // TC 1: Đơn không tồn tại
-  /*
-  it("TC 1: Không tìm thấy đơn đặt bàn", async function () {
+  // TC 4: Đơn không tồn tại
+  it("TC 4: Không tìm thấy đơn đặt bàn", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    const obfuscatedData = obfuscateTextContent(dataOnTestingFlow["GENERAL"].bookingData)
+    const obfuscatedData = obfuscateTextContent(dataOnTestingFlow["GENERAL"].bookingData())
     await autoSubmitSearchForm(obfuscatedData)
 
     await isBookingsHistoryRoute(obfuscatedData.Cus_Phone, obfuscatedData.Cus_FullName)
@@ -326,21 +287,19 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const emptyText = await driver.findElement(By.css(".empty-content")).getText()
     expect(emptyText).to.include("Không có đơn đặt bàn nào")
   })
-	*/
 
-  // TC 2: OTP sai
-  /*
-  it("TC 2: Nhập OTP sai", async function () {
-		const reservation = await seedTestReservationData("GENERAL")
+  // TC 5: OTP sai
+  it("TC 5: Nhập OTP sai", async function () {
+    const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-		const data=dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
 
-		await clickUpdateBookingButton()
+    await clickUpdateBookingButton()
 
     await submitOTP("000000")
 
@@ -348,16 +307,14 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
     expect(await errorMessage.getText()).to.equal("OTP không chính xác, vui lòng thử lại")
   })
-	*/
 
-  // TC 3: OTP hết hạn
-  /*
-  it("TC 3: OTP hết hạn", async function () {
+  // TC 6: OTP hết hạn
+  it("TC 6: OTP hết hạn", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-		const data=dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
@@ -378,16 +335,14 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const errorMessage = await driver.wait(until.elementLocated(By.id("error-message")), 5000)
     expect(await errorMessage.getText()).to.equal("OTP đã hết hạn, vui lòng thử lại")
   })
-	*/
 
-  // TC 4: Gửi lại OTP
-  /*
-  it("TC 4: Gửi lại OTP", async function () {
+  // TC 7: Gửi lại OTP
+  it("TC 7: Gửi lại OTP", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
     await driver.get(`${DOMAIN}/bookings-history`)
-    const data = dataOnTestingFlow["GENERAL"].bookingData
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
     await autoSubmitSearchForm(data)
 
     await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
@@ -398,8 +353,12 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const {
       data: { otp: oldOTP },
     } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
+
     const resendOTPBtn = await driver.wait(until.elementLocated(By.id("resend-otp-btn")), 5000)
-    await resendOTPBtn.click()
+    await driver.wait(until.elementIsEnabled(resendOTPBtn), 5000)
+    // Sử dụng Selenium Actions để click trực tiếp theo element reference, không phụ thuộc pixel tọa độ cũ
+    const actions = driver.actions({ bridge: true })
+    await actions.move({ origin: resendOTPBtn }).click().perform()
 
     await isUrl(`${DOMAIN}/update-bookings/resend-otp?ReservationID=${ReservationID}`)
 
@@ -412,8 +371,8 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const {
       data: { otp: newOTP },
     } = await axios.get(`${DOMAIN}/api/get-otp?ReservationID=${ReservationID}`)
-		await submitOTP(newOTP)
-		
+    await submitOTP(newOTP)
+
     await isUrl(`${DOMAIN}/update-bookings/?ReservationID=${ReservationID}`)
     const pageTitle = await driver.wait(
       until.elementLocated(By.id("update-bookings-page-title")),
@@ -421,11 +380,9 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     )
     expect(await pageTitle.getText()).to.equal("Cập nhật thông tin đặt bàn")
   })
-	*/
 
-  // TC 5: Thời gian đến quá khứ
-  /*
-  it("TC 5: Thời gian đến quá khứ", async function () {
+  // TC 8: Thời gian đến quá khứ
+  it("TC 8: Thời gian đặt bàn ở quá khứ", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
@@ -439,18 +396,14 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
     await waitForLooking()
     const message = await extractContentFromToast(driver)
-    expect(message).to.equal("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
+		expect(message).to.equal("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
+    await closeToast()
   })
-	*/
 
-  // TC 6: Thời gian ngoài giờ làm việc
-  /*
-  it("TC 6: Thời gian ngoài giờ làm việc", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
-    const { ReservationID } = reservation
-
-    await navToUpdateBookingPage(ReservationID)
-
+  // TC 9: Thời gian ngoài giờ làm việc
+	it("TC 9: Thời gian ngoài giờ làm việc", async function () {
+		await seedTestReservationData("GENERAL")
+		
     // đặt vào 23h
     const daysLater = dayjs().add(3, "day")
     const shortTimeV23h = daysLater.hour(23).minute(30)
@@ -458,7 +411,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const timeV23h = shortTimeV23h.format("HH:mm")
 
     await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](dateV23h, timeV23h))
-    const message = await extractContentFromToast(driver)
+		const message = await extractContentFromToast(driver)
     expect(message).to.equal("Nhà hàng đã đóng cửa vào thời gian này!")
 
     await closeToast()
@@ -472,16 +425,12 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await waitForLooking()
     const messageV5h = await extractContentFromToast(driver)
     expect(messageV5h).to.equal("Nhà hàng chưa mở cửa vào thời gian này!")
+    await closeToast()
   })
-	*/
 
-  // TC 7: Đặt vào thời gian nghỉ của nhà hàng
-  /*
-  it("TC 7: Đặt vào thời gian nghỉ", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
-    const { ReservationID } = reservation
-
-    await navToUpdateBookingPage(ReservationID)
+  // TC 10: Đặt vào thời gian nghỉ của nhà hàng
+	it("TC 10: Đặt vào thời gian nghỉ", async function () {
+		await seedTestReservationData("GENERAL")
 
     const daytime = dayjs().month(8).date(2).add(1, "hours") // tháng 9 (0-based index nên là 8)
     const date = daytime.format("DD/MM/YYYY")
@@ -491,16 +440,12 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await waitForLooking()
     const message = await extractContentFromToast(driver)
     expect(message).to.equal("Nhà hàng đóng cửa vào ngày này!")
+    await closeToast()
   })
-	*/
 
-  // TC 8: Thời gian < 1h so với hiện tại
-  /*
-  it("TC 8: Thời gian nhỏ hơn 1h so với hiện tại", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
-    const { ReservationID } = reservation
-
-    await navToUpdateBookingPage(ReservationID)
+  // TC 11: Thời gian < 1h so với hiện tại
+	it("TC 11: Thời gian nhỏ hơn 1h so với hiện tại", async function () {
+		await seedTestReservationData("GENERAL")
 
     const dayTime = dayjs().add(30, "minutes")
     const date = dayTime.format("DD/MM/YYYY")
@@ -510,16 +455,12 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await waitForLooking()
     const message = await extractContentFromToast(driver)
     expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
+    await closeToast()
   })
-	*/
 
-  // TC 9: Bỏ trống trường số lượng người lớn
-  /*
-  it("TC 9: Bỏ trống trường số lượng người lớn", async function () {
-    const reservation = await seedTestReservationData("GENERAL")
-    const { ReservationID } = reservation
-
-    await navToUpdateBookingPage(ReservationID)
+  // TC 12: Bỏ trống trường số lượng người lớn
+  it("TC 12: Bỏ trống trường số lượng người lớn", async function () {
+		await seedTestReservationData("GENERAL")
 
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
@@ -534,8 +475,10 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     expect(message).to.equal("Phải có ít nhất 1 người lớn!")
   })
 
-  // TC 10: Số lượng người lớn = 0
-  it("TC 10: Số lượng người lớn = 0", async function () {
+  // TC 13: Số lượng người lớn = 0
+  it("TC 13: Số lượng người lớn = 0", async function () {
+		await seedTestReservationData("GENERAL")
+
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
     const time = dayTime.format("HH:mm")
@@ -549,8 +492,10 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     expect(message).to.equal("Phải có ít nhất 1 người lớn!")
   })
 
-  // TC 11: Số lượng người lớn < 0
-  it("TC 11: Số lượng người lớn < 0", async function () {
+  // TC 14: Số lượng người lớn < 0
+  it("TC 14: Số lượng người lớn < 0", async function () {
+		await seedTestReservationData("GENERAL")
+
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
     const time = dayTime.format("HH:mm")
@@ -564,8 +509,10 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     expect(message).to.equal("Phải có ít nhất 1 người lớn!")
   })
 
-  // TC 12: Số lượng trẻ em < 0
-  it("TC 12: Số lượng trẻ em < 0", async function () {
+  // TC 15: Số lượng trẻ em < 0
+  it("TC 15: Số lượng trẻ em < 0", async function () {
+		await seedTestReservationData("GENERAL")
+
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
     const time = dayTime.format("HH:mm")
@@ -578,10 +525,9 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     )
     expect(message).to.equal("Số trẻ em phải lớn hơn hoặc bằng 0!")
   })
-	*/
 
-  // TC 13: Luồng chuẩn, thành công (backbone)
-  it("TC 13: Luồng chuẩn, thành công", async function () {
+  // TC 16: Luồng chuẩn, thành công (backbone)
+  it("TC 16: Luồng chuẩn, thành công", async function () {
     const reservation = await seedTestReservationData("GENERAL")
     const { ReservationID } = reservation
 
@@ -592,7 +538,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const time = dayTime.format("HH:mm")
 
     await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
-		
+
     await waitForLooking()
 
     const message = await extractContentFromToast(driver)
