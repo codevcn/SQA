@@ -127,20 +127,21 @@ const validateBooking = async (formData) => {
     const bookingDateTime = dayjs(`${date} ${time}`, "DD/MM/YYYY HH:mm")
     
     // 1. Kiểm tra thời gian đặt trong quá khứ
-    if (bookingDateTime.isBefore(now)) {
-      isValid = false
-      toaster.error("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
-    } 
+    // if (bookingDateTime.isBefore(now)) {
+    //   isValid = false
+    //   toaster.error("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
+    // } 
     // 2. Kiểm tra thời gian đặt phải cách hiện tại ít nhất 1 giờ
-    else if (bookingDateTime.isBefore(now.add(1, "hour"))) {
+    // else
+     if (bookingDateTime.isBefore(now.add(1, "hour"))) {
       isValid = false
       toaster.error("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
     }
-    // 3. Kiểm tra không được quá 2 tháng
-    else if (bookingDateTime.isAfter(now.add(2, "month"))) {
-      isValid = false
-      toaster.error("Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!")
-    }
+    // // 3. Kiểm tra không được quá 2 tháng
+    // else if (bookingDateTime.isAfter(now.add(2, "month"))) {
+    //   isValid = false
+    //   toaster.error("Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!")
+    // }
     // 4. Kiểm tra thời gian hoạt động và ngày nghỉ lễ
     else {
       const dateString = bookingDateTime.format('YYYY-MM-DD')
@@ -216,20 +217,20 @@ const confirmBooking = () => {
 }
 
 const autoFillForm = () => {
-  const staticData = {
-    "full-name": "Nguyễn Văn A",
-    email: "hanmunmun000@gmail.com",
-    phone: "0909090909",
-    date: "29/06/2025",
-    time: "18:00",
-    "adults-count": 2,
-    "children-count": 1,
-    note: Math.random() > 0.5 ? "Có bánh sinh nhật" : "",
-  }
-  const formFields = bookingFormEle.elements
-  for (const field of formFields) {
-    field.value = staticData[field.name]
-  }
+  // const staticData = {
+  //   "full-name": "Nguyễn Văn A",
+  //   email: "hanmunmun000@gmail.com",
+  //   phone: "0909090909",
+  //   date: "29/06/2025",
+  //   time: "18:00",
+  //   "adults-count": 2,
+  //   "children-count": 1,
+  //   note: Math.random() > 0.5 ? "Có bánh sinh nhật" : "",
+  // }
+  // const formFields = bookingFormEle.elements
+  // for (const field of formFields) {
+  //   field.value = staticData[field.name]
+  // }
 }
 
 const init = () => {

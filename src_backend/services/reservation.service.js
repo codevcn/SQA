@@ -107,9 +107,9 @@ async function reserve(data, action = "create") {
 
     // 2. Kiểm tra thời gian đặt trong quá khứ
     const now = dayjs()
-    if (arrivalDateTime.isBefore(now)) {
-      return { errorCode: 400, message: "Thời gian đặt phải từ thời điểm hiện tại trở đi!" }
-    }
+    // if (arrivalDateTime.isBefore(now)) {
+    //   return { errorCode: 400, message: "Thời gian đặt phải từ thời điểm hiện tại trở đi!" }
+    // }
 
     // 2.5. Kiểm tra thời gian đặt phải cách hiện tại ít nhất 1 giờ
     const oneHourFromNow = now.add(1, "hour")
@@ -117,11 +117,11 @@ async function reserve(data, action = "create") {
       return { errorCode: 400, message: "Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!" }
     }
 
-    // 3. Kiểm tra không được quá 2 tháng
-    const maxBookingDate = now.add(2, "month")
-    if (arrivalDateTime.isAfter(maxBookingDate)) {
-      return { errorCode: 400, message: "Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!" }
-    }
+    // // 3. Kiểm tra không được quá 2 tháng
+    // const maxBookingDate = now.add(2, "month")
+    // if (arrivalDateTime.isAfter(maxBookingDate)) {
+    //   return { errorCode: 400, message: "Thời gian đặt không được quá 2 tháng kể từ thời điểm hiện tại!" }
+    // }
 
     // 4. Kiểm tra thời gian hoạt động (giờ mở cửa/đóng cửa)
     const timeValidation = await validateBookingTime(dateString, timeString)
