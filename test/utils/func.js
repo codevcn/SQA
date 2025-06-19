@@ -13,37 +13,38 @@ async function getBookingDetails(driver) {
   for (let card of bookingCards) {
     let bookingData = {}
 
-        // Lấy trạng thái đơn (Đã từ chối, Chưa xử lý, ...)
-        let statusElements = await card.findElements(By.xpath(".//div[contains(@class, 'status')]"));
-        bookingData.status = statusElements.length > 0 ? await statusElements[0].getText() : "Không có trạng thái";
-        // Lấy 2 nút "Từ chối đơn" & "Duyệt đơn" (nếu có)
-        bookingData.rejectButton = null;
-        bookingData.approveButton = null;
-        bookingData.cancelButton = null;
-        bookingData.completeBookingButton = null;
+    // Lấy trạng thái đơn (Đã từ chối, Chưa xử lý, ...)
+    let statusElements = await card.findElements(By.xpath(".//div[contains(@class, 'status')]"))
+    bookingData.status =
+      statusElements.length > 0 ? await statusElements[0].getText() : "Không có trạng thái"
+    // Lấy 2 nút "Từ chối đơn" & "Duyệt đơn" (nếu có)
+    bookingData.rejectButton = null
+    bookingData.approveButton = null
+    bookingData.cancelButton = null
+    bookingData.completeBookingButton = null
 
-        try {
-            let btn = await card.findElement(By.id("reject-booking-btn"));
-            bookingData.rejectButton = btn;
-        } catch (e) {}
-        try {
-            let btn = await card.findElement(By.id("approve-booking-btn"));
-            bookingData.approveButton = btn;
-        } catch (e) {}
-        try {
-            let btn = await card.findElement(By.id("cancel-booking-btn"));
-            bookingData.cancelButton = btn;
-        } catch (e) {}
-        try {
-            let btn = await card.findElement(By.id("complete-booking-btn"));
-            bookingData.completeBookingButton = btn;
-        } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("reject-booking-btn"))
+      bookingData.rejectButton = btn
+    } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("approve-booking-btn"))
+      bookingData.approveButton = btn
+    } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("cancel-booking-btn"))
+      bookingData.cancelButton = btn
+    } catch (e) {}
+    try {
+      let btn = await card.findElement(By.id("complete-booking-btn"))
+      bookingData.completeBookingButton = btn
+    } catch (e) {}
 
-        bookings.push(bookingData);
-    }
-    // Thêm vào danh sách bookings
     bookings.push(bookingData)
-    return bookings
+  }
+  // Thêm vào danh sách bookings
+  bookings.push(bookingData)
+  return bookings
 }
 async function login(driver, username, password) {
   try {
@@ -169,73 +170,77 @@ async function placeOrder(driver, data) {
  * @returns {Promise<Array>} - Mảng chứa các đơn đặt bàn sau khi lọc
  */
 async function filterBookings(driver, filters) {
-    try {
-        // Chọn trạng thái đơn nếu có
-        if (filters.status) {
-            // Click dropdown
-            const statusDropdown = await driver.findElement(By.css('#booking-status-select > button'));
-            await statusDropdown.click();
-            await driver.sleep(200); // Đợi dropdown mở
+  try {
+    // Chọn trạng thái đơn nếu có
+    if (filters.status) {
+      // Click dropdown
+      const statusDropdown = await driver.findElement(By.css("#booking-status-select > button"))
+      await statusDropdown.click()
+      await driver.sleep(200) // Đợi dropdown mở
 
-            // Chọn item theo text tiếng Việt
-            let statusText = '';
-            switch (filters.status) {
-                case 'Chưa được xử lý':
-                    statusText = 'Chưa được xử lý';
-                    break;
-                case 'Đã duyệt':
-                    statusText = 'Đã duyệt';
-                    break;
-                case 'Đã từ chối':
-                    statusText = 'Đã từ chối';
-                    break;
-                case 'Tất cả':
-                    statusText = 'Tất cả';
-                    break;
-                default:
-                    statusText = filters.status;
-            }
-            const statusOption = await driver.findElement(By.xpath(`//div[contains(@class, 'dropdown-item') and text()='${statusText}']`));
-            await statusOption.click();
-            await driver.sleep(200);
-        }
-
-        // Nhập số điện thoại nếu có
-        if (filters.phone) {
-            const phoneInput = await driver.findElement(By.css('input[name="phonenumber"]'));
-            await phoneInput.clear();
-            await phoneInput.sendKeys(filters.phone);
-        }
-
-        // Nhập ngày nếu có
-        if (filters.date) {
-            const dateInput = await driver.findElement(By.css('input[name="date"]'));
-            await dateInput.clear();
-            const [dd, mm, yyyy] = filters.date.split('/');
-            const formattedDate = `${mm}/${dd}/${yyyy}`;
-            await dateInput.sendKeys(formattedDate);
-        }
-
-        // Nhập số giờ đến hạn nếu có
-        if (filters.expires_in_hours) {
-            const hourInput = await driver.findElement(By.css('input[name="expires_in_hours"]'));
-            await hourInput.clear();
-            await hourInput.sendKeys(filters.expires_in_hours);
-        }
-
-        // Click nút áp dụng bộ lọc (bạn cần xác nhận lại selector, ví dụ id='apply-filter-btn')
-        const applyFilterBtn = await driver.findElement(By.xpath('//*[@id="filter-bookings-form"]/div[2]/button'));
-        await applyFilterBtn.click();
-
-        // Đợi loading
-        await driver.sleep(1000);
-
-        // Lấy kết quả sau khi lọc
-        return await getBookingDetails(driver);
-    } catch (error) {
-        console.error("Error in filterBookings:", error);
-        throw error;
+      // Chọn item theo text tiếng Việt
+      let statusText = ""
+      switch (filters.status) {
+        case "Chưa được xử lý":
+          statusText = "Chưa được xử lý"
+          break
+        case "Đã duyệt":
+          statusText = "Đã duyệt"
+          break
+        case "Đã từ chối":
+          statusText = "Đã từ chối"
+          break
+        case "Tất cả":
+          statusText = "Tất cả"
+          break
+        default:
+          statusText = filters.status
+      }
+      const statusOption = await driver.findElement(
+        By.xpath(`//div[contains(@class, 'dropdown-item') and text()='${statusText}']`)
+      )
+      await statusOption.click()
+      await driver.sleep(200)
     }
+
+    // Nhập số điện thoại nếu có
+    if (filters.phone) {
+      const phoneInput = await driver.findElement(By.css('input[name="phonenumber"]'))
+      await phoneInput.clear()
+      await phoneInput.sendKeys(filters.phone)
+    }
+
+    // Nhập ngày nếu có
+    if (filters.date) {
+      const dateInput = await driver.findElement(By.css('input[name="date"]'))
+      await dateInput.clear()
+      const [dd, mm, yyyy] = filters.date.split("/")
+      const formattedDate = `${mm}/${dd}/${yyyy}`
+      await dateInput.sendKeys(formattedDate)
+    }
+
+    // Nhập số giờ đến hạn nếu có
+    if (filters.expires_in_hours) {
+      const hourInput = await driver.findElement(By.css('input[name="expires_in_hours"]'))
+      await hourInput.clear()
+      await hourInput.sendKeys(filters.expires_in_hours)
+    }
+
+    // Click nút áp dụng bộ lọc (bạn cần xác nhận lại selector, ví dụ id='apply-filter-btn')
+    const applyFilterBtn = await driver.findElement(
+      By.xpath('//*[@id="filter-bookings-form"]/div[2]/button')
+    )
+    await applyFilterBtn.click()
+
+    // Đợi loading
+    await driver.sleep(1000)
+
+    // Lấy kết quả sau khi lọc
+    return await getBookingDetails(driver)
+  } catch (error) {
+    console.error("Error in filterBookings:", error)
+    throw error
+  }
 }
 
 async function waitForFlatpickrReady(driver, selector, timeout = 15000) {
@@ -250,7 +255,7 @@ async function waitForFlatpickrReady(driver, selector, timeout = 15000) {
   }, timeout)
 }
 
-async function placeOrderOnStaticForm(driver, data) {
+async function placeOrderOnStaticForm(driver, data, missingFields = []) {
   console.log(">>> data at placeOrderOnStaticForm:", data)
   try {
     await waitForFlatpickrReady(driver, "#date-input", 3000)
