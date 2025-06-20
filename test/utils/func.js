@@ -256,7 +256,7 @@ async function waitForFlatpickrReady(driver, selector, timeout = 15000) {
 }
 
 async function placeOrderOnStaticForm(driver, data, missingFields = []) {
-  console.log(">>> data at placeOrderOnStaticForm:", data)
+  // console.log(">>> data at placeOrderOnStaticForm:", data)
   try {
     await waitForFlatpickrReady(driver, "#date-input", 3000)
     await waitForFlatpickrReady(driver, "#time-input", 3000)
