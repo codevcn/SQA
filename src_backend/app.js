@@ -53,7 +53,7 @@ import crypto from "crypto"
 import Admin from "./models/Admin.js"
 import WorkingHours from "./models/WorkingHours.js"
 import ClosedDates from "./models/ClosedDates.js"
-
+if(process.env.NODE_ENV === "development"){
 app.get("/reset-database", async (req, res) => {
   try {
     // Xóa toàn bộ dữ liệu trong database
@@ -112,6 +112,7 @@ app.get("/reset-database", async (req, res) => {
     return res.status(500).json({ error: "Lỗi khi reset database" })
   }
 })
+}
 
 // Sử dụng route admin
 app.use("/api/admin", adminRoutes)

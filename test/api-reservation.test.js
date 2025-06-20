@@ -348,6 +348,20 @@ describe('API Tests - Chức năng đặt bàn', function() {
             expect(response.data.reservation.Note).to.equal(data.Note);
             expect(response.data.reservation.Status).to.equal('Pending');
 
+            // Kiểm tra database có tồn tại reservation vừa tạo hay không
+            const reservationId = response.data.reservation.ReservationID;
+            const dbCheckResponse = await axios.get(`${BASE_URL}/${reservationId}`);
+            
+            expect(dbCheckResponse.status).to.equal(200);
+            expect(dbCheckResponse.data.message).to.equal('Lấy thông tin đơn đặt bàn thành công.');
+            expect(dbCheckResponse.data.reservation).to.have.property('ReservationID', reservationId);
+            expect(dbCheckResponse.data.reservation.Cus_FullName).to.equal(data.Cus_FullName);
+            expect(dbCheckResponse.data.reservation.Cus_Phone).to.equal(data.Cus_Phone);
+            expect(dbCheckResponse.data.reservation.Cus_Email).to.equal(data.Cus_Email);
+            expect(dbCheckResponse.data.reservation.NumAdults).to.equal(data.NumAdults);
+            expect(dbCheckResponse.data.reservation.NumChildren).to.equal(data.NumChildren);
+            expect(dbCheckResponse.data.reservation.Note).to.equal(data.Note);
+            expect(dbCheckResponse.data.reservation.Status).to.equal('Pending');
         });
 
     });
