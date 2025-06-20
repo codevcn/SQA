@@ -57,7 +57,7 @@
         <% } %>
 
         <!-- Nút cập nhật đơn đặt bàn -->
-        <% if (Status !== 'Completed' && Status !== 'Cancelled') { %>
+        <% if (Status === 'Pending') { %>
         <div class="card-actions mt-2">
           <input name="email" value="<%= Cus_Email %>" style="display: none;">
           <button type="submit" class="update-booking-btn" data-booking-id="<%= ReservationID %>" data-booking-data="<%= JSON.stringify({

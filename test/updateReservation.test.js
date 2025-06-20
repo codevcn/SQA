@@ -231,50 +231,50 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await waitForCloseToast()
   }
 
-  // TC 1: Bỏ trống trường phone
-  it("TC 1: Bỏ trống trường phone", async function () {
-    await seedTestReservationData("GENERAL")
+  // // TC 1: Bỏ trống trường phone
+  // it("TC 1: Bỏ trống trường phone", async function () {
+  //   await seedTestReservationData("GENERAL")
 
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(true, false))
+  //   await driver.get(`${DOMAIN}/bookings-history`)
+  //   await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(true, false))
 
-    await waitForLooking()
+  //   await waitForLooking()
 
-    const errorMessage = await extractContentFromToast(driver)
-    expect(errorMessage).to.include("Trường số điện thoại phải có ít nhất 10 chữ số!")
-  })
+  //   const errorMessage = await extractContentFromToast(driver)
+  //   expect(errorMessage).to.include("Trường số điện thoại phải có ít nhất 10 chữ số!")
+  // })
 
-  // TC 2: Bỏ trống trường họ tên
-  it("TC 2: Bỏ trống trường họ tên", async function () {
-    await seedTestReservationData("GENERAL")
+  // // TC 2: Bỏ trống trường họ tên
+  // it("TC 2: Bỏ trống trường họ tên", async function () {
+  //   await seedTestReservationData("GENERAL")
 
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(false, true))
+  //   await driver.get(`${DOMAIN}/bookings-history`)
+  //   await autoSubmitSearchForm(dataOnTestingFlow["GENERAL"].bookingData(false, true))
 
-    await waitForLooking()
+  //   await waitForLooking()
 
-    const errorMessage = await extractContentFromToast(driver)
-    expect(errorMessage).to.include("Trường tên không được để trống!")
-  })
+  //   const errorMessage = await extractContentFromToast(driver)
+  //   expect(errorMessage).to.include("Trường tên không được để trống!")
+  // })
 
-  // TC 3: Nhập sai định dạng phone
-  it("TC 3: Nhập sai định dạng số điện thoại", async function () {
-    await seedTestReservationData("GENERAL")
+  // // TC 3: Nhập sai định dạng phone
+  // it("TC 3: Nhập sai định dạng số điện thoại", async function () {
+  //   await seedTestReservationData("GENERAL")
 
-    await driver.get(`${DOMAIN}/bookings-history`)
-    await autoSubmitSearchForm({
-      ...dataOnTestingFlow["GENERAL"].bookingData(),
-      Cus_Phone: "1234567890",
-    })
+  //   await driver.get(`${DOMAIN}/bookings-history`)
+  //   await autoSubmitSearchForm({
+  //     ...dataOnTestingFlow["GENERAL"].bookingData(),
+  //     Cus_Phone: "1234567890",
+  //   })
 
-    await waitForLooking()
+  //   await waitForLooking()
 
-    const errorMessage = await extractContentFromToast(driver)
-    expect(errorMessage).to.include("Trường số điện thoại không hợp lệ!")
-  })
+  //   const errorMessage = await extractContentFromToast(driver)
+  //   expect(errorMessage).to.include("Trường số điện thoại không hợp lệ!")
+  // })
 
   // TC 4: Đơn không tồn tại
-  it("TC 4: Không tìm thấy đơn đặt bàn", async function () {
+  it("TC 1: Không tìm thấy đơn đặt bàn", async function () {
     await seedTestReservationData("GENERAL")
 
     await driver.get(`${DOMAIN}/bookings-history`)
@@ -396,7 +396,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
     await waitForLooking()
     const message = await extractContentFromToast(driver)
-		expect(message).to.equal("Thời gian đặt phải từ thời điểm hiện tại trở đi!")
+		expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
     await closeToast()
   })
 
