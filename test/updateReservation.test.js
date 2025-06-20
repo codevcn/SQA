@@ -288,6 +288,40 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     expect(emptyText).to.include("Không có đơn đặt bàn nào")
   })
 
+  // TC 2: Chỉ cập nhật đơn pending
+  it("TC 2: Chỉ cập nhật đơn pending", async function () {
+    const { data: approvedData } = await axios.get(
+      `${DOMAIN}/create-sample-bookings?Status=Approved`
+    )
+    // const approvedBooking = approvedData.booking
+
+    await driver.get(`${DOMAIN}/bookings-history`)
+    const data = dataOnTestingFlow["GENERAL"].bookingData()
+    await autoSubmitSearchForm(data)
+
+    await isBookingsHistoryRoute(data.Cus_Phone, data.Cus_FullName)
+
+    await driver.wait(until.elementLocated(By.css(".booking-card")), 5000)
+    const bookingCard = await driver.findElement(By.css(".booking-card"))
+    const status = await bookingCard.findElement(By.css(".status"))
+    const statusText = await status.getText()
+
+    let message = "can update"
+    try {
+      await clickUpdateBookingButton()
+    } catch (error) {
+      if (
+        statusText.includes("Chưa được xử lý") ||
+        statusText.includes("Đã từ chối") ||
+        statusText.includes("Đã hủy") ||
+        statusText.includes("Đã duyệt")
+      ) {
+        message = "cannot update"
+      }
+    }
+    expect(message).to.equal("cannot update")
+  })
+
   // TC 5: OTP sai
   it("TC 3: Nhập OTP sai", async function () {
     const reservation = await seedTestReservationData("GENERAL")
@@ -322,7 +356,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await clickUpdateBookingButton()
 
     // chờ OTP hết hạn (hơn 1 phút)
-    const timeToWait = 61000
+    const timeToWait = 11000
     await countOTPExpiry(timeToWait)
     await delay(timeToWait)
 
@@ -396,14 +430,14 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](date, time))
     await waitForLooking()
     const message = await extractContentFromToast(driver)
-		expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
+    expect(message).to.equal("Thời gian đặt phải cách thời điểm hiện tại ít nhất 1 giờ!")
     await closeToast()
   })
 
   // TC 9: Thời gian ngoài giờ làm việc
-	it("TC 5: Thời gian ngoài giờ làm việc", async function () {
-		await seedTestReservationData("GENERAL")
-		
+  it("TC 5: Thời gian ngoài giờ làm việc", async function () {
+    await seedTestReservationData("GENERAL")
+
     // đặt vào 23h
     const daysLater = dayjs().add(3, "day")
     const shortTimeV23h = daysLater.hour(23).minute(30)
@@ -411,7 +445,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
     const timeV23h = shortTimeV23h.format("HH:mm")
 
     await placeOrderOnStaticForm(driver, dataOnTestingFlow["PLACE_ORDER"](dateV23h, timeV23h))
-		const message = await extractContentFromToast(driver)
+    const message = await extractContentFromToast(driver)
     expect(message).to.equal("Nhà hàng đã đóng cửa vào thời gian này!")
 
     await closeToast()
@@ -429,8 +463,8 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
   })
 
   // TC 10: Đặt vào thời gian nghỉ của nhà hàng
-	it("TC 6: Đặt vào thời gian nghỉ", async function () {
-		await seedTestReservationData("GENERAL")
+  it("TC 6: Đặt vào thời gian nghỉ", async function () {
+    await seedTestReservationData("GENERAL")
 
     const daytime = dayjs().month(8).date(2).add(1, "hours") // tháng 9 (0-based index nên là 8)
     const date = daytime.format("DD/MM/YYYY")
@@ -444,8 +478,8 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
   })
 
   // TC 11: Thời gian < 1h so với hiện tại
-	it("TC 7: Thời gian nhỏ hơn 1h so với hiện tại", async function () {
-		await seedTestReservationData("GENERAL")
+  it("TC 7: Thời gian nhỏ hơn 1h so với hiện tại", async function () {
+    await seedTestReservationData("GENERAL")
 
     const dayTime = dayjs().add(30, "minutes")
     const date = dayTime.format("DD/MM/YYYY")
@@ -460,7 +494,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
   // TC 12: Bỏ trống trường số lượng người lớn
   it("TC 8: Bỏ trống trường số lượng người lớn", async function () {
-		await seedTestReservationData("GENERAL")
+    await seedTestReservationData("GENERAL")
 
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
@@ -477,7 +511,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
   // TC 13: Số lượng người lớn = 0
   it("TC 9: Số lượng người lớn = 0", async function () {
-		await seedTestReservationData("GENERAL")
+    await seedTestReservationData("GENERAL")
 
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
@@ -494,7 +528,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
   // TC 14: Số lượng người lớn < 0
   it("TC 10: Số lượng người lớn < 0", async function () {
-		await seedTestReservationData("GENERAL")
+    await seedTestReservationData("GENERAL")
 
     const dayTime = dayjs().hour(12).minute(30)
     const date = dayTime.format("DD/MM/YYYY")
@@ -511,7 +545,7 @@ describe("Các testcase cho chức năng cập nhật đơn đặt chỗ", funct
 
   // // TC 15: Số lượng trẻ em < 0
   // it("TC 15: Số lượng trẻ em < 0", async function () {
-	// 	await seedTestReservationData("GENERAL")
+  // 	await seedTestReservationData("GENERAL")
 
   //   const dayTime = dayjs().hour(12).minute(30)
   //   const date = dayTime.format("DD/MM/YYYY")

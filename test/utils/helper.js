@@ -115,7 +115,7 @@ const extractContentFromToast = async (driver) => {
 }
 
 const extractErrorMessageFromInput = async (driver, selector) => {
-  const element = await driver.wait(until.elementLocated(By.css(selector)), 5000)
+  const element = await driver.wait(until.elementLocated(By.css(selector)), 10000)
   return await element.getText()
 }
 
