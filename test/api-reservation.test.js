@@ -50,11 +50,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('họ và tên không hợp lệ');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC2: C1 – Họ tên - "Nguyen 9A" - Chứa số
@@ -64,11 +66,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('họ và tên không hợp lệ');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC3: C1 – Họ tên - "" - Rỗng
@@ -78,11 +82,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Thiếu thông tin: Họ và tên');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC4: C2 – SĐT - "12345" - Dưới 10 số
@@ -96,7 +102,9 @@ describe('API Tests - Chức năng đặt bàn', function() {
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Số điện thoại không hợp lệ.');
+                return;
             }
+            
         });
 
         // TC5: C2 – SĐT - "09ab567890" - Có ký tự chữ
@@ -106,10 +114,11 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Số điện thoại không hợp lệ.');
+                return;
             }
         });
 
@@ -120,11 +129,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Thiếu thông tin: Số điện thoại');
+                return;
             }
+            
         });
 
         // TC7: C3 – Email - "abcgmail.com" - Thiếu ký tự @
@@ -134,11 +145,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Email không hợp lệ.');
+                return;
             }
+            expect.fail('Expected request to fail'); 
         });
 
         // TC8: C3 – Email - "" - Rỗng
@@ -148,11 +161,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Thiếu thông tin: Email');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC9: C4 – Ngày giờ - "23:30 12/08/2025" - Ngoài khung giờ
@@ -163,11 +178,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('đã đóng cửa vào thời gian này');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC10: C4 – Ngày giờ - "10:00 01/01/2022" - Quá khứ
@@ -177,11 +194,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('cách thời điểm hiện tại ít nhất 1 giờ');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC11: C4 – Ngày giờ - "" - Rỗng
@@ -195,6 +214,7 @@ describe('API Tests - Chức năng đặt bàn', function() {
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Thiếu thông tin: Thời gian đặt bàn');
+                return;
             }
         });
 
@@ -207,11 +227,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('cách thời điểm hiện tại ít nhất 1 giờ');
-            }
+                return;
+                }
+            expect.fail('Expected request to fail');
         });
 
         // TC13: C6 – Ngày nghỉ - "01/01/2025" - Ngày nhà hàng nghỉ
@@ -221,11 +243,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('đóng cửa vào ngày này');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC14: C4 – Ngày giờ - "" - Rỗng
@@ -235,11 +259,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Thiếu thông tin: Thời gian đặt bàn');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC15: C7 – Số lượng người lớn - 0 - Bằng 0
@@ -250,11 +276,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
           
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Số lượng người lớn phải lớn hơn hoặc bằng 1.');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC16: C7 – Số lượng người lớn - -3 - Âm
@@ -264,11 +292,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Số lượng người lớn phải lớn hơn hoặc bằng 1.');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC17: C7 – Số lượng người lớn - "" - Rỗng
@@ -277,12 +307,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             delete data.NumAdults;
             
             try {
-                await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                await axios.post(`${BASE_URL}/reserve`, data);                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('Thiếu thông tin: Số lượng người lớn');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC18: C8 – Số lượng trẻ em - -2 - Âm
@@ -292,11 +323,13 @@ describe('API Tests - Chức năng đặt bàn', function() {
             
             try {
                 await axios.post(`${BASE_URL}/reserve`, data);
-                expect.fail('Expected request to fail');
+                
             } catch (error) {
                 expect(error.response.status).to.equal(400);
                 expect(error.response.data.message).to.include('trẻ em phải lớn hơn hoặc bằng 0');
+                return;
             }
+            expect.fail('Expected request to fail');
         });
 
         // TC19: Tất cả hợp lệ - Tất cả giá trị hợp lệ - Đặt bàn thành công

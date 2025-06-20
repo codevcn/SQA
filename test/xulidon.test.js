@@ -10,7 +10,7 @@ const DOMAIN = process.env.DOMAIN;
 console.log(`Testing reservation processing on: ${DOMAIN}`);
 
 const { convertDateFormat, getTomorrowDateFormatted, clickButton, clickOkToast, getMessageFromToast } = require("./utils/helper");
-const { login, logout, placeOrder, getBookingDetails, filterBookings } = require("./utils/func");
+const { login, logout, placeOrder, getBookingDetails, filterBookings } = require("./utils/func_trung");
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -632,58 +632,60 @@ describe('White Box Testing - Business Logic', function () {
             }
         });
     // TC17: Test API rejectReservation - Đơn đã bị từ chối
-    // it('TC17: Test API rejectReservation - Đơn đã bị từ chối', async function () {
-    //     console.log('🔧 Bắt đầu test TC17...');
-    //     const cookies = await loginAdmin();
-    //     console.log('✅ Đăng nhập thành công');
-    //     // Xóa dữ liệu test cũ trước khi tạo mới
-    //     await cleanupTestData(cookies);
+    it('TC17: Test API rejectReservation - Đơn đã bị từ chối', async function () {
+        console.log('🔧 Bắt đầu test TC17...');
+        const cookies = await loginAdmin();
+        console.log('✅ Đăng nhập thành công');
+        // Xóa dữ liệu test cũ trước khi tạo mới
+        await cleanupTestData(cookies);
         
-    //     // Tạo đơn test trước
-    //     const testData = {
-    //         Cus_Email: 'test3@example.com',
-    //         Cus_FullName: 'Test User 3',
-    //         Cus_Phone: '0987654397',
-    //         ArrivalTime: getTestDateTime(1, '20:00'),
-    //         NumAdults: 4,
-    //         NumChildren: 0,
-    //         Note: ''
-    //     };
+        // Tạo đơn test trước
+        const testData = {
+            Cus_Email: 'test3@example.com',
+            Cus_FullName: 'Test User',
+            Cus_Phone: '0987654397',
+            ArrivalTime: getTestDateTime(1, '20:00'),
+            NumAdults: 4,
+            NumChildren: 0,
+            Note: ''
+        };
 
-    //     console.log(`Creating test reservation with data: ${JSON.stringify(testData)}`);
-        
-    //     const createResponse = await axios.post(`${DOMAIN}/api/reservations/reserve`, testData, {
-    //         headers: {
-    //             Cookie: cookies.join('; ')
-    //         }
-    //     });
-    //     const reservationId = createResponse.data.reservation.ReservationID;
+        console.log(`Creating test reservation with data: ${JSON.stringify(testData)}`);
+        const createResponse = await axios.post(`${DOMAIN}/api/reservations/reserve`, testData, {
+            headers: {
+                Cookie: cookies.join('; ')
+            }
+        });
+        const reservationId = createResponse.data.reservation.ReservationID;
 
-    //     console.log(`Created reservation with ID: ${reservationId}`);
-        
-    //     // Từ chối lần đầu
-    //     await axios.post(`${DOMAIN}/api/reservations/rejectReservation/${reservationId}`, {
-    //         reject_reason: 'Lý do từ chối lần 1'
-    //     }, {
-    //         headers: {
-    //             Cookie: cookies.join('; ')
-    //         }
-    //     });
 
-    //     console.log("Rejected reservation for the first time done");
+        console.log(`Created reservation with ID: ${reservationId}`);
         
-    //     // Từ chối lần thứ 2 (sẽ fail)
-    //     const response = await axios.post(`${DOMAIN}/api/reservations/rejectReservation/${reservationId}`, {
-    //         reject_reason: 'Lý do từ chối lần 2'
-    //     }, {
-    //         headers: {
-    //             Cookie: cookies.join('; ')
-    //         }
-    //     }).catch(error => error.response);
+        // Từ chối lần đầu
+        await axios.post(`${DOMAIN}/api/reservations/rejectReservation/${reservationId}`, {
+            reject_reason: 'Lý do từ chối lần 1'
+        }, {
+            headers: {
+                Cookie: cookies.join('; ')
+            }
+        });
 
-    //     console.log("Rejected reservation for the second time done");
+        console.log("Rejected reservation for the first time done");
         
-    //     expect(response.status).to.equal(400);
-    //     expect(response.data.message).to.include('Đơn đặt chỗ đã bị từ chối');
-    // });
+        // Từ chối lần thứ 2 (sẽ fail)
+
+        const response = await axios.post(`${DOMAIN}/api/reservations/rejectReservation/${reservationId}`, {
+            reject_reason: 'Lý do từ chối lần 2'
+        }, {
+            headers: {
+                Cookie: cookies.join('; ')
+            }
+        }).catch(error => error.response);
+  
+
+        console.log("Rejected reservation for the second time done");
+        
+        expect(response.status).to.equal(400);
+        expect(response.data.message).to.include('Đơn đặt chỗ đã bị từ chối');
+    });
 }); 
